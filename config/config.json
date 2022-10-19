@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "root",
+    "password": null,
+    "database": "itaxeasy",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": "root",
+    "password": null,
+    "database": "itaxeasy",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "itaxeasy",
+    "password": "7Cyh*eW%k1cJxob8",
+    "database": "itaxeasy",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  }
+}
