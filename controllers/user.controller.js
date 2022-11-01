@@ -9,6 +9,7 @@ const ApiError = require('../errors/ApiError')
 
 class UserController {
     create = async (req, res, next) => {
+        console.log(req.body);
         if (req.body.username === undefined) {
             return next(ApiError.badRequest("please enter username"));
         }
