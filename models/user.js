@@ -18,13 +18,13 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     User.init({
-        id: {
-            type: DataTypes.UUID,
-            defaultValue: DataTypes.UUID4,
-            allowNull: false,
-            unique: true,
-            primaryKey: true,
-        },
+        // id: {
+        //     type: DataTypes.UUID,
+        //     defaultValue: DataTypes.UUID4,
+        //     allowNull: false,
+        //     unique: true,
+        //     primaryKey: true,
+        // },
         email: {
             type: DataTypes.STRING,
             unique: true,
@@ -43,53 +43,56 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true,
             unique: true,
         },
-        username: {
+        first_name: {
             type: DataTypes.STRING,
-            unique: true,
             allowNull: false,
-            primaryKey: true,
-            validate: {
-                isAlphanumeric: true,
-                notNull: {
-                    msg: "please enter username"
-                }
-            }
+            // validate: {
+            //     isAlphanumeric: true,
+            //     notNull: {
+            //         msg: "please enter username"
+            //     }
+            // }
         },
-        name: {
+        last_name: {
             type: DataTypes.STRING,
             allowNull: true
         },
-        profileImage: {
-            type: DataTypes.STRING(1234),
-            allowNull: true,
-            defaultValue: "https://i.imgur.com/U1dxgda.png"
-        },
-        notificationToken: {
-            type: DataTypes.TEXT,
-            allowNull: true
-        },
+        // profileImage: {
+        //     type: DataTypes.STRING(1234),
+        //     allowNull: true,
+        //     defaultValue: "https://i.imgur.com/U1dxgda.png"
+        // },
+        // notificationToken: {
+        //     type: DataTypes.TEXT,
+        //     allowNull: true
+        // },
         password: {
             type: DataTypes.STRING,
-            allowNull: true
-        },
-        userType: {
-            type: DataTypes.ENUM('Normal'),
-            defaultValue: 'Normal',
             allowNull: false
         },
-        socialID: {
+        pincode: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
+        // userType: {
+        //     type: DataTypes.ENUM('Normal'),
+        //     defaultValue: 'Normal',
+        //     allowNull: false
+        // },
+        social_id: {
             type: DataTypes.STRING,
             unique: true,
             allowNull: true
         },
-        loginVia: {
-            type: DataTypes.ENUM('Email', 'Google', 'Facebook'),
-            defaultValue: 'Email',
-            allowNull: false
-        },
-        createdAt: {
-            type: DataTypes.BIGINT,
+        // loginVia: {
+        //     type: DataTypes.ENUM('Email', 'Google', 'Facebook'),
+        //     defaultValue: 'Email',
+        //     allowNull: false
+        // },
+        created_at: {
+            type: DataTypes.DATE,
             allowNull: false,
+            defaultValue: Date.now(),
         }
     }, {
         sequelize,

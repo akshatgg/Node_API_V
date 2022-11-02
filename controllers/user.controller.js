@@ -1,17 +1,17 @@
-const {User} = require('../models');
+const { User } = require('../models');
 const uuid = require('uuid');
 const bCrypt = require('bcrypt-nodejs');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
-const {Op} = require("sequelize");
-const {Sequelize} = require("sequelize");
+const { Op } = require("sequelize");
+const { Sequelize } = require("sequelize");
 const ApiError = require('../errors/ApiError')
 
 class UserController {
     create = async (req, res, next) => {
         console.log(req.body);
-        if (req.body.username === undefined) {
-            return next(ApiError.badRequest("please enter username"));
+        if (req.body.email === undefined) {
+            return next(ApiError.badRequest("please enter email address"));
         }
 
         if (req.body.password === undefined) {
@@ -23,9 +23,9 @@ class UserController {
             return;
         }
 
-        let isUsernameExists = await isUsernameExist(req.body.username)
+        let isUsernameExists = await isUsernameExist(req.body.email)
         if (isUsernameExists) {
-            next(ApiError.conflict("username already exists"))
+            next(ApiError.conflict("email already exists"))
             return;
         }
 
@@ -36,11 +36,19 @@ class UserController {
             } else {
                 console.log("trying creating user")
                 User.create({
-                    id: uuid.v4(),
-                    username: req.body.username,
+                    // id: uuid.v4(),
+                    first_name: req.body.first_name,
+                    last_name: req.body.last_name,
+                    phone: req.body.phone,
                     email: req.body.email,
                     password: hash,
-                    createdAt: Date.now()
+                    pincode: req.body.pincode,
+                    // profileImage: req.body.profileImage,
+                    // notificationToken: req.body.notificationToken,
+                    // userType: req.body.userType,
+                    social_id: req.body.socialID,
+                    // loginVia: req.body.loginVia,
+                    // created_at: Date.now()
                 }).then((result) => {
                     console.log(result)
                     if (result) {
@@ -90,10 +98,10 @@ class UserController {
                             token: token,
                             id: result['dataValues']['id'],
                             email: result['dataValues']['email'],
-                            name: result['dataValues']['name'],
-                            username: result['dataValues']['username'],
-                            profileImage: result['dataValues']['profileImage'],
-                            userType: result['dataValues']['userType']
+                            first_name: result['dataValues']['first_name'],
+                            last_name: result['dataValues']['last_name'],
+                            phone: result['dataValues']['phone'],
+                            pincode: result['dataValues']['pincode'],
                         })
                     }
                     return next(ApiError.unAuthorized("invalid credentials"))
@@ -110,10 +118,10 @@ class UserController {
     }
 }
 
-isUsernameExist = async (username) => {
+isUsernameExist = async (email) => {
     return await User.findOne({
         where: {
-            username: username
+            email: email
         }
     })
 }
@@ -122,10 +130,10 @@ getJwtToken = (user) => {
     return jwt.sign({
         id: user['dataValues']['id'],
         email: user['dataValues']['email'],
-        name: user['dataValues']['name'],
-        username: user['dataValues']['username'],
-        profileImage: user['dataValues']['profileImage'],
-        userType: user['dataValues']['userType'],
+        first_name: user['dataValues']['first_name'],
+        last_name: user['dataValues']['last_name'],
+        phone: user['dataValues']['phone'],
+        pincode: user['dataValues']['pincode'],
         environment: process.env.NODE_ENV
     }, process.env.JWT_KEY, {
         issuer: "iTaxEasy",
