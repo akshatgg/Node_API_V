@@ -24,8 +24,13 @@ class UserController {
         }
 
         let isUsernameExists = await isUsernameExist(req.body.email)
+        let isPhoneExists = await isPhoneExist(req.body.phone)
         if (isUsernameExists) {
             next(ApiError.conflict("email already exists"))
+            return;
+        }
+        if (isPhoneExists) {
+            next(ApiError.conflict("phone already exists"))
             return;
         }
 
@@ -81,7 +86,15 @@ class UserController {
     login = async (req, res, next) => {
         User.findOne({
             where: {
-                email: req.body.email,
+                [Op.or]: [{
+                    email: req.body.email,
+                },
+                {
+                    phone: req.body.email,
+                }
+            ]
+                // email: req.body.email,
+                // phone: req.body.email,
             }
         }).then((result) => {
             if (result) {
@@ -122,6 +135,13 @@ isUsernameExist = async (email) => {
     return await User.findOne({
         where: {
             email: email
+        }
+    })
+}
+isPhoneExist = async (phone) => {
+    return await User.findOne({
+        where: {
+            phone: phone
         }
     })
 }
