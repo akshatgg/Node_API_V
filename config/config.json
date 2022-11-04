@@ -1,23 +1,25 @@
 {
   "development": {
-    "username": "root",
-    "password": null,
+    "username": "ehsaan",
+    "password": "Ehsaan@1337.",
     "database": "itaxeasy",
     "host": "127.0.0.1",
+    "port":"3307",
     "dialect": "mysql"
   },
   "test": {
     "username": "root",
-    "password": null,
+    "password": "",
     "database": "itaxeasy",
     "host": "127.0.0.1",
     "dialect": "mysql"
   },
   "production": {
-    "username": "itaxeasy",
-    "password": "7Cyh*eW%k1cJxob8",
+    "username": "ehsaan",
+    "password": "Ehsaan@1337.",
     "database": "itaxeasy",
     "host": "127.0.0.1",
+    "port":"3307",
     "dialect": "mysql"
   }
 }
