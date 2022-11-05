@@ -1,4 +1,4 @@
-const { User,UserProfile } = require('../models');
+const { User,UserProfile,UserBusinessProfile } = require('../models');
 const uuid = require('uuid');
 const bCrypt = require('bcrypt-nodejs');
 const jwt = require('jsonwebtoken');
@@ -157,6 +157,60 @@ class UserController {
         var token=req.header('authorization')
         var payload=decodeToken(token)
         UserProfile.findOne({
+            include: [{
+                model: User,
+                where: {id: payload.id}
+               }]
+        }).then((result) => {
+            if (result) {
+                return res.status(200).json({
+                    status: "success",
+                    message: "user profile",
+                    data:result
+                })
+            } else {
+                return next(ApiError.badRequest("failed to get user"))
+            }
+        }).catch((error) => {
+            console.log(`catch block ${error}`)
+            if (error)
+                return next(ApiError.conflict(error));
+            else
+                return next(ApiError.internalServerError(error))
+        });
+    }
+    //business profile
+    createBusinessProfile = async (req, res, next) => {
+        var token=req.header('authorization')
+        var payload=decodeToken(token)
+        UserBusinessProfile.create({
+         user_id:payload.id,
+         ifsc:req.body.ifsc,
+         contactNo:req.body.contactNo,
+         accountHolderName:req.body.accountHolderName,
+         accountNo:req.body.accountNo
+        }).then((result) => {
+         if (result) {
+             return res.status(201).json({
+                 status: "created",
+                 message: "Business Profile created successfully",
+             })
+         } else {
+             return next(ApiError.badRequest("failed to create user"))
+         }
+     }).catch((error) => {
+         console.log(`catch block ${error}`)
+         if (error)
+             return next(ApiError.conflict(error));
+         else
+             return next(ApiError.internalServerError(error))
+     });
+ 
+     }
+     getBusinessProfile = async (req, res, next) => {
+        var token=req.header('authorization')
+        var payload=decodeToken(token)
+        UserBusinessProfile.findOne({
             include: [{
                 model: User,
                 where: {id: payload.id}

@@ -1,6 +1,5 @@
 'use strict';
-const { User,UserProfile } = require('../models');
-var Sequelize=require('sequelize');
+const { User,UserProfile ,UserBusinessProfile} = require('../models');
 const {
     Model
 } = require('sequelize');
@@ -11,13 +10,17 @@ module.exports = (sequelize, DataTypes) => {
          * This method is not a part of Sequelize lifecycle.
          * The `models/index` file will call this method automatically.
          */
-         static associate({GSTIN,UserProfile}) {
+         static associate({GSTIN,UserProfile,UserBusinessProfile}) {
             // define association here
             this.hasMany(GSTIN, {
                 foreignKey: 'userId',
                 // as: 'GSTIN'
             }),
             this.hasMany(UserProfile, {
+                foreignKey: 'id',
+                // as: 'userprofile'
+            }),
+            this.hasMany(UserBusinessProfile, {
                 foreignKey: 'id',
                 // as: 'userprofile'
             })

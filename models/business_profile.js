@@ -3,9 +3,8 @@ const {
     Model
 } = require('sequelize');
 
-var Sequelize=require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-    class UserProfile extends Model {
+    class UserBusinessProfile extends Model {
         /**
          * Helper method for defining associations.
          * This method is not a part of Sequelize lifecycle.
@@ -22,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
         }
     }
 
-    UserProfile.init({
+    UserBusinessProfile.init({
         id: {
             type: DataTypes.INTEGER,
             autoIncrement: true,
@@ -33,28 +32,28 @@ module.exports = (sequelize, DataTypes) => {
             unique: true,
             allowNull: false
         },
-        pan: {
+        ifsc: {
             type: DataTypes.STRING,
             allowNull: false
         },
-        aadhar: {
+        contactNo: {
             type: DataTypes.STRING,
             allowNull: false,
-            unique: true
+            
         },
-        profile_img: {
+        accountHolderName: {
             type: DataTypes.STRING,
-            allowNull: true,
+            allowNull: false,
         },
-        last_update: {
-            type: Sequelize.DATE, 
-  defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+        accountNo: {
+            type: DataTypes.STRING,
+            allowNull: false,
         }
     }, {
         sequelize,
-        tableName: 'user_profiles',
-        modelName: 'UserProfile',
-        timestamps: false
+        tableName: 'business_profiles',
+        modelName: 'UserBusinessProfile',
+       
     });
-    return UserProfile;
+    return UserBusinessProfile;
 };
