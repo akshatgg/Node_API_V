@@ -1,4 +1,6 @@
 'use strict';
+const { User,UserProfile } = require('../models');
+var Sequelize=require('sequelize');
 const {
     Model
 } = require('sequelize');
@@ -9,22 +11,25 @@ module.exports = (sequelize, DataTypes) => {
          * This method is not a part of Sequelize lifecycle.
          * The `models/index` file will call this method automatically.
          */
-        static associate({GSTIN}) {
+         static associate({GSTIN,UserProfile}) {
             // define association here
             this.hasMany(GSTIN, {
-                foreignKey: 'userId'
+                foreignKey: 'userId',
+                // as: 'GSTIN'
+            }),
+            this.hasMany(UserProfile, {
+                foreignKey: 'id',
+                // as: 'userprofile'
             })
         }
     }
 
     User.init({
-        // id: {
-        //     type: DataTypes.UUID,
-        //     defaultValue: DataTypes.UUID4,
-        //     allowNull: false,
-        //     unique: true,
-        //     primaryKey: true,
-        // },
+        id: {
+            type: DataTypes.INTEGER,
+            autoIncrement: true,
+            primaryKey: true
+        },
         email: {
             type: DataTypes.STRING,
             unique: true,
@@ -74,31 +79,30 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: true
         },
-        // userType: {
-        //     type: DataTypes.ENUM('Normal'),
-        //     defaultValue: 'Normal',
-        //     allowNull: false
-        // },
-        social_id: {
-            type: DataTypes.STRING,
-            unique: true,
-            allowNull: true
+        isverified: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,
+            allowNull: false
         },
+        // social_id: {
+        //     type: DataTypes.STRING,
+        //     unique: true,
+        //     allowNull: true
+        // },
         // loginVia: {
         //     type: DataTypes.ENUM('Email', 'Google', 'Facebook'),
         //     defaultValue: 'Email',
         //     allowNull: false
-        // },
-        created_at: {
-            type: DataTypes.DATE,
-            allowNull: false,
-            defaultValue: Date.now(),
-        }
+//         // },
+//         created_at: {
+//             type: Sequelize.DATE, 
+//   defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+//         }
     }, {
         sequelize,
         tableName: 'users',
         modelName: 'User',
-        timestamps: false
+       
     });
     return User;
 };
