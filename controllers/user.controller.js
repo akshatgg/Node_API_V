@@ -60,7 +60,7 @@ class UserController {
                         return res.status(200).json({
                             status: true,
 
-                            token: token,
+                           
                             results: {
                                 status: 200,
                                 message: "Registration Successfull",
@@ -74,7 +74,8 @@ class UserController {
                                     pincode: result['dataValues']['pincode'],
                                     profileImage: result['dataValues']['profileImage'],
                                 
-                                }
+                                },
+                                token: token,
                             }
                         })
                     } else {
@@ -115,7 +116,7 @@ class UserController {
                         const token = getJwtToken(result)
                         return res.status(200).json({
                             status: true,
-                            token: token,
+                         
                             results: {
                                 status: 200,
                                 message: "login successfull",
@@ -127,7 +128,8 @@ class UserController {
                                     phone: result['dataValues']['phone'],
                                     pincode: result['dataValues']['pincode'],
                                     isverified: result['dataValues']['isverified']
-                                }
+                                },
+                                token: token,
 
                             }
 
