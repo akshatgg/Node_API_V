@@ -57,15 +57,25 @@ class UserController {
                     console.log(result)
                     if (result) {
                         const token = getJwtToken(result)
-                        return res.status(201).json({
-                            status: "created",
-                            message: "user created successfully",
+                        return res.status(200).json({
+                            status: true,
+
                             token: token,
-                            id: result['dataValues']['id'],
-                            email: result['dataValues']['email'],
-                            name: result['dataValues']['name'],
-                            userType: result['dataValues']['userType'],
-                            profileImage: result['dataValues']['profileImage'],
+                            results: {
+                                status: 200,
+                                message: "Registration Successfull",
+                                data: {
+
+                                    id: result['dataValues']['id'],
+                                    email: result['dataValues']['email'],
+                                    first_name: result['dataValues']['first_name'],
+                                    last_name: result['dataValues']['last_name'],
+                                    phone: result['dataValues']['phone'],
+                                    pincode: result['dataValues']['pincode'],
+                                    profileImage: result['dataValues']['profileImage'],
+                                
+                                }
+                            }
                         })
                     } else {
                         return next(ApiError.badRequest("failed to create user"))
@@ -106,10 +116,10 @@ class UserController {
                         return res.status(200).json({
                             status: true,
                             token: token,
-                            results:{
-                                status:200,
-                                message:"login successfull",
-                                data:{
+                            results: {
+                                status: 200,
+                                message: "login successfull",
+                                data: {
                                     id: result['dataValues']['id'],
                                     email: result['dataValues']['email'],
                                     first_name: result['dataValues']['first_name'],
@@ -118,9 +128,9 @@ class UserController {
                                     pincode: result['dataValues']['pincode'],
                                     isverified: result['dataValues']['isverified']
                                 }
-                                
+
                             }
-                           
+
                         })
                     }
                     return next(ApiError.unAuthorized("invalid credentials"))
