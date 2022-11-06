@@ -1,4 +1,4 @@
-const { User,UserProfile,UserBusinessProfile } = require('../models');
+const { User, UserProfile, UserBusinessProfile } = require('../models');
 const uuid = require('uuid');
 const bCrypt = require('bcrypt-nodejs');
 const jwt = require('jsonwebtoken');
@@ -91,8 +91,8 @@ class UserController {
                 {
                     phone: req.body.email,
                 }
-            ]
-           
+                ]
+
             }
         }).then((result) => {
             if (result) {
@@ -127,46 +127,122 @@ class UserController {
                 return next(ApiError.internalServerError("something went wrong"))
         });
     }
-    createProfile = async (req, res, next) => {
-       var token=req.header('authorization')
-       var payload=decodeToken(token)
-       UserProfile.create({
-        user_id:payload.id,
-        pan:req.body.pan,
-        aadhar:req.body.aadhar,
-        profile_img:req.body.profile_img,
-       }).then((result) => {
-        if (result) {
-            return res.status(201).json({
-                status: "created",
-                message: "user created successfully",
-            })
-        } else {
-            return next(ApiError.badRequest("failed to create user"))
-        }
-    }).catch((error) => {
-        console.log(`catch block ${error}`)
-        if (error)
-            return next(ApiError.conflict(error));
-        else
-            return next(ApiError.internalServerError(error))
-    });
+    updatePassword = async (req, res, next) => {
+        var token = req.header('authorization')
+        var payload = decodeToken(token)
+        bCrypt.hash(req.body.password, bCrypt.genSaltSync(8), null, (err, hash) => {
+            if (err) {
+                console.log(`bcrypt error ${err}`)
+                return next(ApiError.internalServerError(err.toString()))
+            } else {
+                User.update(
+                    { password: hash },
+                    { where: { id: payload.id } }
+                )
+                    .then((result) => {
+                        if (result) {
+                            return res.status(200).json({
+                                status: "success",
+                                message: "password updated successfully",
+                            })
+                        } else {
+                            return next(ApiError.badRequest("failed to create user"))
+                        }
+                    }).catch((error) => {
+                        console.log(`catch block ${error}`)
+                        if (error)
+                            return next(ApiError.conflict(error));
+                        else
+                            return next(ApiError.internalServerError(error))
+                    });
+
+            }
+        })
 
     }
+
+
+    createProfile = async (req, res, next) => {
+        var token = req.header('authorization')
+        var payload = decodeToken(token)
+        UserProfile.create({
+            user_id: payload.id,
+            pan: req.body.pan,
+            aadhar: req.body.aadhar,
+            profile_img: req.body.profile_img,
+        }).then((result) => {
+            if (result) {
+                return res.status(201).json({
+                    status: "created",
+                    message: "user created successfully",
+                })
+            } else {
+                return next(ApiError.badRequest("failed to create user"))
+            }
+        }).catch((error) => {
+            console.log(`catch block ${error}`)
+            if (error)
+                return next(ApiError.conflict(error));
+            else
+                return next(ApiError.internalServerError(error))
+        });
+
+    }
+    updateProfile = async (req, res, next) => {
+        var token = req.header('authorization')
+        if (token) {
+            var payload = decodeToken(token)
+            UserProfile.findOne({
+                where: {
+                    user_id: payload.id
+                }
+            })
+                .then((userprofile) => {
+                    userprofile.update({
+                        pan: req.body.pan,
+                        aadhar: req.body.aadhar,
+                        profile_img: req.body.profile_img,
+                    }).then((result) => {
+
+                        if (result) {
+                            return res.status(200).json({
+                                status: "success",
+                                message: "profile updated successfully",
+                                result: result
+                            })
+                        } else {
+                            return next(ApiError.badRequest("failed to create user"))
+                        }
+                    }).catch((error) => {
+                        console.log(`catch block ${error}`)
+                        if (error)
+                            return next(ApiError.conflict(error));
+                        else
+                            return next(ApiError.internalServerError(error))
+                    });
+                })
+
+        } else {
+            return next(ApiError.unAuthorized("invalid credentials"))
+        }
+
+
+    }
+
     getProfile = async (req, res, next) => {
-        var token=req.header('authorization')
-        var payload=decodeToken(token)
+        var token = req.header('authorization')
+        var payload = decodeToken(token)
         UserProfile.findOne({
             include: [{
                 model: User,
-                where: {id: payload.id}
-               }]
+                where: { id: payload.id }
+            }]
         }).then((result) => {
             if (result) {
                 return res.status(200).json({
                     status: "success",
                     message: "user profile",
-                    data:result
+                    data: result
                 })
             } else {
                 return next(ApiError.badRequest("failed to get user"))
@@ -181,46 +257,87 @@ class UserController {
     }
     //business profile
     createBusinessProfile = async (req, res, next) => {
-        var token=req.header('authorization')
-        var payload=decodeToken(token)
+        var token = req.header('authorization')
+        var payload = decodeToken(token)
         UserBusinessProfile.create({
-         user_id:payload.id,
-         ifsc:req.body.ifsc,
-         contactNo:req.body.contactNo,
-         accountHolderName:req.body.accountHolderName,
-         accountNo:req.body.accountNo
+            user_id: payload.id,
+            ifsc: req.body.ifsc,
+            contactNo: req.body.contactNo,
+            accountHolderName: req.body.accountHolderName,
+            accountNo: req.body.accountNo
         }).then((result) => {
-         if (result) {
-             return res.status(201).json({
-                 status: "created",
-                 message: "Business Profile created successfully",
-             })
-         } else {
-             return next(ApiError.badRequest("failed to create user"))
-         }
-     }).catch((error) => {
-         console.log(`catch block ${error}`)
-         if (error)
-             return next(ApiError.conflict(error));
-         else
-             return next(ApiError.internalServerError(error))
-     });
- 
-     }
-     getBusinessProfile = async (req, res, next) => {
-        var token=req.header('authorization')
-        var payload=decodeToken(token)
+            if (result) {
+                return res.status(201).json({
+                    status: "created",
+                    message: "Business Profile created successfully",
+                })
+            } else {
+                return next(ApiError.badRequest("failed to create user"))
+            }
+        }).catch((error) => {
+            console.log(`catch block ${error}`)
+            if (error)
+                return next(ApiError.conflict(error));
+            else
+                return next(ApiError.internalServerError(error))
+        });
+
+    }
+    updateBusinessProfile = async (req, res, next) => {
+        var token = req.header('authorization')
+        if (token) {
+            var payload = decodeToken(token)
+            UserBusinessProfile.findOne({
+                where: {
+                    user_id: payload.id
+                }
+            })
+                .then((businesprofile) => {
+                    businesprofile.update({
+                        ifsc: req.body.ifsc,
+                        contactNo: req.body.contactNo,
+                        accountHolderName: req.body.accountHolderName,
+                        accountNo: req.body.accountNo
+                    }).then((result) => {
+
+                        if (result) {
+                            return res.status(200).json({
+                                status: "success",
+                                message: "profile updated successfully",
+                                result: result
+                            })
+                        } else {
+                            return next(ApiError.badRequest("failed to create user"))
+                        }
+                    }).catch((error) => {
+                        console.log(`catch block ${error}`)
+                        if (error)
+                            return next(ApiError.conflict(error));
+                        else
+                            return next(ApiError.internalServerError(error))
+                    });
+                })
+
+        } else {
+            return next(ApiError.unAuthorized("invalid credentials"))
+        }
+
+
+    }
+    getBusinessProfile = async (req, res, next) => {
+        var token = req.header('authorization')
+        var payload = decodeToken(token)
         UserBusinessProfile.findOne({
             include: [{
                 model: User,
-                where: {id: payload.id}
-               }]
+                where: { id: payload.id }
+            }]
         }).then((result) => {
             if (result) {
                 return res.status(200).json({
                     status: "success",
                     message: "user profile",
-                    data:result
+                    data: result
                 })
             } else {
                 return next(ApiError.badRequest("failed to get user"))
@@ -251,10 +368,10 @@ isPhoneExist = async (phone) => {
 }
 decodeToken = (token) => {
     var base64Url = token.split('.')[1];
-       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-const buff = new Buffer(base64, 'base64');
-const payloadinit = buff.toString('ascii');
-const payload = JSON.parse(payloadinit);
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const buff = new Buffer(base64, 'base64');
+    const payloadinit = buff.toString('ascii');
+    const payload = JSON.parse(payloadinit);
     return payload;
 }
 getJwtToken = (user) => {
