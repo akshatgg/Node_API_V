@@ -8,6 +8,7 @@ router.post('/send-email', emailController.sendEmail);
 
 router.post('/login', userController.login);
 router.post('/update-password', userController.updatePassword);
+router.post('/update', userController.updateUser);
 // User profile routes
 router.post('/createProfile', userController.createProfile);
 router.post('/update-profile', userController.updateProfile);

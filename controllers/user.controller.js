@@ -113,6 +113,7 @@ class UserController {
                             last_name: result['dataValues']['last_name'],
                             phone: result['dataValues']['phone'],
                             pincode: result['dataValues']['pincode'],
+                            isverified: result['dataValues']['isverified'],
                         })
                     }
                     return next(ApiError.unAuthorized("invalid credentials"))
@@ -126,6 +127,49 @@ class UserController {
             else
                 return next(ApiError.internalServerError("something went wrong"))
         });
+    }
+    updateUser = async (req, res, next) => {
+        var token = req.header('authorization')
+        if (token) {
+            var payload = decodeToken(token)
+            User.findOne({
+                where: {
+                    id: payload.id
+                }
+            })
+                .then((user) => {
+                    user.update({
+                        first_name: req.body.first_name,
+                        last_name: req.body.last_name,
+                        phone: req.body.phone,
+                        email: req.body.email,
+                        pincode: req.body.pincode,
+                        isverified: req.body.isverified,
+                    }).then((result) => {
+
+                        if (result) {
+                            return res.status(200).json({
+                                status: "success",
+                                message: "profile updated successfully",
+                                // result: result
+                            })
+                        } else {
+                            return next(ApiError.badRequest("failed to create user"))
+                        }
+                    }).catch((error) => {
+                        console.log(`catch block ${error}`)
+                        if (error)
+                            return next(ApiError.conflict(error));
+                        else
+                            return next(ApiError.internalServerError(error))
+                    });
+                })
+
+        } else {
+            return next(ApiError.unAuthorized("invalid credentials"))
+        }
+
+
     }
     updatePassword = async (req, res, next) => {
         var token = req.header('authorization')
