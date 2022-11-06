@@ -104,16 +104,23 @@ class UserController {
                     if (hashResult) {
                         const token = getJwtToken(result)
                         return res.status(200).json({
-                            status: "success",
-                            message: "auth successful",
+                            status: true,
                             token: token,
-                            id: result['dataValues']['id'],
-                            email: result['dataValues']['email'],
-                            first_name: result['dataValues']['first_name'],
-                            last_name: result['dataValues']['last_name'],
-                            phone: result['dataValues']['phone'],
-                            pincode: result['dataValues']['pincode'],
-                            isverified: result['dataValues']['isverified'],
+                            results:{
+                                status:200,
+                                message:"login successfull",
+                                data:{
+                                    id: result['dataValues']['id'],
+                                    email: result['dataValues']['email'],
+                                    first_name: result['dataValues']['first_name'],
+                                    last_name: result['dataValues']['last_name'],
+                                    phone: result['dataValues']['phone'],
+                                    pincode: result['dataValues']['pincode'],
+                                    isverified: result['dataValues']['isverified']
+                                }
+                                
+                            }
+                           
                         })
                     }
                     return next(ApiError.unAuthorized("invalid credentials"))
