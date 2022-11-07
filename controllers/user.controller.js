@@ -191,8 +191,12 @@ class UserController {
 
     }
     updatePassword = async (req, res, next) => {
-        var token = req.header('authorization')
-        var payload = decodeToken(token)
+        if(req.body.email==undefined){
+            return next(ApiError.badRequest("please enter email"))
+        }
+        if(req.body.password==undefined){
+            return next(ApiError.badRequest("please enter password"))
+        }
         bCrypt.hash(req.body.password, bCrypt.genSaltSync(8), null, (err, hash) => {
             if (err) {
                 console.log(`bcrypt error ${err}`)
@@ -200,16 +204,17 @@ class UserController {
             } else {
                 User.update(
                     { password: hash },
-                    { where: { id: payload.id } }
+                    { where: {email: req.body.email } }
                 )
                     .then((result) => {
-                        if (result) {
+                        if (result[0]) {
                             return res.status(200).json({
                                 status: "success",
                                 message: "password updated successfully",
+                              
                             })
                         } else {
-                            return next(ApiError.badRequest("failed to create user"))
+                            return next(ApiError.badRequest("user not found"))
                         }
                     }).catch((error) => {
                         console.log(`catch block ${error}`)
