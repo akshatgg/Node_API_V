@@ -306,11 +306,25 @@ class UserController {
                 where: { id: payload.id }
             }]
         }).then((result) => {
+            console.log(result["dataValues"].User["dataValues"]);
             if (result) {
                 return res.status(200).json({
-                    status: "success",
+                    status: true,
                     message: "user profile",
-                    data: result
+                    data: {
+                        id: result['dataValues']['id'],
+                        user_id: result['dataValues']['user_id'],
+                        pan: result['dataValues']['pan'],
+                        aadhar: result['dataValues']['aadhar'],
+                        profile_img: result['dataValues']['profile_img'],
+                        first_name: result['dataValues'].User['dataValues']['first_name'],
+                        last_name: result['dataValues'].User['dataValues']['last_name'],
+                        phone: result['dataValues'].User['dataValues']['phone'],
+                        email: result['dataValues'].User['dataValues']['email'],
+                        pincode: result['dataValues'].User['dataValues']['pincode'],
+                        isverified: result['dataValues'].User['dataValues']['isverified'],
+
+                    }
                 })
             } else {
                 return next(ApiError.badRequest("failed to get user"))
@@ -336,7 +350,7 @@ class UserController {
         }).then((result) => {
             if (result) {
                 return res.status(201).json({
-                    status: "created",
+                    status: true,
                     message: "Business Profile created successfully",
                 })
             } else {
@@ -375,7 +389,7 @@ class UserController {
                                 result: result
                             })
                         } else {
-                            return next(ApiError.badRequest("failed to create user"))
+                            return next(ApiError.badRequest("failed to update user"))
                         }
                     }).catch((error) => {
                         console.log(`catch block ${error}`)
