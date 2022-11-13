@@ -6,9 +6,10 @@ const logger = require('morgan');
 const {sequelize} = require('./models');
 const apiErrorHandler = require('./errors/ApiError.handler');
 var cors = require('cors')
+const fileupload = require("express-fileupload");
+const bodyParser = require('body-parser');
 
 const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users.route');
 
 const app = express();
 const corsOpts = {
@@ -35,14 +36,17 @@ var allowCrossDomain = function(req, res, next) {
 app.use(allowCrossDomain);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
-
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({extended: false}));
-app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(logger('dev'));
+app.use(cookieParser());
+
+// app.use("/public",(req, res) => {
+//   res.json({status: "yup"});})
+app.use(fileupload());
+app.use(bodyParser.json());
 app.use('/', indexRouter);
 
+// app.use(express.bodyParser({uploadDir:'./uploads'}));
 app.use(function (req, res, next) {
     next(createError(404));
 });
