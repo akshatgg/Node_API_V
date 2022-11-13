@@ -96,11 +96,11 @@ module.exports = (sequelize, DataTypes) => {
         //     unique: true,
         //     allowNull: true
         // },
-        // loginVia: {
-        //     type: DataTypes.ENUM('Email', 'Google', 'Facebook'),
-        //     defaultValue: 'Email',
-        //     allowNull: false
-//         // },
+        userType: {
+            type: DataTypes.ENUM('normal', 'admin', 'superadmin'),
+            defaultValue: 'normal',
+            allowNull: false
+        },
 //         created_at: {
 //             type: Sequelize.DATE, 
 //   defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')

@@ -20,4 +20,7 @@ router.post('/create-business-profile', userController.createBusinessProfile);
 router.get('/get-business-profile', userController.getBusinessProfile);
 router.post('/update-business-profile', userController.updateBusinessProfile);
 
+//CMS API
+router.get('/get-all-user', userController.getallUsers);
+
 module.exports = router;

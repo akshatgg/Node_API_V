@@ -406,6 +406,33 @@ class UserController {
 
 
     }
+getallUsers = async (req, res, next) => {
+
+        User.findAndCountAll({
+            limit: 10,
+            offset: req.query.page*10,
+            attributes: ['id', 'email', 'first_name', 'last_name', 'phone', 'pincode', 'isverified', 'createdAt', 'updatedAt','userType'  ],
+            where: {},
+        }).then((result) => {
+            if (result) {
+                const response = getPagingData(result, req.query.page, 10);
+               return res.send(response);
+            } else {
+
+                return next(ApiError.badRequest("failed to get user"))
+            }
+        }).catch((error) => {
+            console.log(`catch block ${error}`)
+            if (error)
+
+
+                return next(ApiError.conflict(error));
+            else
+                return next(ApiError.internalServerError(error))
+        });
+    }
+
+
     getBusinessProfile = async (req, res, next) => {
         var token = req.header('authorization')
         var payload = decodeToken(token)
@@ -470,5 +497,12 @@ getJwtToken = (user) => {
         expiresIn: "1Y"
     })
 }
+const getPagingData = (result, page, limit) => {
+    const { count: totalItems, rows: data } = result;
+    const currentPage = page ? +page : 0;
+    const totalPages = Math.ceil(totalItems / limit);
+  
+    return { totalItems, data, totalPages, currentPage };
+  };
 
 module.exports = new UserController();
