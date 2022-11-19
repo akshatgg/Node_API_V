@@ -9,10 +9,7 @@ const ApiError = require('../errors/ApiError');
 
 class HsnController {
   getHsnCode = async (req, res, next) => {
-    //var token = req.header('authorization')
-   // var payload = decodeToken(token)
-   console.log(req.query.id);
-   console.log(req.body.id);
+   
     Hsn.findOne({
         
 
@@ -20,7 +17,7 @@ class HsnController {
             where: { id: req.body.id }
         
     }).then((result) => {
-       // console.log(result["dataValues"].User["dataValues"]);
+      
         if (result) {
             return res.status(200).json({
                 status: true,
@@ -40,10 +37,7 @@ class HsnController {
  }
 
  getSacCode = async (req, res, next) => {
-    //var token = req.header('authorization')
-   // var payload = decodeToken(token)
-   console.log(req.query.id);
-   console.log(req.body.id);
+    
     Sac.findOne({
         
 
@@ -51,7 +45,7 @@ class HsnController {
             where: { id: req.body.id }
         
     }).then((result) => {
-       // console.log(result["dataValues"].User["dataValues"]);
+       
         if (result) {
             return res.status(200).json({
                 status: true,
