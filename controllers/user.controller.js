@@ -477,7 +477,7 @@ isPhoneExist = async (phone) => {
 }
 decodeToken = (token) => {
     var base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
     const buff = new Buffer(base64, 'base64');
     const payloadinit = buff.toString('ascii');
     const payload = JSON.parse(payloadinit);

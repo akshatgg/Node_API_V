@@ -11,6 +11,7 @@ const banks = require("./bank");
 const pincoderoute = require("./pincode");
 const postofficeroute = require("./postoffice");
 const pdfroute = require("./pdf");
+const hsnRouter = require("./hsn");
 
 router.get('/', function (req, res, next) {
     res.render('index', {title: 'APi node Server is running! 🏃‍'});
@@ -26,6 +27,7 @@ router.use('/banks', banks);
 router.use('/postoffice', postofficeroute);
 router.use('/pincode', pincoderoute);
 router.use('/pdf', pdfroute);
+router.use('/hsn', hsnRouter);
 
 router.get('*', (req, res, next) => {
     return next(ApiError.notFound("endpoint not found"))
