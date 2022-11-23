@@ -12,6 +12,13 @@ const bodyParser = require('body-parser');
 const indexRouter = require('./routes/index');
 
 const app = express();
+
+const mongoose = require('mongoose');
+const config = require('./config');
+
+mongoose.connect(`${config.MONGODB_URI}/${config.DATABASE_NAME}`);
+console.log("connect");
+
 const corsOpts = {
   origin: '*',
 
@@ -58,6 +65,8 @@ app.use(function (req, res, next) {
 //     res.status(err.status || 500);
 //     res.render('error');
 // });
+
+
 
 app.use(apiErrorHandler)
 sequelize.authenticate()

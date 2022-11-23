@@ -12,7 +12,7 @@
     STATE: { type: String},
 
     STD_CODE: { type: Number },
-    PHONE: { type: String },
+    PHONE: { type: String }, 
 
  });
 
