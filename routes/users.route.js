@@ -23,4 +23,11 @@ router.post('/update-business-profile', userController.updateBusinessProfile);
 //CMS API
 router.get('/get-all-user', userController.getallUsers);
 
+
+router.get('/',(req,res)=>{
+    
+    res.send("Hello World");
+}
+)
+
 module.exports = router;
