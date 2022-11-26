@@ -13,7 +13,7 @@ const postofficeroute = require("./postoffice");
 const pdfroute = require("./pdf");
 const hsnRouter = require("./hsn");
 const clientRouter = require("./clients");
-const invoiceRouter = require("./invoices");
+const invoice = require("./invoices");
 const profileRouter = require("./profile");
 const invoiceRouter = require("./invoice.route");
 
@@ -33,7 +33,7 @@ router.use('/pincode', pincoderoute);
 router.use('/pdf', pdfroute);
 router.use('/hsn', hsnRouter);
 router.use('/client', clientRouter);
-router.use('/invoice', invoiceRouter);
+router.use('/invoice', invoice);
 router.use('/profile', profileRouter);
 
 

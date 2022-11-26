@@ -14,10 +14,12 @@ const indexRouter = require('./routes/index');
 const app = express();
 
 const mongoose = require('mongoose');
-const config = require('./config');
+const DB_URL = process.env.DB_URL
+mongoose.connect(DB_URL, { useNewUrlParser: true, useUnifiedTopology: true})
+    .catch((error) => console.log(error.message))
 
-mongoose.connect(`${config.MONGODB_URI}/${config.DATABASE_NAME}`);
-console.log("connect");
+mongoose.set('useFindAndModify', false)
+mongoose.set('useCreateIndex', true)
 
 const corsOpts = {
   origin: '*',
