@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 
 exports.getSandboxAuthToken = async () => {
     let token = await fetchTokenFromDB()
-    if (isTokenExpired(token)) {
+    if (token===null||isTokenExpired(token)) {
         await generateNewSandboxToken()
         token = fetchTokenFromDB()
     }
@@ -43,7 +43,11 @@ fetchTokenFromDB = async () => {
         },
         attributes: ["key", "value"]
     }).then((config) => {
+        if(config){
         return config["dataValues"]["value"];
+        } else{
+            return null;
+        }
     })
 }
 

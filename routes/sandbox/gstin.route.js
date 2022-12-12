@@ -5,7 +5,7 @@ const checkAuth = require('../../middleware/check-auth')
 const queryValidator = require('../../middleware/query-validator')
 const bodyValidator = require('../../middleware/body-validator')
 
-router.get('/search/gstin', checkAuth, queryValidator, gstinController.searchDetailsByGSTINNumber);
+router.get('/search/gstin', queryValidator, gstinController.searchDetailsByGSTINNumber);
 
 router.get('/search/gstin-by-pan', checkAuth, queryValidator, gstinController.searchGSTINNumberByPan);
 

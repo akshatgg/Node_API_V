@@ -10,6 +10,7 @@ class GstinController {
             return next(ApiError.badRequest("query parameter \'GSTIN\' is missing"))
 
         let token = await sandboxUtil.getSandboxAuthToken()
+        console.log("token:",token);
         await axios.get(`${process.env.SANDBOX_BASE_URL}/gsp/public/gstin/${req.query.gstin}`, {
             headers: {
                 'x-api-key': process.env.SANDBOX_KEY,
@@ -23,7 +24,7 @@ class GstinController {
                     company: result.data["data"]
                 })
             } else {
-                console.log(result)
+                // console.log(result)
                 return next(ApiError.badRequest(result))
             }
         }).catch((error) => {
