@@ -12,7 +12,7 @@ console.log(req.body);
             // secure:false,
             auth: {
               user: 'support@itaxeasy.com',
-              pass: "Sonali@1996"
+              pass: process.env.EMAIL_PASSWORD
             },
             tls: {
               // do not fail on invalid certs
