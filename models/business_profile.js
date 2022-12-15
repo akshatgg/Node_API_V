@@ -32,20 +32,40 @@ module.exports = (sequelize, DataTypes) => {
             unique: true,
             allowNull: false
         },
-        ifsc: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        contactNo: {
-            type: DataTypes.STRING,
-            allowNull: false,
+        // contactNo: {
+        //     type: DataTypes.STRING,
+        //     allowNull: false,
             
-        },
-        accountHolderName: {
+        // },
+        businessName: {
             type: DataTypes.STRING,
             allowNull: false,
         },
-        accountNo: {
+        bankAccountNo: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        companyPanNo: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        companyTanNo: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        msmeNo: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        gstNo: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        bandDetails: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        incorporateCertificate: {
             type: DataTypes.STRING,
             allowNull: false,
         }

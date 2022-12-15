@@ -7,17 +7,22 @@ console.log(req.body);
 
         var transporter = nodemailer.createTransport({
             // service: 'cruxtech.in',
-            host:'smtp-mail.outlook.com',
-            port:587,
+            host:'webmail.itaxeasy.com',
+            port:465,
             // secure:false,
             auth: {
-              user: 'itaxeasy@hotmail.com',
-              pass: process.env.OUTLOOK_PASSWORD
-            }
+              user: 'support@itaxeasy.com',
+              pass: "Sonali@1996"
+            },
+            tls: {
+              // do not fail on invalid certs
+              rejectUnauthorized: false
+          },
           });
           var mailOptions = {
-            from: 'itaxeasy@hotmail.com',
-            to: req.body.email,
+            from: 'support@itaxeasy.com',
+            // to: req.body.email,
+            to: "vineetkaimau@gmail.com",
             subject: req.body.subject,
             text: req.body.text
           };
