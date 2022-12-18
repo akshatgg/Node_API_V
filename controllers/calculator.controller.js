@@ -382,6 +382,7 @@ class CalculatorController {
 
         if (type === "excluding") {
             gstAmount = amount * gstRate / 100
+
             finalAmount = amount + gstAmount
         } else if (type === "including") {
             finalAmount = amount
@@ -395,6 +396,8 @@ class CalculatorController {
             status: "success",
             finalAmount: finalAmount.toFixed(2),
             gstAmount: gstAmount.toFixed(2),
+            sgst:(gstAmount/2).toFixed(2),
+            cgst:(gstAmount/2).toFixed(2),
             amount: amount.toFixed(2),
             gstType: type,
             gstRate: `${gstRate}%`
