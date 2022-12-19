@@ -21,8 +21,8 @@ console.log(req.body);
           });
           var mailOptions = {
             from: 'support@itaxeasy.com',
-            // to: req.body.email,
-            to: "vineetkaimau@gmail.com",
+            to: req.body.email,
+            // to: "vineetkaimau@gmail.com",
             subject: req.body.subject,
             text: req.body.text
           };
