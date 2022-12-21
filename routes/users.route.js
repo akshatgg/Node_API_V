@@ -7,8 +7,10 @@ router.post('/sign-up', userController.create);
 router.post('/send-email', emailController.sendEmail);
 
 router.post('/login', userController.login);
+router.post('/sign-in-with-otp', userController.logInWithOtp);
 router.post('/update-password', userController.updatePassword);
 router.post('/update', userController.updateUser);
+router.post('/send-otp-mobile', userController.sendOtpToMobile);
 // User profile routes
 router.post('/createProfile', userController.createProfile);
 router.post('/update-profile', userController.updateProfile);

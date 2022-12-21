@@ -147,6 +147,45 @@ class UserController {
                 return next(ApiError.internalServerError("something went wrong"))
         });
     }
+    logInWithOtp = async (req, res, next) => {
+        var token = req.header('authorization');
+        if (token) {
+            var payload = decodeToken(token);
+            User.findOne({
+                where: {
+                    phone: payload.phone
+                }
+            }).then((result) => {
+                if(result){
+                    const token = getJwtToken(result)
+                    return res.status(200).json({
+                        status: true,
+                     
+                        results: {
+                            status: 200,
+                            message: "login successfull",
+                            data: {
+                                id: result['dataValues']['id'],
+                                email: result['dataValues']['email'],
+                                first_name: result['dataValues']['first_name'],
+                                last_name: result['dataValues']['last_name'],
+                                phone: result['dataValues']['phone'],
+                                pincode: result['dataValues']['pincode'],
+                                isverified: result['dataValues']['isverified']
+                            },
+                            token: token,
+
+                        }});
+                }else{
+                    return next(ApiError.notFound("user does not exists"));
+                }
+
+            });                
+        }
+        else{
+            return next(ApiError.unAuthorized("invalid credentials"))
+        }
+    }
     updateUser = async (req, res, next) => {
         var token = req.header('authorization')
         if (token) {
@@ -406,6 +445,39 @@ class UserController {
 
 
     }
+sendOtpToMobile=async(req,res,next)=>{
+    let isPhoneExists = await isPhoneExist(req.body.phone)
+        if (!isPhoneExists) {
+            next(ApiError.conflict("Account not found"));
+            return;
+        }else{
+            try {
+                var otp = Math.floor(100000 + Math.random() * 900000);
+            var message = "Your OTP is " + otp;
+           const otpToken= jwt.sign({
+                otp: otp,
+                phone: req.body.phone
+            }, process.env.JWT_KEY, {
+                issuer: "iTaxEasy",
+                expiresIn: "1Y"
+            });
+            res.status(200).json({
+                status: true,
+                message: "OTP sent successfully.Verify your mobile number using OTP and token",
+                otpToken: otpToken,
+                otp: otp,
+                phone: req.body.phone
+            });
+            } catch (error) {
+                console.log(error)
+                return next(ApiError.internalServerError(error));
+                
+            }
+
+
+        }
+}
+
 getallUsers = async (req, res, next) => {
 
         User.findAndCountAll({
