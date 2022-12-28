@@ -1,11 +1,11 @@
 
 var cards= require('../config/cards.json');
 class cmsController{
-    getUpper = async (req, res, next) => {
+    getHomeScreen = async (req, res, next) => {
         res.status(200).json({
             status: "success",
           
-            data:cards.upper
+            data:cards.home
         });
     };
     getCards = async (req, res, next) => {
