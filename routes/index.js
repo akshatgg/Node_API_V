@@ -17,6 +17,7 @@ const clientRouter = require("./clients");
 const invoice = require("./invoices");
 const profileRouter = require("./profile");
 // const invoiceRouter = require("./invoice.route");
+const cmsRouter = require("./cms");
 
 router.get('/', function (req, res, next) {
     res.render('index', {title: 'APi node Server is running! 🏃‍'});
@@ -36,6 +37,7 @@ router.use('/hsn', hsnRouter);
 router.use('/client', clientRouter);
 router.use('/invoice', invoice);
 router.use('/profile', profileRouter);
+router.use('/cms', cmsRouter);
 
 
 router.get('*', (req, res, next) => {
