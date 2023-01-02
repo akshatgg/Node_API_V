@@ -1,5 +1,6 @@
 
 var cards= require('../config/cards.json');
+const ApiError = require('../errors/ApiError');
 class cmsController{
     getHomeScreen = async (req, res, next) => {
         res.status(200).json({
@@ -8,6 +9,81 @@ class cmsController{
             data:cards.home
         });
     };
+
+    
+    updateMainHeading=async (req, res, next) => {
+        var token = req.header('authorization')
+    if (token) {
+        const fs = require('fs');
+            const fileName = '../config/cards.json';
+            const file = require(fileName);
+            const newheading=req.body.mainHeading;   
+            file.home.upper.mainHeading = newheading;
+                
+            fs.writeFile(fileName, JSON.stringify(file), function writeJSON(err) {
+              if (err) return console.log(err);
+              console.log(JSON.stringify(file));
+              console.log('writing to ' + fileName);
+            });
+        res.status(200).json({ 
+            status: "success",
+          
+            data:cards.home
+        });
+    } else {
+        return next(ApiError.unAuthorized("invalid credentials"))
+    }
+    };
+
+    updateSubHeading=async (req, res, next) => {
+        var token = req.header('authorization')
+    if (token) {
+        const fs = require('fs');
+            const fileName = '../config/cards.json';
+            const file = require(fileName);
+            const newheading=req.body.subHeading;   
+            file.home.upper.subHeading = newheading;
+                
+            fs.writeFile(fileName, JSON.stringify(file), function writeJSON(err) {
+              if (err) return console.log(err);
+              console.log(JSON.stringify(file));
+              console.log('writing to ' + fileName);
+            });
+        res.status(200).json({ 
+            status: "success",
+          
+            data:cards.home
+        });
+    } else {
+        return next(ApiError.unAuthorized("invalid credentials"))
+    }
+    };
+
+    updateButton=async (req, res, next) => {
+        var token = req.header('authorization')
+    if (token) {
+        const fs = require('fs');
+            const fileName = '../config/cards.json';
+            const file = require(fileName);
+            const newheading=req.body.button;   
+            file.home.upper.button = newheading;
+                
+            fs.writeFile(fileName, JSON.stringify(file), function writeJSON(err) {
+              if (err) return console.log(err);
+              console.log(JSON.stringify(file));
+              console.log('writing to ' + fileName);
+            });
+        res.status(200).json({ 
+            status: "success",
+          
+            data:cards.home
+        });
+    } else {
+        return next(ApiError.unAuthorized("invalid credentials"))
+    }
+    };
+
+
     getCards = async (req, res, next) => {
         res.status(200).json({
             status: "success",

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/user.controller')
+const cmsController = require('../controllers/cms.controller')
 const emailController = require('../controllers/email.controller')
 
 router.post('/sign-up', userController.create);
@@ -24,7 +25,9 @@ router.post('/update-business-profile', userController.updateBusinessProfile);
 
 //CMS API
 router.get('/get-all-user', userController.getallUsers);
-
+router.post('/updateMainHeading', cmsController.updateMainHeading);
+router.post('/updateSubHeading', cmsController.updateSubHeading);
+router.post('/updateButton', cmsController.updateButton);
 
 router.get('/',(req,res)=>{
     
