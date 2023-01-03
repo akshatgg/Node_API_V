@@ -1,5 +1,6 @@
 
 var cards= require('../config/cards.json');
+const { User,} = require('../models');
 const ApiError = require('../errors/ApiError');
 class cmsController{
     getHomeScreen = async (req, res, next) => {
@@ -107,42 +108,14 @@ class cmsController{
     }
     };
 
+    getUsercount = async (req, res, next) => {
+        const count = await User.count();
+console.log(count); 
+        res.status(200).json({
+            status: "success",
+            count:count
+        });
+    }
 
-    getCards = async (req, res, next) => {
-        res.status(200).json({
-            status: "success",
-          
-            data:cards.cards
-        });
-    };
-    getNavCards = async (req, res, next) => {
-        res.status(200).json({
-            status: "success",
-          
-            data:cards.navcards
-        });
-    };
-    getContent = async (req, res, next) => {
-        res.status(200).json({
-            status: "success",
-          
-            data:cards.content
-        });
-    };
-    getongoingPro = async (req, res, next) => {
-        res.status(200).json({
-            status: "success",
-          
-            data:cards.ongoingPro
-        });
-    };
-    getCorporatePro = async (req, res, next) => {
-        res.status(200).json({
-            status: "success",
-          
-            data:cards.corporatePro
-        });
-    };
-    
 }
 module.exports = new cmsController();
