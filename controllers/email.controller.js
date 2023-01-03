@@ -2,8 +2,6 @@
 var nodemailer = require('nodemailer');
 const { OTP,User} = require('../models');
 const jwt = require('jsonwebtoken');
-const {encode} = require("../middleware/crypt.js")
-var otpGenerator = require('otp-generator');
 class EmailController {
     sendEmail = async (req, res, next) => {
 console.log(req.body);
