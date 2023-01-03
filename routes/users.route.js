@@ -28,6 +28,7 @@ router.get('/get-all-user', userController.getallUsers);
 router.post('/updateMainHeading', cmsController.updateMainHeading);
 router.post('/updateSubHeading', cmsController.updateSubHeading);
 router.post('/updateButton', cmsController.updateButton);
+router.post('/updateNavcard', cmsController.updateNavcard);
 
 router.get('/',(req,res)=>{
     
