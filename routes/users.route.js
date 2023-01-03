@@ -4,7 +4,7 @@ const userController = require('../controllers/user.controller')
 const emailController = require('../controllers/email.controller')
 
 router.post('/sign-up', userController.create);
-router.post('/send-email', emailController.sendEmail);
+
 
 router.post('/login', userController.login);
 router.post('/sign-in-with-otp', userController.logInWithOtp);
