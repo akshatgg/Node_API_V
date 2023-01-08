@@ -127,7 +127,9 @@ class UserController {
                                     last_name: result['dataValues']['last_name'],
                                     phone: result['dataValues']['phone'],
                                     pincode: result['dataValues']['pincode'],
-                                    isverified: result['dataValues']['isverified']
+                                    isverified: result['dataValues']['isverified'],
+                                    userType:result['dataValues']['userType']
+
                                 },
                                 token: token,
 
