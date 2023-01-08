@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const cmsController = require('../controllers/cms.controller')
-router.get('/getHomeScreen', cmsController.getHomeScreen);
-router.get('/get-user-count', cmsController.getUsercount);
+const emailController = require('../controllers/email.controller')
+router.post('/otp', emailController.sendOtpEmail);
+router.post('/verify', emailController.verifyEmail);
+router.post('/verify-forgot-pass', emailController.veriForgotPassword);
 // router.get('/cards', cmsController.getCards);
 // router.get('/navCards', cmsController.getNavCards);
 // router.get('/content', cmsController.getContent);

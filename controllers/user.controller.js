@@ -230,12 +230,23 @@ class UserController {
 
     }
     updatePassword = async (req, res, next) => {
-        if(req.body.email==undefined){
-            return next(ApiError.badRequest("please enter email"))
-        }
-        if(req.body.password==undefined){
-            return next(ApiError.badRequest("please enter password"))
-        }
+        var token = req.header('authorization');
+        var currentdate = new Date(); 
+        if (token) {
+            var payload = decodeToken(token);
+            if(payload.expiration_time<currentdate){
+                return next(ApiError.unAuthorized("token expired"))
+            }
+       const   user=  User.findOne({
+                where: {
+                    id: payload.id
+                }
+            });
+            if(!user){
+                return next(ApiError.notFound("user does not exists"))
+
+            }
+
         bCrypt.hash(req.body.password, bCrypt.genSaltSync(8), null, (err, hash) => {
             if (err) {
                 console.log(`bcrypt error ${err}`)
@@ -243,7 +254,7 @@ class UserController {
             } else {
                 User.update(
                     { password: hash },
-                    { where: {email: req.body.email } }
+                    { where: {id: payload.id } }
                 )
                     .then((result) => {
                         if (result[0]) {
@@ -265,7 +276,10 @@ class UserController {
 
             }
         })
-
+    }
+    else{
+        return next(ApiError.unAuthorized("invalid credentials"))
+    }
     }
 
 
