@@ -481,6 +481,14 @@ class GstinController {
             return next(ApiError.internalServerError(`Sandbox error ${error}`))
         })
     }
+    saveGstSearch= async (req, res, next) => {
+        return res.status(200).json({
+            status: "success",
+            message: "GSTIN saved successfully"
+        })
+        
+
+    }
 }
 
 invokeAPICCall = async (req, res, next, endPoint) => {
