@@ -4,6 +4,7 @@ const gstinController = require('../../controllers/sandbox/gstin.controller')
 const checkAuth = require('../../middleware/check-auth')
 const queryValidator = require('../../middleware/query-validator')
 const bodyValidator = require('../../middleware/body-validator')
+const tokenValidator = require('../../middleware/token-validator')
 
 router.get('/search/gstin', queryValidator, gstinController.searchDetailsByGSTINNumber);
 
@@ -54,5 +55,8 @@ router.post('/gst/tax-payer/gstrs/gstr-1/upload', checkAuth, bodyValidator, gsti
 router.post('/gst/tax-payer/gstrs/gstr-1/submit', checkAuth, bodyValidator, gstinController.submitGSTR1);
 router.post('/gst/tax-payer/gstrs/gstr-1/file', checkAuth, bodyValidator, gstinController.fileGSTR1);
 router.get('/gst/tax-payer/gstrs/gstr-1/generate-evc', checkAuth, queryValidator, gstinController.fileGSTR1);
+
+
+router.post('insert-gst-search', gstinController.saveGstSearch);
 
 module.exports = router;
