@@ -125,6 +125,7 @@ class UserController {
                                     email: result['dataValues']['email'],
                                     first_name: result['dataValues']['first_name'],
                                     last_name: result['dataValues']['last_name'],
+                                    userType: result['dataValues']['userType'],
                                     phone: result['dataValues']['phone'],
                                     pincode: result['dataValues']['pincode'],
                                     isverified: result['dataValues']['isverified'],
