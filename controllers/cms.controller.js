@@ -1,5 +1,6 @@
 
 var cards= require('../config/cards.json');
+const jwt = require('jsonwebtoken');
 const { User,} = require('../models');
 const ApiError = require('../errors/ApiError');
 class cmsController{
@@ -117,5 +118,51 @@ console.log(count);
         });
     }
 
+    getUserProfile = async (req, res, next) => {
+        const token = req.header('authorization');
+        if (token) {
+            const { id: _id } = req.query;
+            // console.log(req.query,"prm");
+            if(_id==undefined){
+                return next(ApiError.badRequest("id is missing")  );
+            }
+            var payload = decodeToken(token);
+            console.log(payload,"payload");
+            if(payload.userType=="admin"){
+                const result = await User.findOne({ where: { id: _id } });
+                if(result==null){
+                    return next(ApiError.badRequest("user not found")  );
+                }
+                res.status(200).json({
+                    status: "success",
+                    data: {
+                        id: result['dataValues']['id'],
+                        email: result['dataValues']['email'],
+                        first_name: result['dataValues']['first_name'],
+                        last_name: result['dataValues']['last_name'],
+                        userType: result['dataValues']['userType'],
+                        phone: result['dataValues']['phone'],
+                        pincode: result['dataValues']['pincode'],
+                        isverified: result['dataValues']['isverified'],
+                    }
+                });
+            }
+            else
+                return next(ApiError.unAuthorized("invalid credentials")  );  
+
+        }
+        else
+            return next(ApiError.unAuthorized("invalid credentials"))
+
+    }
+
+}
+decodeToken = (token) => {
+    var base64Url = token.split('.')[1];
+    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const buff = new Buffer(base64, 'base64');
+    const payloadinit = buff.toString('ascii');
+    const payload = JSON.parse(payloadinit);
+    return payload;
 }
 module.exports = new cmsController();

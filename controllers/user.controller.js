@@ -579,6 +579,7 @@ getJwtToken = (user) => {
         last_name: user['dataValues']['last_name'],
         phone: user['dataValues']['phone'],
         pincode: user['dataValues']['pincode'],
+        userType: user['dataValues']['userType'],
         environment: process.env.NODE_ENV
     }, process.env.JWT_KEY, {
         issuer: "iTaxEasy",
