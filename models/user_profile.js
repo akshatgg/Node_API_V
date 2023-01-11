@@ -42,6 +42,11 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             unique: true
         },
+        dob: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            unique: false
+        },
         profile_img: {
             type: DataTypes.STRING,
             allowNull: true,

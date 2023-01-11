@@ -1,7 +1,7 @@
 
 var cards= require('../config/cards.json');
 const jwt = require('jsonwebtoken');
-const { User,} = require('../models');
+const { User,UserProfile,UserBusinessProfile} = require('../models');
 const ApiError = require('../errors/ApiError');
 class cmsController{
     getHomeScreen = async (req, res, next) => {
@@ -133,18 +133,40 @@ console.log(count);
                 if(result==null){
                     return next(ApiError.badRequest("user not found")  );
                 }
+                var response={
+                    id: result['dataValues']['id'],
+                    email: result['dataValues']['email'],
+                    first_name: result['dataValues']['first_name'],
+                    last_name: result['dataValues']['last_name'],
+                    userType: result['dataValues']['userType'],
+                    phone: result['dataValues']['phone'],
+                    pincode: result['dataValues']['pincode'],
+                    isverified: result['dataValues']['isverified'],
+                };
+                const userprof = await UserProfile.findOne({ where: { user_id: _id } });
+                if(userprof!=null){
+                    response['pan']=userprof['dataValues']['pan'];
+                    response['address']=userprof['dataValues']['address'];
+                    response['aadhar']=userprof['dataValues']['aadhar'];
+                    response['dob']=userprof['dataValues']['dob'];
+                    response['profile_pic']=userprof['dataValues']['profile_pic'];
+                    response['address']=userprof['dataValues']['address'];
+                    response['city']=userprof['dataValues']['city'];
+                    response['state']=userprof['dataValues']['state'];
+                    // response['country']=userprof['dataValues']['country'];
+                }
+                const businessProf = await UserBusinessProfile.findOne({ where: { user_id: _id } });
+                if(businessProf!=null){
+                    response['businessName']=businessProf['dataValues']['businessName'];
+                    response['bankAccountNo']=businessProf['dataValues']['bankAccountNo'];
+                    response['companyPanNo']=businessProf['dataValues']['companyPanNo'];
+                    response['companyTanNo']=businessProf['dataValues']['companyTanNo'];
+                    response['msmeNo']=businessProf['dataValues']['msmeNo'];
+                    response['gstNo']=businessProf['dataValues']['gstNo'];
+                }
                 res.status(200).json({
                     status: "success",
-                    data: {
-                        id: result['dataValues']['id'],
-                        email: result['dataValues']['email'],
-                        first_name: result['dataValues']['first_name'],
-                        last_name: result['dataValues']['last_name'],
-                        userType: result['dataValues']['userType'],
-                        phone: result['dataValues']['phone'],
-                        pincode: result['dataValues']['pincode'],
-                        isverified: result['dataValues']['isverified'],
-                    }
+                    data: response
                 });
             }
             else
