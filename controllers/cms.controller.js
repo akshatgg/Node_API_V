@@ -151,8 +151,8 @@ console.log(count);
                     response['dob']=userprof['dataValues']['dob'];
                     response['profile_pic']=userprof['dataValues']['profile_pic'];
                     response['address']=userprof['dataValues']['address'];
-                    response['city']=userprof['dataValues']['city'];
-                    response['state']=userprof['dataValues']['state'];
+                    // response['city']=userprof['dataValues']['city'];
+                    // response['state']=userprof['dataValues']['state'];
                     // response['country']=userprof['dataValues']['country'];
                 }
                 const businessProf = await UserBusinessProfile.findOne({ where: { user_id: _id } });
@@ -163,6 +163,9 @@ console.log(count);
                     response['companyTanNo']=businessProf['dataValues']['companyTanNo'];
                     response['msmeNo']=businessProf['dataValues']['msmeNo'];
                     response['gstNo']=businessProf['dataValues']['gstNo'];
+                    response['secondMob']=businessProf['dataValues']['secondMob'];
+                    response['secondEmail']=businessProf['dataValues']['secondEmail'];
+                    response['address']=businessProf['dataValues']['address'];
                 }
                 res.status(200).json({
                     status: "success",
