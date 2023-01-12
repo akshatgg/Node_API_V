@@ -9,4 +9,14 @@ router.get('/get-user-count', cmsController.getUsercount);
 // router.get('/ongoingPro', cmsController.getongoingPro);
 // router.get('/corporatePro', cmsController.getCorporatePro);
 router.get('/get-user', cmsController.getUserProfile);
+
+
+
+
+
+//Create Customer
+router.post('/create-customer', cmsController.createCustomer);
+router.post('/update-customer', cmsController.updateCustomer);
+router.get('/get-customer', cmsController.getCustomer);
+
 module.exports = router;

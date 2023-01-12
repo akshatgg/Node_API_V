@@ -26,7 +26,9 @@ generateNewSandboxToken = async () => {
             'x-api-version': process.env.SANDBOX_API_VERSION,
         }
     }).then(async (response) => {
+        console.log(response,"generate token log");
         if (response.status === 200) {
+
             return await saveSandboxAuthToken(response.data["access_token"])
         } else {
             return response.data["message"];
@@ -52,6 +54,7 @@ fetchTokenFromDB = async () => {
 }
 
 saveSandboxAuthToken = async (token) => {
+    
     return await Config.update({
         value: token
     }, {

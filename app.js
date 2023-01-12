@@ -80,7 +80,7 @@ app.use(apiErrorHandler)
 sequelize.authenticate()
     .then(() => {
         console.log('Connection has been established successfully.');
-        sequelize.sync({alter: true,}).then(() => {
+        sequelize.sync({alter: false,}).then(() => {
             console.log("Tables Created if not exists!")
         });
     }).catch(err => {
