@@ -125,9 +125,11 @@ class UserController {
                                     email: result['dataValues']['email'],
                                     first_name: result['dataValues']['first_name'],
                                     last_name: result['dataValues']['last_name'],
+                                    userType: result['dataValues']['userType'],
                                     phone: result['dataValues']['phone'],
                                     pincode: result['dataValues']['pincode'],
-                                    isverified: result['dataValues']['isverified']
+                                    isverified: result['dataValues']['isverified'],
+
                                 },
                                 token: token,
 
@@ -577,6 +579,7 @@ getJwtToken = (user) => {
         last_name: user['dataValues']['last_name'],
         phone: user['dataValues']['phone'],
         pincode: user['dataValues']['pincode'],
+        userType: user['dataValues']['userType'],
         environment: process.env.NODE_ENV
     }, process.env.JWT_KEY, {
         issuer: "iTaxEasy",
