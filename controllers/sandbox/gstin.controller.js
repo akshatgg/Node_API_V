@@ -500,6 +500,7 @@ invokeAPICCall = async (req, res, next, endPoint) => {
             'x-api-version': process.env.SANDBOX_API_VERSION,
         }
     }).then((result) => {
+        console.log("result::::", result);
         if (result.status === 200) {
             return res.status(200).json({
                 status: "success",
@@ -509,7 +510,7 @@ invokeAPICCall = async (req, res, next, endPoint) => {
             return next(ApiError.badRequest(result.data["message"]))
         }
     }).catch((error) => {
-        console.log(error.response.data)
+        console.log("catch error:",error)
         if (error.response) {
             if (error.response.status !== 500) {
                 return next(ApiError.internalServerError(error.response.data["message"] === undefined ? `Sandbox error ${error.response.data["message"]}` : error.response.data["message"]))

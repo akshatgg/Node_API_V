@@ -255,7 +255,7 @@ class cmsController {
             return next(ApiError.unAuthorized("invalid credentials"))
         }
     }
-    getCustomer = async (req, res, next) => {
+    getCustomerList = async (req, res, next) => {
         const token = req.header('authorization');
         if (token) {
             try {
@@ -283,6 +283,37 @@ class cmsController {
             return next(ApiError.unAuthorized("invalid credentials"))
         }
     }
+    getCustomerById = async (req, res, next) => {
+        const token = req.header('authorization');
+        if (token) {
+            try {
+                var payload = decodeToken(token);
+                if(req.query.id== undefined){
+                    return next(ApiError.badRequest("customer id is missing"));
+                }
+                Customer.findOne({
+                    where: {
+                        id: req.query.id
+                    }
+                }).then((result) => {
+                    if(result==null){
+                        return next(ApiError.badRequest("customer not found"));
+                    }
+                    return res.status(200).json({
+                        status: "success",
+                        data: result
+                        });
+                }
+                ).catch((err) => {
+                    return next(ApiError.badRequest(err.message));
+                }
+                );
+            } catch (error) {
+                return next(ApiError.badRequest(error.message));
+            }
+        } else {
+            return next(ApiError.unAuthorized("invalid credentials"))
+        }}
 
 }
 decodeToken = (token) => {

@@ -33,7 +33,11 @@ router.get('/search/gstin-by-pan', checkAuth, queryValidator, gstinController.se
 // router.get('/gst/tax-payer/gstrs/gstr-2a/cdna', checkAuth, queryValidator, gstinController.gstr2aCDNA);
 // router.get('/gst/tax-payer/gstrs/gstr-2a/isd', checkAuth, queryValidator, gstinController.gstr2aISD);
 
-// router.get('/gst/tax-payer/gstrs/gstr-1/at', checkAuth, queryValidator, gstinController.gstr1AT);
+
+// GSTR1 routes
+
+
+router.get('/gst/tax-payer/gstrs/gstr-1/at', checkAuth, queryValidator, gstinController.gstr1AT);
 // router.get('/gst/tax-payer/gstrs/gstr-1/ata', checkAuth, queryValidator, gstinController.gstr1ATA);
 // router.get('/gst/tax-payer/gstrs/gstr-1/b2b', checkAuth, queryValidator, gstinController.gstr1B2B);
 // router.get('/gst/tax-payer/gstrs/gstr-1/b2ba', checkAuth, queryValidator, gstinController.gstr1B2BA);

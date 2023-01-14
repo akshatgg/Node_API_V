@@ -17,6 +17,7 @@ router.get('/get-user', cmsController.getUserProfile);
 //Create Customer
 router.post('/create-customer', cmsController.createCustomer);
 router.post('/update-customer', cmsController.updateCustomer);
-router.get('/get-customer', cmsController.getCustomer);
+router.get('/get-customer-list', cmsController.getCustomerList);
+router.get('/get-customer', cmsController.getCustomerById);
 
 module.exports = router;
