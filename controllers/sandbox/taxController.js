@@ -4,11 +4,11 @@ const ApiError = require('../../errors/ApiError')
 
 class TaxController {
     cashItcBalance = async (req, res, next) => {
+        
         if ( req.query.gstin === "" || req.query.gstin === undefined  || req.query.year === undefined || req.query.year === "" || req.query.month === undefined || req.query.month === "")
-            return next(ApiError.badRequest(" query parameter  is missing"))
-
+        return next(ApiError.badRequest(" query parameter  is missing"))
+        
         let token = await sandboxUtil.getSandboxAuthToken()
-        console.log(token)
         await axios.get(`${process.env.SANDBOX_BASE_URL}/gsp/tax-payer/${req.query.gstin}/ledgers/bal/${req.query.year}/${req.query.month}`, {
             headers: {
                 'Content-Type': 'application/json',
@@ -42,19 +42,22 @@ class TaxController {
 
 
     cashLedger = async (req, res, next) => {
-        if ( req.query.gstin === "" || req.query.gstin === undefined )
 
-        console.log(req.query)
-            return next(ApiError.badRequest(" query parameter  is missing"))
-
+        if (req.query.gstin === undefined || req.query.gstin === "")
+            return next(ApiError.badRequest("query parameter is missing"))
+         
         let token = await sandboxUtil.getSandboxAuthToken()
         console.log(token)
-        await axios.get(`${process.env.SANDBOX_BASE_URL}/gsp/tax-payer/${req.query.gstin}/ledgers/cash`, {
+        await axios.get(`${process.env.SANDBOX_BASE_URL}/gsp/tax-payer/${req.body.gstin}/ledgers/cash`, {
             headers: {
                 'Content-Type': 'application/json',
                 'x-api-key': process.env.SANDBOX_KEY,
                 'Authorization': token,
                 'x-api-version': process.env.SANDBOX_API_VERSION,
+            },
+            params: {
+                   from: req.query.from,
+                   to: req.query.to
             }
         }).then((result) => {
             if (result.status === 200) {
@@ -81,12 +84,12 @@ class TaxController {
 
 
     itcLedgers =async (req, res, next) => {
-        if ( req.query.gstin === "" || req.query.gstin === undefined || req.query.fromDate === undefined || req.query.fromDate === "" || req.query.toDate === undefined || req.query.toDate ==="")
+        if ( req.query.gstin === "" || req.query.gstin === undefined || req.query.from === undefined || req.query.from === "" || req.query.to === undefined || req.query.to ==="")
             return next(ApiError.badRequest(" query parameter  is missing"))
 
         let token = await sandboxUtil.getSandboxAuthToken()
         console.log(token)
-        await axios.get(`${process.env.SANDBOX_BASE_URL}/gsp/tax-payer/${req.query.gstin}/ledgers/cash`, {
+        await axios.get(`${process.env.SANDBOX_BASE_URL}/gsp/tax-payer/${req.query.gstin}/ledgers/itc`, {
             headers: {
                 'Content-Type': 'application/json',
                 'x-api-key': process.env.SANDBOX_KEY,
@@ -94,8 +97,8 @@ class TaxController {
                 'x-api-version': process.env.SANDBOX_API_VERSION,
             },
             params:{
-                'from':req.query.fromDate,
-                "to":req.query.toDate ,
+                'from':req.query.from,
+                "to":req.query.to ,
             }
         }).then((result) => {
             if (result.status === 200) {
