@@ -48,7 +48,7 @@ class TaxController {
          
         let token = await sandboxUtil.getSandboxAuthToken()
         console.log(token)
-        await axios.get(`${process.env.SANDBOX_BASE_URL}/gsp/tax-payer/${req.body.gstin}/ledgers/cash`, {
+        await axios.get(`${process.env.SANDBOX_BASE_URL}/gsp/tax-payer/${req.query.gstin}/ledgers/cash`, {
             headers: {
                 'Content-Type': 'application/json',
                 'x-api-key': process.env.SANDBOX_KEY,
