@@ -6,6 +6,8 @@ const bankRouter = require("./sandbox/bank.route");
 const gspRouter = require("./sandbox/gstin.route");
 const panRouter = require("./sandbox/pan.route");
 const sandboxcalcRouter = require("./sandbox/calculator.route");
+const sandboxTaxRouter = require("../routes/sandbox/tax.route"); // pk
+const Blog= require("../routes/blog.route"); //
 const calcRouter = require("./calculator.route");
 const ApiError = require('../errors/ApiError')
 const banks = require("./bank");
@@ -23,6 +25,11 @@ const emailRouter = require("./email");
 router.get('/', function (req, res, next) {
     res.render('index', {title: 'APi node Server is running! 🏃‍'});
 });
+
+
+router.use("/blog",Blog)
+
+router.use('/taxes',sandboxTaxRouter)
 
 router.use('/users', usersRouter);
 router.use('/mca', mcaRouter);
