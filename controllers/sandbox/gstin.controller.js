@@ -1,7 +1,7 @@
 const axios = require('axios');
 const sandboxUtil = require('../../utils/sandbox.util')
 const ApiError = require('../../errors/ApiError')
-const {GSTIN} = require('../../models');
+const {GSTIN,GSTSearch} = require('../../models');
 const uuid = require("uuid");
 
 class GstinController {
@@ -482,10 +482,33 @@ class GstinController {
         })
     }
     saveGstSearch= async (req, res, next) => {
-        return res.status(200).json({
-            status: "success",
-            message: "GSTIN saved successfully"
-        })
+        var token = req.header('authorization')
+        if(!token){
+            var result= new GSTSearch(req.body);
+            result.save().then((result)=>{
+                if(result){
+                    return res.status(200).json({
+                        status: "success",
+                        message: "GSTIN saved successfully"
+                    })
+                }else{
+                    return next(ApiError.internalServerError("Error while saving GSTIN"))
+                }
+            }).catch((error)=>{
+                if( error.parent.code=="ER_DUP_ENTRY"){
+                    return res.status(200).json({
+                        status: "success",
+                        message: "GSTIN saved successfully",
+                        data: error.parent.code
+                    })
+                }
+                return next(ApiError.internalServerError(error))
+            })
+          
+        }else{
+            return ApiError.unAuthorized("Invalid token");
+        }
+       
         
 
     }

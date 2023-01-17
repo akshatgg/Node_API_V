@@ -61,6 +61,6 @@ router.get('/gst/tax-payer/gstrs/gstr-1/at', checkAuth, queryValidator, gstinCon
 // router.get('/gst/tax-payer/gstrs/gstr-1/generate-evc', checkAuth, queryValidator, gstinController.fileGSTR1);
 
 
-router.post('insert-gst-search', gstinController.saveGstSearch);
+router.post('/insert-gst-search', gstinController.saveGstSearch);
 
 module.exports = router;
