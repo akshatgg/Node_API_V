@@ -21,6 +21,7 @@ const profileRouter = require("./profile");
 // const invoiceRouter = require("./invoice.route");
 const cmsRouter = require("./cms");
 const emailRouter = require("./email");
+const challan = require("../routes/sandbox/taxPayment.routes");
 
 router.get('/', function (req, res, next) {
     res.render('index', {title: 'APi node Server is running! 🏃‍'});
@@ -47,6 +48,7 @@ router.use('/invoice', invoice);
 router.use('/profile', profileRouter);
 router.use('/cms', cmsRouter);
 router.use('/email', emailRouter);
+router.use('/challan', challan);
 
 
 router.get('*', (req, res, next) => {
