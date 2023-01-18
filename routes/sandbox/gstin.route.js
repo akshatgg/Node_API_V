@@ -16,9 +16,9 @@ router.get('/search/gstin-by-pan', checkAuth, queryValidator, gstinController.se
 
 // router.post('/gst/tax-payer/registration', checkAuth, bodyValidator, gstinController.registerForGST);
 
-// router.post('/gst/tax-payer/generate-otp', checkAuth, bodyValidator, gstinController.generateOTP);
+router.post('/gst/tax-payer/generate-otp', checkAuth, bodyValidator, gstinController.generateOTP);
 
-// router.post('/gst/tax-payer/verify-otp', checkAuth, bodyValidator, gstinController.verifyOTP);
+router.post('/gst/tax-payer/verify-otp', checkAuth, bodyValidator, gstinController.verifyOTP);
 
 // router.post('/gst/tax-payer/gstrs/gstr-4/upload', checkAuth, bodyValidator, gstinController.uploadGSTR4);
 

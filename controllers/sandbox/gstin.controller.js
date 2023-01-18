@@ -1,7 +1,7 @@
 const axios = require('axios');
 const sandboxUtil = require('../../utils/sandbox.util')
 const ApiError = require('../../errors/ApiError')
-const {GSTIN,GSTSearch} = require('../../models');
+const { GSTIN, GSTSearch } = require('../../models');
 const uuid = require("uuid");
 
 class GstinController {
@@ -10,7 +10,7 @@ class GstinController {
             return next(ApiError.badRequest("query parameter \'GSTIN\' is missing"))
 
         let token = await sandboxUtil.getSandboxAuthToken()
-        console.log("token:",token);
+        console.log("token:", token);
         await axios.get(`${process.env.SANDBOX_BASE_URL}/gsp/public/gstin/${req.query.gstin}`, {
             headers: {
                 'x-api-key': process.env.SANDBOX_KEY,
@@ -142,13 +142,18 @@ class GstinController {
     }
 
     generateOTP = async (req, res, next) => {
+
+                //  console.log(req.body)                                                         
         let token = await sandboxUtil.getSandboxAuthToken()
-        await axios.post(`${process.env.SANDBOX_BASE_URL}/gsp/tax-payer/${req.body.gstin}/otp?username=${req.body.gst_portal_username}`, {}, {
+        await axios.post(`${process.env.SANDBOX_BASE_URL}/gsp/tax-payer/${req.body.gstin}/otp?username=${req.query.gst_portal_username}`, {
             headers: {
                 'x-api-key': process.env.SANDBOX_KEY,
                 'Authorization': token,
                 'x-api-version': process.env.SANDBOX_API_VERSION,
-            }
+            },
+            // params:{
+            //     username: req.query.gst_portal_username,
+            // }
         }).then((result) => {
             if (result.status === 200) {
                 return res.status(200).json({
@@ -481,21 +486,21 @@ class GstinController {
             return next(ApiError.internalServerError(`Sandbox error ${error}`))
         })
     }
-    saveGstSearch= async (req, res, next) => {
+    saveGstSearch = async (req, res, next) => {
         var token = req.header('authorization')
-        if(!token){
-            var result= new GSTSearch(req.body);
-            result.save().then((result)=>{
-                if(result){
+        if (!token) {
+            var result = new GSTSearch(req.body);
+            result.save().then((result) => {
+                if (result) {
                     return res.status(200).json({
                         status: "success",
                         message: "GSTIN saved successfully"
                     })
-                }else{
+                } else {
                     return next(ApiError.internalServerError("Error while saving GSTIN"))
                 }
-            }).catch((error)=>{
-                if( error.parent.code=="ER_DUP_ENTRY"){
+            }).catch((error) => {
+                if (error.parent.code == "ER_DUP_ENTRY") {
                     return res.status(200).json({
                         status: "success",
                         message: "GSTIN saved successfully",
@@ -504,12 +509,12 @@ class GstinController {
                 }
                 return next(ApiError.internalServerError(error))
             })
-          
-        }else{
+
+        } else {
             return ApiError.unAuthorized("Invalid token");
         }
-       
-        
+
+
 
     }
 }
@@ -533,7 +538,7 @@ invokeAPICCall = async (req, res, next, endPoint) => {
             return next(ApiError.badRequest(result.data["message"]))
         }
     }).catch((error) => {
-        console.log("catch error:",error)
+        console.log("catch error:", error)
         if (error.response) {
             if (error.response.status !== 500) {
                 return next(ApiError.internalServerError(error.response.data["message"] === undefined ? `Sandbox error ${error.response.data["message"]}` : error.response.data["message"]))

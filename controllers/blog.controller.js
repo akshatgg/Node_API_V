@@ -11,7 +11,7 @@ class BlogController {
         const token = req.headers.authorization
 
 
-        if ('token') {
+        if (token) {
             try {
 
                 var payload = decodeToken(token)
