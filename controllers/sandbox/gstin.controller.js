@@ -4,7 +4,7 @@ const ApiError = require('../../errors/ApiError')
 const { GSTIN, GSTSearch } = require('../../models');
 const uuid = require("uuid");
 const { token } = require('morgan');
-const sdk = require('api')('@sandbox-docs/v2.0#axga842wkycr2fnc');
+// const sdk = require('api')('@sandbox-docs/v2.0#axga842wkycr2fnc');
 
 
 class GstinController {

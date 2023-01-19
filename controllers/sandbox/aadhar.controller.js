@@ -16,7 +16,7 @@ class AadharController {
                 'Authorization': token,
                 'x-api-version': process.env.SANDBOX_API_VERSION,
             },
-            data:{
+                data:{
                 aadhaar_number: req.query.aadhar
             }
         }).then((result) => {
