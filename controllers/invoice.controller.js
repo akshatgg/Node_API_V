@@ -95,7 +95,9 @@
 //         }
 //     };
 // }
-const { Party, Item } = require('../models/invoice');
+const { Party, Item } = require('../models');
+
+const LIMIT = 10;
 
 decodeToken = (token) => {
     var base64Url = token.split('.')[1];
@@ -111,14 +113,15 @@ exports.getParties = async (req, res) => {
     if (token) {
         var payload = decodeToken(token);
         try {
+            console.log(Party);
             const data = await Party.findAll({
                 where: {
-                    id: payload.id,
+                    userId: payload.id,
                     type: req.query.type,
                 },
                 offset: req.body.pageNo ? req.body.pageNo * LIMIT : 0,
                 limit: LIMIT,
-                order: [['name', 'DESC']],
+                order: [['name', 'ASC']],
             });
 
             res.status(200).json({
@@ -126,6 +129,7 @@ exports.getParties = async (req, res) => {
                 data,
             });
         } catch (error) {
+            console.log(error);
             res.status(500).json({
                 status: 'error',
                 error: error,
@@ -178,9 +182,9 @@ exports.getItems = async (req, res) => {
                 where: {
                     userId: payload.id,
                 },
-                offset: req.body.pageNo ? req.body.pageNo * LIMIT : 0,
+                offset: req.query.pageNo ? req.query.pageNo * LIMIT : 0,
                 limit: LIMIT,
-                order: [['name', 'DESC']],
+                order: [['name', 'ASC']],
                 // offset: req.body.offset ? req.body.offset : 0,
             });
 
