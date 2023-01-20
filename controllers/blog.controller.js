@@ -49,11 +49,14 @@ class BlogController {
 
     getPosts = async (req, res, next) => {
         try {
-            const posts = await Post.findAll({
+            const posts = await Post.findAndCountAll({
                 offset: req.query.pageNo ? req.query.pageNo * LIMIT : 0,
                 limit: LIMIT,
             });
-            res.status(200).json(posts);
+            res.status(200).json({
+                total_posts: posts.count,
+                posts: posts.rows,
+            });
             return;
         } catch (err) {
             res.status(500).json(err);
@@ -152,7 +155,7 @@ class BlogController {
         !token && res.status(404).json('unauthorized access of users posts');
 
         try {
-            const post = await Post.findAll({
+            const post = await Post.findAndCountAll({
                 where: {
                     userId: req.query.id,
                 },
@@ -161,7 +164,10 @@ class BlogController {
             });
             !post && res.status(204).jsson('posts not found');
 
-            res.status(200).json(post);
+            res.status(200).json({
+                total_posts: post.count,
+                posts: post.rows,
+            });
             return;
             // const payload = decodeToken(token)
 

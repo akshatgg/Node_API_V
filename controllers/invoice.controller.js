@@ -113,8 +113,7 @@ exports.getParties = async (req, res) => {
     if (token) {
         var payload = decodeToken(token);
         try {
-            console.log(Party);
-            const data = await Party.findAll({
+            const data = await Party.findAndCountAll({
                 where: {
                     userId: payload.id,
                     type: req.query.type,
@@ -125,11 +124,10 @@ exports.getParties = async (req, res) => {
             });
 
             res.status(200).json({
-                status: 'success',
-                data,
+                total_parties: data.rows,
+                parties: data.rows,
             });
         } catch (error) {
-            console.log(error);
             res.status(500).json({
                 status: 'error',
                 error: error,
@@ -155,10 +153,7 @@ exports.getPartyById = async (req, res) => {
                 },
             });
 
-            res.status(200).json({
-                status: 'success',
-                data,
-            });
+            res.status(200).json(data);
         } catch (error) {
             res.status(500).json({
                 status: 'error',
@@ -178,7 +173,7 @@ exports.getItems = async (req, res) => {
     if (token) {
         var payload = decodeToken(token);
         try {
-            const data = await Item.findAll({
+            const data = await Item.findAndCountAll({
                 where: {
                     userId: payload.id,
                 },
@@ -189,8 +184,8 @@ exports.getItems = async (req, res) => {
             });
 
             res.status(200).json({
-                status: 'success',
-                data,
+                total_items: data.rows,
+                items: data.rows,
             });
         } catch (error) {
             res.status(500).json({
