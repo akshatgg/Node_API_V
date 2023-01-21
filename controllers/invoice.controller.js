@@ -95,7 +95,7 @@
 //         }
 //     };
 // }
-const { Party, Item } = require('../models');
+const { Party, Item, Invoice } = require('../models');
 
 const LIMIT = 10;
 
@@ -108,10 +108,19 @@ decodeToken = (token) => {
     return payload;
 };
 
+// PARTIES
 exports.getParties = async (req, res) => {
     var token = req.header('authorization');
     if (token) {
         var payload = decodeToken(token);
+
+        if (!req.query.type) {
+            return res.status(400).json({
+                status: 'error',
+                error: 'query type required',
+            });
+        }
+
         try {
             const data = await Party.findAndCountAll({
                 where: {
@@ -124,7 +133,7 @@ exports.getParties = async (req, res) => {
             });
 
             res.status(200).json({
-                total_parties: data.rows,
+                total_parties: data.count,
                 parties: data.rows,
             });
         } catch (error) {
@@ -168,6 +177,7 @@ exports.getPartyById = async (req, res) => {
     }
 };
 
+// ITEMS
 exports.getItems = async (req, res) => {
     var token = req.header('authorization');
     if (token) {
@@ -184,7 +194,7 @@ exports.getItems = async (req, res) => {
             });
 
             res.status(200).json({
-                total_items: data.rows,
+                total_items: data.count,
                 items: data.rows,
             });
         } catch (error) {
@@ -213,9 +223,46 @@ exports.getItemById = async (req, res) => {
                 },
             });
 
+            res.status(200).json(data);
+        } catch (error) {
+            res.status(500).json({
+                status: 'error',
+                error: error,
+            });
+        }
+    } else {
+        res.status(403).json({
+            status: 'error',
+            message: 'token not found',
+        });
+    }
+};
+
+// INVOICE
+exports.createInvoice = async (req, res) => {
+    var token = req.header('authorization');
+    if (token) {
+        var payload = decodeToken(token);
+        try {
+            await Invoice.create({
+                type: req.body.type,
+                invoiceNumber: req.body.invoiceNumber,
+                partyName: req.body.partyName,
+                phoneNumber: req.body.phoneNumber,
+                partyAddress: req.body.partyAddress,
+                gstin: req.body.gstin,
+                date: req.body.date,
+                userGstin: req.body.userGstin,
+                stateOfSupply: req.body.stateOfSupply,
+                totalAmount: req.body.totalAmount,
+                paidVia: req.body.paidVia,
+                balanceDue: req.body.balanceDue,
+                userId: payload.id,
+            });
+
             res.status(200).json({
                 status: 'success',
-                data,
+                msg: 'Invoice created',
             });
         } catch (error) {
             res.status(500).json({
@@ -231,4 +278,60 @@ exports.getItemById = async (req, res) => {
     }
 };
 
-// module.exports = new InvoiceController();
+exports.getInvoices = async (req, res) => {
+    var token = req.header('authorization');
+    if (token) {
+        var payload = decodeToken(token);
+        try {
+            const data = await Invoice.findAndCountAll({
+                where: {
+                    userId: payload.id,
+                },
+                offset: req.query.pageNo ? req.query.pageNo * LIMIT : 0,
+                limit: LIMIT,
+            });
+
+            res.status(200).json({
+                total_invoices: data.count,
+                items: data.rows,
+            });
+        } catch (error) {
+            res.status(500).json({
+                status: 'error',
+                error: error,
+            });
+        }
+    } else {
+        res.status(403).json({
+            status: 'error',
+            message: 'token not found',
+        });
+    }
+};
+
+exports.getInvoiceById = async (req, res) => {
+    var token = req.header('authorization');
+    if (token) {
+        var payload = decodeToken(token);
+        try {
+            const data = await Invoice.findOne({
+                where: {
+                    userId: payload.id,
+                    id: req.params.id,
+                },
+            });
+
+            res.status(200).json(data);
+        } catch (error) {
+            res.status(500).json({
+                status: 'error',
+                error: error,
+            });
+        }
+    } else {
+        res.status(403).json({
+            status: 'error',
+            message: 'token not found',
+        });
+    }
+};

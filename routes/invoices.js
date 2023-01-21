@@ -9,6 +9,9 @@ const express = require('express');
 // } = require('../controllers/invoices');
 
 const {
+    createInvoice,
+    getInvoices,
+    getInvoiceById,
     getParties,
     getPartyById,
     getItems,
@@ -26,5 +29,9 @@ const router = express.Router();
 router.get('/parties', getParties);
 router.get('/party/:id', getPartyById);
 router.get('/items', getItems);
+
+router.get('/', getInvoices);
+router.post('/create', createInvoice);
+router.get('/:id', getInvoiceById);
 
 module.exports = router;
