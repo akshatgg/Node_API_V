@@ -109,6 +109,37 @@ decodeToken = (token) => {
 };
 
 // PARTIES
+exports.createParty = async (req, res) => {
+    var token = req.header('authorization');
+    if (token) {
+        var payload = decodeToken(token);
+        try {
+            await Party.create({
+                type: req.body.type,
+                name: req.body.name,
+                phoneNumber: req.body.phoneNumber,
+                gstin: req.body.gstin,
+                userId: payload.id,
+            });
+
+            res.status(200).json({
+                status: 'success',
+                msg: 'Party created',
+            });
+        } catch (error) {
+            res.status(500).json({
+                status: 'error',
+                error: error,
+            });
+        }
+    } else {
+        res.status(403).json({
+            status: 'error',
+            message: 'token not found',
+        });
+    }
+};
+
 exports.getParties = async (req, res) => {
     var token = req.header('authorization');
     if (token) {
@@ -178,6 +209,44 @@ exports.getPartyById = async (req, res) => {
 };
 
 // ITEMS
+exports.createItem = async (req, res) => {
+    var token = req.header('authorization');
+    if (token) {
+        var payload = decodeToken(token);
+        try {
+            await Item.create({
+                type: req.body.type,
+                name: req.body.name,
+                description: req.body.description,
+                unit: req.body.unit,
+                salePrice: req.body.salePrice,
+                purchasePrice: req.body.purchasePrice,
+                taxExempted: req.body.taxExempted,
+                openingStock: req.body.openingStock,
+                lowStock: req.body.lowStock,
+                hsnCode: req.body.hsnCode,
+                gstPercentage: req.body.gstPercentage,
+                userId: payload.id,
+            });
+
+            res.status(200).json({
+                status: 'success',
+                msg: 'Item created',
+            });
+        } catch (error) {
+            res.status(500).json({
+                status: 'error',
+                error: error,
+            });
+        }
+    } else {
+        res.status(403).json({
+            status: 'error',
+            message: 'token not found',
+        });
+    }
+};
+
 exports.getItems = async (req, res) => {
     var token = req.header('authorization');
     if (token) {
