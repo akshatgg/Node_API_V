@@ -3,7 +3,8 @@ const {Config} = require('../models');
 const jwt = require('jsonwebtoken');
 
 exports.getSandboxAuthToken = async () => {
-    let token = await fetchTokenFromDB()
+    let token = await fetchTokenFromDB();
+    console.log(isTokenExpired(token),"token");
     if (token===null||isTokenExpired(token)) {
         await generateNewSandboxToken()
         token = fetchTokenFromDB()

@@ -3,6 +3,11 @@ const sandboxUtil = require('../../utils/sandbox.util')
 const ApiError = require('../../errors/ApiError')
 const { GSTIN, GSTSearch } = require('../../models');
 const uuid = require("uuid");
+const { token } = require('morgan');
+const fetch = require('node-fetch');
+
+// const sdk = require('api')('@sandbox-docs/v2.0#axga842wkycr2fnc');
+
 
 class GstinController {
     searchDetailsByGSTINNumber = async (req, res, next) => {
@@ -142,36 +147,64 @@ class GstinController {
     }
 
     generateOTP = async (req, res, next) => {
-
-                //  console.log(req.body)                                                         
-        let token = await sandboxUtil.getSandboxAuthToken()
-        await axios.post(`${process.env.SANDBOX_BASE_URL}/gsp/tax-payer/${req.body.gstin}/otp?username=${req.query.gst_portal_username}`, {
+        let token = await sandboxUtil.getSandboxAuthToken();
+        const options = {
+            method: 'POST',
             headers: {
-                'x-api-key': process.env.SANDBOX_KEY,
-                'Authorization': token,
-                'x-api-version': process.env.SANDBOX_API_VERSION,
-            },
-            // params:{
-            //     username: req.query.gst_portal_username,
-            // }
-        }).then((result) => {
-            if (result.status === 200) {
-                return res.status(200).json({
-                    status: "success",
-                    message: result.data["data"]["message"]
-                })
-            } else {
-                return next(ApiError.badRequest(result.data["data"]))
+              accept: 'application/json',
+              Authorization: token,
+              'x-api-key': process.env.SANDBOX_KEY,
+              'x-api-version': process.env.SANDBOX_API_VERSION
             }
-        }).catch((error) => {
-            console.log(error)
-            if (error.response) {
-                if (error.response.status !== 500) {
-                    return next(ApiError.internalServerError(error.response.data["message"] === undefined ? `Sandbox error ${error}` : error.response.data["message"]))
+          };
+          
+          fetch(`${process.env.SANDBOX_BASE_URL}/gsp/tax-payer/${req.body.gstin}/otp?username=${req.body.gst_portal_username}`, options)
+            .then(response => response.json())
+            .then(response => res.status(200).json(response))
+            .catch(err => {
+                console.log("catch eeror:",error.response)
+                if (error.response) {
+                    if (error.response.status !== 500) {
+                        return next(ApiError.internalServerError(error.response.data["message"] === undefined ? `Sandbox error ${error}` : error.response.data["message"]))
+                    }
                 }
-            }
-            return next(ApiError.internalServerError(`Sandbox error ${error}`))
-        })
+                return next(ApiError.internalServerError(`Sandbox error ${error}`))
+            });
+                                                                
+//         let token = await sandboxUtil.getSandboxAuthToken()
+//         console.log(token);
+//         const link=`${process.env.SANDBOX_BASE_URL}/gsp/tax-payer/${req.body.gstin}/otp?username=${req.body.gst_portal_username}`
+//        const headers={
+//         'x-api-key': process.env.SANDBOX_KEY,
+// //   "Authorization": "eyJhbGciOiJIUzUxMiJ9.eyJhdWQiOiJBUEkiLCJyZWZyZXNoX3Rva2VuIjoiZXlKaGJHY2lPaUpJVXpVeE1pSjkuZXlKaGRXUWlPaUpCVUVraUxDSnpkV0lpT2lKcGRHRjRaV0Z6ZVRFNVFHZHRZV2xzTG1OdmJTSXNJbUZ3YVY5clpYa2lPaUpyWlhsZmJHbDJaVjlFUjJONGIwVklWRTFWTVd4eFNVbFdkMnhtVFcxUU0yUnlaMjlUUlc5RE9DSXNJbWx6Y3lJNkltRndhUzV6WVc1a1ltOTRMbU52TG1sdUlpd2laWGh3SWpveE56QTFOVGd4TVRrMExDSnBiblJsYm5RaU9pSlNSVVpTUlZOSVgxUlBTMFZPSWl3aWFXRjBJam94TmpjME1EUTFNVGswZlEuWTVEQzllQkZTZ0tHdExfcGEyZ3dJOTRmYWU5R3dpUE5RZU96SGxYeEhYcUxreXoyQWRuZDJrNjA4enc5TjY2T09pQW5tencyRi1UWDJBMFFEa2pNNmciLCJzdWIiOiJpdGF4ZWFzeTE5QGdtYWlsLmNvbSIsImFwaV9rZXkiOiJrZXlfbGl2ZV9ER2N4b0VIVE1VMWxxSUlWd2xmTW1QM2RyZ29TRW9DOCIsImlzcyI6ImFwaS5zYW5kYm94LmNvLmluIiwiZXhwIjoxNjc0MTMxNTk0LCJpbnRlbnQiOiJBQ0NFU1NfVE9LRU4iLCJpYXQiOjE2NzQwNDUxOTR9.JSPqnR5-jgKyJlHegfPRxh1Fe2tuc8IVqNrn5n7FgFfwZfTU0KczmQHgEkKV0wtCNUNokyvGJuQ_i9T4qoFgiw",
+//         'x-api-version': process.env.SANDBOX_API_VERSION,
+//         // 'accept': 'application/json'
+//     };
+//         console.log("link",link)
+//         console.log("headers",headers)
+//         await axios.post(link, {
+//             headers: headers,
+//             // params:{
+//             //     username: req.query.gst_portal_username,
+//             // }
+        // }).then((result) => {
+        //     if (result.status === 200) {
+        //         return res.status(200).json({
+        //             status: "success",
+        //             message: result.data["data"]["message"]
+        //         })
+        //     } else {
+        //         return next(ApiError.badRequest(result.data["data"]))
+        //     }
+        // }).catch((error) => {
+        //     console.log("catch eeror:",error.response)
+        //     if (error.response) {
+        //         if (error.response.status !== 500) {
+        //             return next(ApiError.internalServerError(error.response.data["message"] === undefined ? `Sandbox error ${error}` : error.response.data["message"]))
+        //         }
+        //     }
+        //     return next(ApiError.internalServerError(`Sandbox error ${error}`))
+        // })
     }
 
     verifyOTP = async (req, res, next) => {

@@ -1,7 +1,7 @@
 const { Footer } = require("../models")
 
 
-class Footer {
+class Footers {
 
 
     // footer
@@ -120,25 +120,41 @@ class Footer {
             },
             copywrite,
         }
+            const token = req.header('authorization')
+            if(token){
 
-        try {
-            const jsonData = JSON.stringify(data)
-            Footer.update({
-                data: jsonData
-            })
+                try {
+                    const jsonData = JSON.stringify(data)
+                    var payload = decodeToken(token)
+                    const footer = await Footer.findOne({
+                        userId: payload.id
+                    })
+                    
+                    footer.update({
+                        data: jsonData
+                    })
 
-            res.status(200).json('data updated successfully')
-        } catch (error) {
-            res.status(500).json(error)
-            console.log(error)
-        }
+                    res.status(200).json('footer updated successfully')
+                } catch (error) {
+                    res.status(500).json(error)
+                    console.log(error)
+                    
+                }
+
+               
+
+            }else{
+                res.status(401).json({ message: "You are not authorized to update" });
+                return;
+            }
+      
 
     }
 
     //get footer data
     get = async (req, res, next) => {
         try {
-            const data = await Footer.find()
+            const data = await Footer.findAll({})
             res.status(200).json(data)
         } catch (error) {
             res.status(500).json(error)
@@ -152,7 +168,7 @@ class Footer {
 
 }
 
-module.exports = new Footer()
+module.exports = new Footers()
 
 
 
