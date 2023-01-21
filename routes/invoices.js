@@ -12,8 +12,10 @@ const {
     createInvoice,
     getInvoices,
     getInvoiceById,
+    createParty,
     getParties,
     getPartyById,
+    createItem,
     getItems,
 } = require('../controllers/invoice.controller');
 
@@ -28,7 +30,14 @@ const router = express.Router();
 
 router.get('/parties', getParties);
 router.get('/party/:id', getPartyById);
+router.post('/party', createParty);
+// router.put('/party', updateParty);
+// router.delete('/party', deleteParty);
+
 router.get('/items', getItems);
+router.post('/item', createItem);
+// router.put('/item', updateItem);
+// router.delete('/item', deleteItem);
 
 router.get('/', getInvoices);
 router.post('/create', createInvoice);
