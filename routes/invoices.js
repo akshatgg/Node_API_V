@@ -1,14 +1,37 @@
-const express = require("express");
-const {createInvoice, updateInvoice, deleteInvoice, getInvoice, getInvoicesByUser, getTotalCount } =require('../controllers/invoices.js');
+const express = require('express');
+// const {
+//     createInvoice,
+//     updateInvoice,
+//     deleteInvoice,
+//     getInvoice,
+//     getInvoicesByUser,
+//     getTotalCount,
+// } = require('../controllers/invoices');
 
-const router = express.Router()
+const {
+    createInvoice,
+    getInvoices,
+    getInvoiceById,
+    getParties,
+    getPartyById,
+    getItems,
+} = require('../controllers/invoice.controller');
 
-router.get('/count', getTotalCount) //use to generate invoice serial number
-router.get('/:id', getInvoice)
-router.get('/', getInvoicesByUser)
-router.post('/', createInvoice)
-router.patch('/:id', updateInvoice)
-router.delete('/:id', deleteInvoice)
+const router = express.Router();
 
+// router.get('/count', getTotalCount); //use to generate invoice serial number
+// router.get('/:id', getInvoice);
+// router.get('/', getInvoicesByUser);
+// router.post('/', createInvoice);
+// router.patch('/:id', updateInvoice);
+// router.delete('/:id', deleteInvoice);
+
+router.get('/parties', getParties);
+router.get('/party/:id', getPartyById);
+router.get('/items', getItems);
+
+router.get('/', getInvoices);
+router.post('/create', createInvoice);
+router.get('/:id', getInvoiceById);
 
 module.exports = router;

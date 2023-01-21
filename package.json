@@ -28,7 +28,10 @@
     "multer": "^1.4.5-lts.1",
     "mysql": "^2.18.1",
     "mysql2": "^2.2.5",
+<<<<<<< HEAD
     "node-fetch": "^2.6.8",
+=======
+>>>>>>> f5053f7591a917b2e47492bb8d2110b8c5c1f59e
     "nodemailer": "^6.8.0",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
