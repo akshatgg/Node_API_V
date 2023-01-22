@@ -47,7 +47,12 @@ class CalculatorController {
     }
 
     calCompoundInterest = async (req, res, next) => {
-        let {principle, rate, year, compoundFreqInYear} = req.body
+        // let {principle, rate, year, compoundFreqInYear} = req.body
+
+        let principle =parseInt(req.body.principle)
+        let rate =parseInt(req.body.rate)
+        let year =parseInt(req.body.year)
+        let compoundFreqInYear =parseInt(req.body.compoundFreqInYear)
         let interestEarned = 0
 
         let {
