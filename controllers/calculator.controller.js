@@ -3,7 +3,15 @@ const ApiError = require('../errors/ApiError')
 class CalculatorController {
 
     calSimpleInterest = async (req, res, next) => {
-        let {principle, rate, year} = req.body
+        // let {principle, rate, year} =parseInt(req.body)
+
+        let principle =parseInt(req.body.principle)
+        let rate =parseInt(req.body.rate)
+        let year =parseInt(req.body.year)
+       
+       
+
+
         let interest = (principle * rate * year) / 100
 
         let yearlyCalculation = []
