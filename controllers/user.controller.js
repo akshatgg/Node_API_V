@@ -128,7 +128,8 @@ class UserController {
                                     userType: result['dataValues']['userType'],
                                     phone: result['dataValues']['phone'],
                                     pincode: result['dataValues']['pincode'],
-                                    isverified: result['dataValues']['isverified']
+                                    isverified: result['dataValues']['isverified'],
+
                                 },
                                 token: token,
 
@@ -396,11 +397,21 @@ class UserController {
         var token = req.header('authorization')
         var payload = decodeToken(token)
         UserBusinessProfile.create({
-            user_id: payload.id,
-            ifsc: req.body.ifsc,
-            contactNo: req.body.contactNo,
-            accountHolderName: req.body.accountHolderName,
-            accountNo: req.body.accountNo
+
+             businessName:req.body.businessName,
+             bankAccountNo:req.body.bankAccountNo,
+             companyPanNo:req.body.companyPanNo,
+             companyTanNo:req.body.companyTanNo,
+             msmeNo:req.body.msmeNo,
+             gstNo:req.body.gstNo,
+             bandDetails:req.body.bandDetails,
+             incorporateCertificate:req.body.incorporateCertificate,
+             user_id: payload.id,
+
+            // ifsc: req.body.ifsc,
+            // contactNo: req.body.contactNo,
+            // accountHolderName: req.body.accountHolderName,
+            // accountNo: req.body.accountNo
         }).then((result) => {
             if (result) {
                 return res.status(201).json({
@@ -430,10 +441,22 @@ class UserController {
             })
                 .then((businesprofile) => {
                     businesprofile.update({
-                        ifsc: req.body.ifsc,
-                        contactNo: req.body.contactNo,
-                        accountHolderName: req.body.accountHolderName,
-                        accountNo: req.body.accountNo
+                        businessName:req.body.businessName,
+                        bankAccountNo:req.body.bankAccountNo,
+                        companyPanNo:req.body.companyPanNo,
+                        companyTanNo:req.body.companyTanNo,
+                        msmeNo:req.body.msmeNo,
+                        gstNo:req.body.gstNo,
+                        bandDetails:req.body.bandDetails,
+                        incorporateCertificate:req.body.incorporateCertificate,
+                        
+           
+
+
+                        // ifsc: req.body.ifsc,
+                        // contactNo: req.body.contactNo,
+                        // accountHolderName: req.body.accountHolderName,
+                        // accountNo: req.body.accountNo
                     }).then((result) => {
 
                         if (result) {
@@ -578,6 +601,7 @@ getJwtToken = (user) => {
         last_name: user['dataValues']['last_name'],
         phone: user['dataValues']['phone'],
         pincode: user['dataValues']['pincode'],
+        userType: user['dataValues']['userType'],
         environment: process.env.NODE_ENV
     }, process.env.JWT_KEY, {
         issuer: "iTaxEasy",

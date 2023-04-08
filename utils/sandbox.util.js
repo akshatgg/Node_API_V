@@ -3,7 +3,8 @@ const {Config} = require('../models');
 const jwt = require('jsonwebtoken');
 
 exports.getSandboxAuthToken = async () => {
-    let token = await fetchTokenFromDB()
+    let token = await fetchTokenFromDB();
+    console.log(isTokenExpired(token),"token");
     if (token===null||isTokenExpired(token)) {
         await generateNewSandboxToken()
         token = fetchTokenFromDB()
@@ -26,7 +27,9 @@ generateNewSandboxToken = async () => {
             'x-api-version': process.env.SANDBOX_API_VERSION,
         }
     }).then(async (response) => {
+        console.log(response,"generate token log");
         if (response.status === 200) {
+
             return await saveSandboxAuthToken(response.data["access_token"])
         } else {
             return response.data["message"];
@@ -52,6 +55,7 @@ fetchTokenFromDB = async () => {
 }
 
 saveSandboxAuthToken = async (token) => {
+    
     return await Config.update({
         value: token
     }, {
