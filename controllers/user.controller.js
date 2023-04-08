@@ -200,8 +200,8 @@ class UserController {
                     user.update({
                         first_name: req.body.first_name,
                         last_name: req.body.last_name,
+                        email:req.body.email,
                         phone: req.body.phone,
-                        email: req.body.email,
                         pincode: req.body.pincode,
                         isverified: req.body.isverified,
                     }).then((result) => {
