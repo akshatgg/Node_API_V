@@ -1,4 +1,5 @@
-const { User, UserProfile, UserBusinessProfile } = require('../models');
+const { User, UserProfile,UserBusinessProfile } = require('../models');
+//const {UserBusinessProfile}=require('../models/business_profile');
 const uuid = require('uuid');
 const bCrypt = require('bcrypt-nodejs');
 const jwt = require('jsonwebtoken');
@@ -128,7 +129,8 @@ class UserController {
                                     userType: result['dataValues']['userType'],
                                     phone: result['dataValues']['phone'],
                                     pincode: result['dataValues']['pincode'],
-                                    isverified: result['dataValues']['isverified']
+                                    isverified: result['dataValues']['isverified'],
+
                                 },
                                 token: token,
 
@@ -200,8 +202,8 @@ class UserController {
                     user.update({
                         first_name: req.body.first_name,
                         last_name: req.body.last_name,
+                        email:req.body.email,
                         phone: req.body.phone,
-                        email: req.body.email,
                         pincode: req.body.pincode,
                         isverified: req.body.isverified,
                     }).then((result) => {
@@ -396,11 +398,21 @@ class UserController {
         var token = req.header('authorization')
         var payload = decodeToken(token)
         UserBusinessProfile.create({
-            user_id: payload.id,
-            ifsc: req.body.ifsc,
-            contactNo: req.body.contactNo,
-            accountHolderName: req.body.accountHolderName,
-            accountNo: req.body.accountNo
+
+             businessName:req.body.businessName,
+             bankAccountNo:req.body.bankAccountNo,
+             companyPanNo:req.body.companyPanNo,
+             companyTanNo:req.body.companyTanNo,
+             msmeNo:req.body.msmeNo,
+             gstNo:req.body.gstNo,
+             bandDetails:req.body.bankDetails,
+             incorporateCertificate:req.body.incorporateCertificate,
+             user_id: req.body.user_id
+
+            // ifsc: req.body.ifsc,
+            // contactNo: req.body.contactNo,
+            // accountHolderName: req.body.accountHolderName,
+            // accountNo: req.body.accountNo
         }).then((result) => {
             if (result) {
                 return res.status(201).json({
@@ -429,12 +441,26 @@ class UserController {
                 }
             })
                 .then((businesprofile) => {
+                    if(businesprofile!=null){
                     businesprofile.update({
-                        ifsc: req.body.ifsc,
-                        contactNo: req.body.contactNo,
-                        accountHolderName: req.body.accountHolderName,
-                        accountNo: req.body.accountNo
+                        businessName:req.body.businessName,
+                        bankAccountNo:req.body.bankAccountNo,
+                        companyPanNo:req.body.companyPanNo,
+                        companyTanNo:req.body.companyTanNo,
+                        msmeNo:req.body.msmeNo,
+                        gstNo:req.body.gstNo,
+                        bandDetails:req.body.bandDetails,
+                        incorporateCertificate:req.body.incorporateCertificate,
+                        
+                    
+
+
+                        // ifsc: req.body.ifsc,
+                        // contactNo: req.body.contactNo,
+                        // accountHolderName: req.body.accountHolderName,
+                        // accountNo: req.body.accountNo
                     }).then((result) => {
+
 
                         if (result) {
                             return res.status(200).json({
@@ -444,6 +470,53 @@ class UserController {
                             })
                         } else {
                             return next(ApiError.badRequest("failed to update user"))
+                        }
+                    }).catch((error) => {
+                        console.log(`catch block ${error}`)
+                        if (error)
+                            return next(ApiError.conflict(error));
+                        else
+                            return next(ApiError.internalServerError(error))
+                    });
+                }
+                })
+
+        } else {
+            return next(ApiError.unAuthorized("invalid credentials"))
+        }
+    
+
+    }
+
+    deleteBusinessProfile = async (req, res, next) => {
+        var token = req.header('authorization')
+        if (token) {
+            var payload = decodeToken(token)
+            UserBusinessProfile.findOne({
+                where: {
+                    user_id: payload.id
+                }
+            })
+                .then((businesprofile) => {
+                    businesprofile.destroy({
+                        
+           
+
+
+                        // ifsc: req.body.ifsc,
+                        // contactNo: req.body.contactNo,
+                        // accountHolderName: req.body.accountHolderName,
+                        // accountNo: req.body.accountNo
+                    }).then((result) => {
+
+                        if (result) {
+                            return res.status(200).json({
+                                status: "success",
+                                message: "profile delete successfully",
+                                result: result
+                            })
+                        } else {
+                            return next(ApiError.badRequest("failed to delete user"))
                         }
                     }).catch((error) => {
                         console.log(`catch block ${error}`)
@@ -491,6 +564,47 @@ sendOtpToMobile=async(req,res,next)=>{
 
 
         }
+}
+
+deleteBusinessProfile = async (req, res, next) => {
+    var token = req.header('authorization')
+    if (token) {
+        var payload = decodeToken(token)
+        UserBusinessProfile.findOne({
+            where: {
+                user_id: payload.id
+            }
+        }) .then((businesprofile) => {
+            if(businesprofile!=null){
+            businesprofile.destroy({
+               
+            }).then((result) => {
+
+
+                if (result) {
+                    return res.status(200).json({
+                        status: "success",
+                        message: "profile delete successfully",
+                        result: result
+                    })
+                } else {
+                    return next(ApiError.badRequest("failed to update user"))
+                }
+            }).catch((error) => {
+                console.log(`catch block ${error}`)
+                if (error)
+                    return next(ApiError.conflict(error));
+                else
+                    return next(ApiError.internalServerError(error))
+            });
+        }
+        })
+
+} else {
+    return next(ApiError.unAuthorized("invalid credentials"))
+}
+
+
 }
 
 getallUsers = async (req, res, next) => {
@@ -578,6 +692,7 @@ getJwtToken = (user) => {
         last_name: user['dataValues']['last_name'],
         phone: user['dataValues']['phone'],
         pincode: user['dataValues']['pincode'],
+        userType: user['dataValues']['userType'],
         environment: process.env.NODE_ENV
     }, process.env.JWT_KEY, {
         issuer: "iTaxEasy",

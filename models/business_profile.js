@@ -15,8 +15,8 @@ module.exports = (sequelize, DataTypes) => {
                
                 foreignKey: 'user_id',
                 targetKey: 'id',
-                onDelete: 'CASCADE',
-                onUpdate: 'CASCADE'
+                //onDelete: 'CASCADE',
+                //onUpdate: 'CASCADE'
             })
         }
     }
