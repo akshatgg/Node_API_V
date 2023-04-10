@@ -22,6 +22,7 @@ router.get('/getProfile', userController.getProfile);
 router.post('/create-business-profile', userController.createBusinessProfile);
 router.get('/get-business-profile', userController.getBusinessProfile);
 router.post('/update-business-profile', userController.updateBusinessProfile);
+router.post('/delete-business-profile', userController.deleteBusinessProfile);
 
 //CMS API
 router.get('/get-all-user', userController.getallUsers);

@@ -1,4 +1,5 @@
-const { User, UserProfile, UserBusinessProfile } = require('../models');
+const { User, UserProfile,UserBusinessProfile } = require('../models');
+//const {UserBusinessProfile}=require('../models/business_profile');
 const uuid = require('uuid');
 const bCrypt = require('bcrypt-nodejs');
 const jwt = require('jsonwebtoken');
@@ -404,9 +405,9 @@ class UserController {
              companyTanNo:req.body.companyTanNo,
              msmeNo:req.body.msmeNo,
              gstNo:req.body.gstNo,
-             bandDetails:req.body.bandDetails,
+             bandDetails:req.body.bankDetails,
              incorporateCertificate:req.body.incorporateCertificate,
-             user_id: payload.id,
+             user_id: req.body.user_id
 
             // ifsc: req.body.ifsc,
             // contactNo: req.body.contactNo,
@@ -440,6 +441,7 @@ class UserController {
                 }
             })
                 .then((businesprofile) => {
+                    if(businesprofile!=null){
                     businesprofile.update({
                         businessName:req.body.businessName,
                         bankAccountNo:req.body.bankAccountNo,
@@ -450,7 +452,7 @@ class UserController {
                         bandDetails:req.body.bandDetails,
                         incorporateCertificate:req.body.incorporateCertificate,
                         
-           
+                    
 
 
                         // ifsc: req.body.ifsc,
@@ -458,6 +460,7 @@ class UserController {
                         // accountHolderName: req.body.accountHolderName,
                         // accountNo: req.body.accountNo
                     }).then((result) => {
+
 
                         if (result) {
                             return res.status(200).json({
@@ -475,12 +478,13 @@ class UserController {
                         else
                             return next(ApiError.internalServerError(error))
                     });
+                }
                 })
 
         } else {
             return next(ApiError.unAuthorized("invalid credentials"))
         }
-
+    
 
     }
 
@@ -560,6 +564,47 @@ sendOtpToMobile=async(req,res,next)=>{
 
 
         }
+}
+
+deleteBusinessProfile = async (req, res, next) => {
+    var token = req.header('authorization')
+    if (token) {
+        var payload = decodeToken(token)
+        UserBusinessProfile.findOne({
+            where: {
+                user_id: payload.id
+            }
+        }) .then((businesprofile) => {
+            if(businesprofile!=null){
+            businesprofile.destroy({
+               
+            }).then((result) => {
+
+
+                if (result) {
+                    return res.status(200).json({
+                        status: "success",
+                        message: "profile delete successfully",
+                        result: result
+                    })
+                } else {
+                    return next(ApiError.badRequest("failed to update user"))
+                }
+            }).catch((error) => {
+                console.log(`catch block ${error}`)
+                if (error)
+                    return next(ApiError.conflict(error));
+                else
+                    return next(ApiError.internalServerError(error))
+            });
+        }
+        })
+
+} else {
+    return next(ApiError.unAuthorized("invalid credentials"))
+}
+
+
 }
 
 getallUsers = async (req, res, next) => {
