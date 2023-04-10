@@ -12,7 +12,7 @@ const db = mysql.createConnection({
   user: 'root',
   password: '',
   port: 3307, // change the port number to match your MySQL port
-  database: 'aadhar'
+  database: 'itaxeasy'
 });
 
 db.connect((err) => {

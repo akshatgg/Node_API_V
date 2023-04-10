@@ -483,6 +483,52 @@ class UserController {
 
 
     }
+
+    deleteBusinessProfile = async (req, res, next) => {
+        var token = req.header('authorization')
+        if (token) {
+            var payload = decodeToken(token)
+            UserBusinessProfile.findOne({
+                where: {
+                    user_id: payload.id
+                }
+            })
+                .then((businesprofile) => {
+                    businesprofile.destroy({
+                        
+           
+
+
+                        // ifsc: req.body.ifsc,
+                        // contactNo: req.body.contactNo,
+                        // accountHolderName: req.body.accountHolderName,
+                        // accountNo: req.body.accountNo
+                    }).then((result) => {
+
+                        if (result) {
+                            return res.status(200).json({
+                                status: "success",
+                                message: "profile delete successfully",
+                                result: result
+                            })
+                        } else {
+                            return next(ApiError.badRequest("failed to delete user"))
+                        }
+                    }).catch((error) => {
+                        console.log(`catch block ${error}`)
+                        if (error)
+                            return next(ApiError.conflict(error));
+                        else
+                            return next(ApiError.internalServerError(error))
+                    });
+                })
+
+        } else {
+            return next(ApiError.unAuthorized("invalid credentials"))
+        }
+
+
+    }
 sendOtpToMobile=async(req,res,next)=>{
     let isPhoneExists = await isPhoneExist(req.body.phone)
         if (!isPhoneExists) {
