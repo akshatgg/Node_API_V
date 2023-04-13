@@ -15,6 +15,7 @@ const pincoderoute = require("./pincode");
 const postofficeroute = require("./postoffice");
 const pdfroute = require("./pdf");
 const hsnRouter = require("./hsn");
+const StarHealthRouter = require("./starHealth");
 const clientRouter = require("./clients");
 const invoice = require("./invoices");
 const profileRouter = require("./profile");
@@ -29,9 +30,7 @@ router.get('/', function (req, res, next) {
 
 
 router.use("/blog",Blog)
-
 router.use('/taxes',sandboxTaxRouter)
-
 router.use('/users', usersRouter);
 router.use('/mca', mcaRouter);
 router.use('/bank', bankRouter);
@@ -43,13 +42,14 @@ router.use('/postoffice', postofficeroute);
 router.use('/pincode', pincoderoute);
 router.use('/pdf', pdfroute);
 router.use('/hsn', hsnRouter);
+router.use('/starhealth', StarHealthRouter);
 router.use('/client', clientRouter);
 router.use('/invoice', invoice);
 router.use('/profile', profileRouter);
 router.use('/cms', cmsRouter);
 router.use('/email', emailRouter);
 router.use('/challan', challan);
-router.use('/footer',footer)
+router.use('/footer', footer);
 
 
 router.get('*', (req, res, next) => {
