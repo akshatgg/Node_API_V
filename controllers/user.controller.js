@@ -1,4 +1,5 @@
-const { User, UserProfile, UserBusinessProfile } = require('../models');
+const { User, UserProfile,UserBusinessProfile } = require('../models');
+//const {UserBusinessProfile}=require('../models/business_profile');
 const uuid = require('uuid');
 const bCrypt = require('bcrypt-nodejs');
 const jwt = require('jsonwebtoken');
@@ -125,9 +126,11 @@ class UserController {
                                     email: result['dataValues']['email'],
                                     first_name: result['dataValues']['first_name'],
                                     last_name: result['dataValues']['last_name'],
+                                    userType: result['dataValues']['userType'],
                                     phone: result['dataValues']['phone'],
                                     pincode: result['dataValues']['pincode'],
-                                    isverified: result['dataValues']['isverified']
+                                    isverified: result['dataValues']['isverified'],
+
                                 },
                                 token: token,
 
@@ -147,6 +150,45 @@ class UserController {
                 return next(ApiError.internalServerError("something went wrong"))
         });
     }
+    logInWithOtp = async (req, res, next) => {
+        var token = req.header('authorization');
+        if (token) {
+            var payload = decodeToken(token);
+            User.findOne({
+                where: {
+                    phone: payload.phone
+                }
+            }).then((result) => {
+                if(result){
+                    const token = getJwtToken(result)
+                    return res.status(200).json({
+                        status: true,
+                     
+                        results: {
+                            status: 200,
+                            message: "login successfull",
+                            data: {
+                                id: result['dataValues']['id'],
+                                email: result['dataValues']['email'],
+                                first_name: result['dataValues']['first_name'],
+                                last_name: result['dataValues']['last_name'],
+                                phone: result['dataValues']['phone'],
+                                pincode: result['dataValues']['pincode'],
+                                isverified: result['dataValues']['isverified']
+                            },
+                            token: token,
+
+                        }});
+                }else{
+                    return next(ApiError.notFound("user does not exists"));
+                }
+
+            });                
+        }
+        else{
+            return next(ApiError.unAuthorized("invalid credentials"))
+        }
+    }
     updateUser = async (req, res, next) => {
         var token = req.header('authorization')
         if (token) {
@@ -160,8 +202,8 @@ class UserController {
                     user.update({
                         first_name: req.body.first_name,
                         last_name: req.body.last_name,
+                        email:req.body.email,
                         phone: req.body.phone,
-                        email: req.body.email,
                         pincode: req.body.pincode,
                         isverified: req.body.isverified,
                     }).then((result) => {
@@ -191,12 +233,23 @@ class UserController {
 
     }
     updatePassword = async (req, res, next) => {
-        if(req.body.email==undefined){
-            return next(ApiError.badRequest("please enter email"))
-        }
-        if(req.body.password==undefined){
-            return next(ApiError.badRequest("please enter password"))
-        }
+        var token = req.header('authorization');
+        var currentdate = new Date(); 
+        if (token) {
+            var payload = decodeToken(token);
+            if(payload.expiration_time<currentdate){
+                return next(ApiError.unAuthorized("token expired"))
+            }
+       const   user=  User.findOne({
+                where: {
+                    id: payload.id
+                }
+            });
+            if(!user){
+                return next(ApiError.notFound("user does not exists"))
+
+            }
+
         bCrypt.hash(req.body.password, bCrypt.genSaltSync(8), null, (err, hash) => {
             if (err) {
                 console.log(`bcrypt error ${err}`)
@@ -204,7 +257,7 @@ class UserController {
             } else {
                 User.update(
                     { password: hash },
-                    { where: {email: req.body.email } }
+                    { where: {id: payload.id } }
                 )
                     .then((result) => {
                         if (result[0]) {
@@ -226,7 +279,10 @@ class UserController {
 
             }
         })
-
+    }
+    else{
+        return next(ApiError.unAuthorized("invalid credentials"))
+    }
     }
 
 
@@ -342,11 +398,21 @@ class UserController {
         var token = req.header('authorization')
         var payload = decodeToken(token)
         UserBusinessProfile.create({
-            user_id: payload.id,
-            ifsc: req.body.ifsc,
-            contactNo: req.body.contactNo,
-            accountHolderName: req.body.accountHolderName,
-            accountNo: req.body.accountNo
+
+             businessName:req.body.businessName,
+             bankAccountNo:req.body.bankAccountNo,
+             companyPanNo:req.body.companyPanNo,
+             companyTanNo:req.body.companyTanNo,
+             msmeNo:req.body.msmeNo,
+             gstNo:req.body.gstNo,
+             bandDetails:req.body.bankDetails,
+             incorporateCertificate:req.body.incorporateCertificate,
+             user_id: req.body.user_id
+
+            // ifsc: req.body.ifsc,
+            // contactNo: req.body.contactNo,
+            // accountHolderName: req.body.accountHolderName,
+            // accountNo: req.body.accountNo
         }).then((result) => {
             if (result) {
                 return res.status(201).json({
@@ -375,12 +441,26 @@ class UserController {
                 }
             })
                 .then((businesprofile) => {
+                    if(businesprofile!=null){
                     businesprofile.update({
-                        ifsc: req.body.ifsc,
-                        contactNo: req.body.contactNo,
-                        accountHolderName: req.body.accountHolderName,
-                        accountNo: req.body.accountNo
+                        businessName:req.body.businessName,
+                        bankAccountNo:req.body.bankAccountNo,
+                        companyPanNo:req.body.companyPanNo,
+                        companyTanNo:req.body.companyTanNo,
+                        msmeNo:req.body.msmeNo,
+                        gstNo:req.body.gstNo,
+                        bandDetails:req.body.bandDetails,
+                        incorporateCertificate:req.body.incorporateCertificate,
+                        
+                    
+
+
+                        // ifsc: req.body.ifsc,
+                        // contactNo: req.body.contactNo,
+                        // accountHolderName: req.body.accountHolderName,
+                        // accountNo: req.body.accountNo
                     }).then((result) => {
+
 
                         if (result) {
                             return res.status(200).json({
@@ -398,6 +478,53 @@ class UserController {
                         else
                             return next(ApiError.internalServerError(error))
                     });
+                }
+                })
+
+        } else {
+            return next(ApiError.unAuthorized("invalid credentials"))
+        }
+    
+
+    }
+
+    deleteBusinessProfile = async (req, res, next) => {
+        var token = req.header('authorization')
+        if (token) {
+            var payload = decodeToken(token)
+            UserBusinessProfile.findOne({
+                where: {
+                    user_id: payload.id
+                }
+            })
+                .then((businesprofile) => {
+                    businesprofile.destroy({
+                        
+           
+
+
+                        // ifsc: req.body.ifsc,
+                        // contactNo: req.body.contactNo,
+                        // accountHolderName: req.body.accountHolderName,
+                        // accountNo: req.body.accountNo
+                    }).then((result) => {
+
+                        if (result) {
+                            return res.status(200).json({
+                                status: "success",
+                                message: "profile delete successfully",
+                                result: result
+                            })
+                        } else {
+                            return next(ApiError.badRequest("failed to delete user"))
+                        }
+                    }).catch((error) => {
+                        console.log(`catch block ${error}`)
+                        if (error)
+                            return next(ApiError.conflict(error));
+                        else
+                            return next(ApiError.internalServerError(error))
+                    });
                 })
 
         } else {
@@ -406,6 +533,80 @@ class UserController {
 
 
     }
+sendOtpToMobile=async(req,res,next)=>{
+    let isPhoneExists = await isPhoneExist(req.body.phone)
+        if (!isPhoneExists) {
+            next(ApiError.conflict("Account not found"));
+            return;
+        }else{
+            try {
+                var otp = Math.floor(100000 + Math.random() * 900000);
+            var message = "Your OTP is " + otp;
+           const otpToken= jwt.sign({
+                otp: otp,
+                phone: req.body.phone
+            }, process.env.JWT_KEY, {
+                issuer: "iTaxEasy",
+                expiresIn: "1Y"
+            });
+            res.status(200).json({
+                status: true,
+                message: "OTP sent successfully.Verify your mobile number using OTP and token",
+                otpToken: otpToken,
+                otp: otp,
+                phone: req.body.phone
+            });
+            } catch (error) {
+                console.log(error)
+                return next(ApiError.internalServerError(error));
+                
+            }
+
+
+        }
+}
+
+deleteBusinessProfile = async (req, res, next) => {
+    var token = req.header('authorization')
+    if (token) {
+        var payload = decodeToken(token)
+        UserBusinessProfile.findOne({
+            where: {
+                user_id: payload.id
+            }
+        }) .then((businesprofile) => {
+            if(businesprofile!=null){
+            businesprofile.destroy({
+               
+            }).then((result) => {
+
+
+                if (result) {
+                    return res.status(200).json({
+                        status: "success",
+                        message: "profile delete successfully",
+                        result: result
+                    })
+                } else {
+                    return next(ApiError.badRequest("failed to update user"))
+                }
+            }).catch((error) => {
+                console.log(`catch block ${error}`)
+                if (error)
+                    return next(ApiError.conflict(error));
+                else
+                    return next(ApiError.internalServerError(error))
+            });
+        }
+        })
+
+} else {
+    return next(ApiError.unAuthorized("invalid credentials"))
+}
+
+
+}
+
 getallUsers = async (req, res, next) => {
 
         User.findAndCountAll({
@@ -491,6 +692,7 @@ getJwtToken = (user) => {
         last_name: user['dataValues']['last_name'],
         phone: user['dataValues']['phone'],
         pincode: user['dataValues']['pincode'],
+        userType: user['dataValues']['userType'],
         environment: process.env.NODE_ENV
     }, process.env.JWT_KEY, {
         issuer: "iTaxEasy",

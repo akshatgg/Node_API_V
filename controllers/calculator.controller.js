@@ -3,7 +3,15 @@ const ApiError = require('../errors/ApiError')
 class CalculatorController {
 
     calSimpleInterest = async (req, res, next) => {
-        let {principle, rate, year} = req.body
+        // let {principle, rate, year} =parseInt(req.body)
+
+        let principle =parseInt(req.body.principle)
+        let rate =parseInt(req.body.rate)
+        let year =parseInt(req.body.year)
+       
+       
+
+
         let interest = (principle * rate * year) / 100
 
         let yearlyCalculation = []
@@ -39,7 +47,12 @@ class CalculatorController {
     }
 
     calCompoundInterest = async (req, res, next) => {
-        let {principle, rate, year, compoundFreqInYear} = req.body
+        // let {principle, rate, year, compoundFreqInYear} = req.body
+
+        let principle =parseInt(req.body.principle)
+        let rate =parseInt(req.body.rate)
+        let year =parseInt(req.body.year)
+        let compoundFreqInYear =parseInt(req.body.compoundFreqInYear)
         let interestEarned = 0
 
         let {
@@ -157,25 +170,64 @@ class CalculatorController {
     }
 
     emi = async (req, res, next) => {
-        let {loanAmount, loanTenure, rate} = req.body
-        rate = rate / 12 / 100
+        // let {loanAmount, loanTenure, rate} = req.body
+        // rate = rate / 12 / 100
 
-        loanTenure = loanTenure * 12
+        // loanTenure = loanTenure * 12
 
-        let emi = loanAmount * rate * ((1 + rate) ** loanTenure) / (((1 + rate) ** loanTenure) - 1)
+        // let emi = loanAmount * rate * ((1 + rate) ** loanTenure) / (((1 + rate) ** loanTenure) - 1)
 
-        let totalAmount = emi * loanTenure
+        // let totalAmount = emi * loanTenure
 
-        let monthlyPayment = calculateMonthlyEmiPayment(loanAmount, req.body.rate, req.body.loanTenure, emi)
+        // let monthlyPayment = calculateMonthlyEmiPayment(loanAmount, req.body.rate, req.body.loanTenure, emi)
 
-        return res.status(200).json({
-            status: "success",
-            emi: Math.round(emi),
-            loanAmount: loanAmount,
-            totalInterest: Math.round(totalAmount - loanAmount),
-            totalAmount: Math.round(totalAmount),
-            monthlyPayment: monthlyPayment
-        })
+        // return res.status(200).json({
+        //     status: "success",
+        //     emi: Math.round(emi),
+        //     loanAmount: loanAmount,
+        //     totalInterest: Math.round(totalAmount - loanAmount),
+        //     totalAmount: Math.round(totalAmount),
+        //     monthlyPayment: monthlyPayment
+        // })
+
+        const P0 = req.body.loanAmount;
+        const ir = req.body.interestRate;
+        const N = req.body.term;
+      
+        if (P0 > 0 && N > 0 && ir > 0) {
+            var payments = Array.from({ length: N + 1 });
+            var r = ir / 100 / 12;
+    
+            var c = (P0 * r * Math.pow(1 + r, N)) / (Math.pow(1 + r, N) - 1);
+            var total = c * N;
+    
+            var remainingPrincipal = P0;
+    
+           
+    
+            payments[0] = {
+              index: 0,
+              amount: 0,
+              principal: 0,
+              interest: 0,
+              remainingAmount: total
+            };
+        }
+    
+        for (var i = 1; i <= N; i++) {
+            var interest = remainingPrincipal * r;
+    
+            payments[i] = {
+              index: i,
+              amount: c,
+              principal: c - interest,
+              interest: interest,
+              remainingAmount: total - c * i
+            };
+            remainingPrincipal -= c - interest;
+          }
+        res.json({ payments, total, c, interest: total - P0 });
+        
     }
 
     homeLoanEligibility = async (req, res, next) => {
@@ -382,6 +434,7 @@ class CalculatorController {
 
         if (type === "excluding") {
             gstAmount = amount * gstRate / 100
+
             finalAmount = amount + gstAmount
         } else if (type === "including") {
             finalAmount = amount
@@ -395,6 +448,8 @@ class CalculatorController {
             status: "success",
             finalAmount: finalAmount.toFixed(2),
             gstAmount: gstAmount.toFixed(2),
+            sgst:(gstAmount/2).toFixed(2),
+            cgst:(gstAmount/2).toFixed(2),
             amount: amount.toFixed(2),
             gstType: type,
             gstRate: `${gstRate}%`

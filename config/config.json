@@ -1,7 +1,7 @@
 {
   "development": {
     "username": "root",
-    "password": "",
+    "password": "her0her0@mysql",
     "database": "itaxeasy",
     "host": "127.0.0.1",
     "dialect": "mysql"
