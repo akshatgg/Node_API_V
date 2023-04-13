@@ -107,7 +107,6 @@ decodeToken = (token) => {
     const payload = JSON.parse(payloadinit);
     return payload;
 };
-
 // PARTIES
 exports.createParty = async (req, res) => {
     var token = req.header('authorization');
