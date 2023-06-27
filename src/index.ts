@@ -1,10 +1,10 @@
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import cors from 'cors';
+import helmet from 'helmet';
 
 import { config } from "dotenv";
 import router from './routes';
-import EmailService from './services/email.service';
 
 config();
 
@@ -14,11 +14,16 @@ export const prisma = new PrismaClient();
 
 const app = express();
 
-app.use(cors({
-    origin: '*',
-}));
+app.use(cors());
 
 app.use(express.json());
+
+app.use(helmet());
+
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    console.error(err.stack);
+    return res.status(500).json({ error: 'Internal Server Error' });
+});
 
 app.use(router);
 

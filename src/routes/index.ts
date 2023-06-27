@@ -1,12 +1,16 @@
 import { Request, Response, Router } from "express";
+
 import userRouter from "./user.routes";
 import businessProfileRouter from "./businessProfile.routes";
+import invoiceRouter from "./invoice.routes";
 
 const router = Router();
 
 router.use('/user', userRouter);
 
 router.use('/business', businessProfileRouter);
+
+router.use('/invoice', invoiceRouter);
 
 router.get('/', (req, res) => {
     return res.send({ message: 'Up and running' });

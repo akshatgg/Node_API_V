@@ -40,6 +40,10 @@ model User {
   userType        UserType         @default(normal)
   otps            Otp[]
   businessProfile BusinessProfile?
+  invoices        Invoice[]
+  categories      Category[]
+  items Item[]
+  parties Party[]
 }
 
 model Otp {
@@ -66,4 +70,129 @@ model BusinessProfile {
   user          User     @relation(fields: [userId], references: [id])
   createdAt     DateTime @default(now())
   updatedAt     DateTime @default(now())
+}
+
+enum PartyType {
+  customer
+  supplier
+}
+
+model Party {
+  id                String    @id @unique @default(uuid())
+  partyName         String
+  type              PartyType
+  gstin             String?
+  pan               String?
+  tan               String?
+  upi               String?
+  email             String?
+  phone             String?
+  address           String?
+  bankName          String?
+  bankAccountNumber String?
+  bankIfsc          String?
+  bankBranch        String?
+  invoices          Invoice[]
+  items             Item[]
+  userId        Int
+  user          User          @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model Category {
+  id           String @id @unique @default(uuid())
+  categoryName String
+  userId       Int
+  user         User   @relation(fields: [userId], references: [id])
+  items        Item[]
+}
+
+enum ItemUnit {
+  pieces
+  grams
+  kilograms
+  liters
+  milliliters
+  meters
+  centimeters
+  inches
+  feet
+  squareMeters
+  squareFeet
+  cubicMeters
+  cubicFeet
+  dozen
+  pack
+  carton
+  box
+  roll
+  bundle
+  pair
+  set
+}
+
+model Item {
+  id            String        @id @unique @default(uuid())
+  itemName      String
+  unit          ItemUnit      @default(pieces)
+  price         Decimal
+  openingStock  Decimal?
+  closingStock  Decimal?
+  purchasePrice Decimal?
+  cgst          Decimal?
+  sgst          Decimal?
+  igst          Decimal?
+  utgst         Decimal?
+  taxExempted   Boolean       @default(false)
+  description   String?
+  hsnCode       String?
+  categoryId    String?
+  category      Category?     @relation(fields: [categoryId], references: [id])
+  supplierId    String?
+  supplier      Party?        @relation(fields: [supplierId], references: [id])
+  invoiceItems  InvoiceItem[]
+  userId        Int
+  user          User          @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+enum InvoiceType {
+  sales
+  purchase
+  sales_return
+  purchase_return
+}
+
+model Invoice {
+  id            String        @id @unique @default(uuid())
+  invoiceNumber Int
+  type          InvoiceType
+  partyId       String
+  party         Party         @relation(fields: [partyId], references: [id])
+  phone         String?
+  partyName     String?
+  totalAmount   Float
+  totalGst      Float?
+  stateOfSupply String
+  cgst          Float?
+  sgst          Float?
+  igst          Float?
+  utgst         Float?
+  details       String?
+  extraDetails  String?
+  items         InvoiceItem[]
+  userId        Int
+  user          User          @relation(fields: [userId], references: [id])
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @default(now())
+}
+
+model InvoiceItem {
+  id        String  @id @unique @default(uuid())
+  itemId    String
+  item      Item    @relation(fields: [itemId], references: [id])
+  invoiceId String
+  invoice   Invoice @relation(fields: [invoiceId], references: [id])
 }
