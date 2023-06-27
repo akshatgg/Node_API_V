@@ -6,9 +6,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = require("express");
 var user_routes_1 = __importDefault(require("./user.routes"));
 var businessProfile_routes_1 = __importDefault(require("./businessProfile.routes"));
+var invoice_routes_1 = __importDefault(require("./invoice.routes"));
 var router = (0, express_1.Router)();
 router.use('/user', user_routes_1.default);
 router.use('/business', businessProfile_routes_1.default);
+router.use('/invoice', invoice_routes_1.default);
 router.get('/', function (req, res) {
     return res.send({ message: 'Up and running' });
 });
