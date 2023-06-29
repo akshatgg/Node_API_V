@@ -39,55 +39,65 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var india_pincode_lookup_1 = __importDefault(require("india-pincode-lookup"));
+var pincodes_json_1 = __importDefault(require("../data/pincodes.json"));
 var PincodeController = /** @class */ (function () {
     function PincodeController() {
     }
+    PincodeController.lookupByPincode = function (pincode) {
+        if (typeof pincode === 'string') {
+            return pincodes_json_1.default.filter(function (e) {
+                return e.pincode === +pincode;
+            });
+        }
+        else if (typeof pincode === 'number') {
+            return pincodes_json_1.default.filter(function (e) {
+                return e.pincode === pincode;
+            });
+        }
+    };
+    PincodeController.lookupByCity = function (city) {
+        var regex = RegExp(city, 'i');
+        return pincodes_json_1.default.filter(function (e) {
+            return e.officeName.match(regex);
+        });
+    };
     PincodeController.getPincodeByCity = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var city, data, e_1;
+            var city, data;
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        city = req.body.city;
-                        if (!city) {
-                            return [2 /*return*/, res.status(400).send({ success: false, message: 'Required field "city" is missing' })];
-                        }
-                        return [4 /*yield*/, india_pincode_lookup_1.default.lookup(city)];
-                    case 1:
-                        data = _a.sent();
-                        return [2 /*return*/, res.status(200).send({ success: false, data: data })];
-                    case 2:
-                        e_1 = _a.sent();
-                        console.log(e_1);
-                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong.' })];
-                    case 3: return [2 /*return*/];
+                try {
+                    city = req.body.city;
+                    if (!city) {
+                        return [2 /*return*/, res.status(400).send({ success: false, message: 'Required field "city" is missing' })];
+                    }
+                    data = PincodeController.lookupByCity(city);
+                    return [2 /*return*/, res.status(200).send({ success: false, data: data })];
                 }
+                catch (e) {
+                    console.log(e);
+                    return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong.' })];
+                }
+                return [2 /*return*/];
             });
         });
     };
     PincodeController.getInfoByPincode = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var pincode, data, e_2;
+            var pincode, data;
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        pincode = req.body.pincode;
-                        if (!pincode) {
-                            return [2 /*return*/, res.status(400).send({ success: false, message: 'Required field "pincode" is missing' })];
-                        }
-                        return [4 /*yield*/, india_pincode_lookup_1.default.lookup(pincode)];
-                    case 1:
-                        data = _a.sent();
-                        return [2 /*return*/, res.status(200).send({ success: false, data: data })];
-                    case 2:
-                        e_2 = _a.sent();
-                        console.log(e_2);
-                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong.' })];
-                    case 3: return [2 /*return*/];
+                try {
+                    pincode = req.body.pincode;
+                    if (!pincode) {
+                        return [2 /*return*/, res.status(400).send({ success: false, message: 'Required field "pincode" is missing' })];
+                    }
+                    data = PincodeController.lookupByPincode(pincode);
+                    return [2 /*return*/, res.status(200).send({ success: false, data: data })];
                 }
+                catch (e) {
+                    console.log(e);
+                    return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong.' })];
+                }
+                return [2 /*return*/];
             });
         });
     };

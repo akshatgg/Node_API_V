@@ -1,1 +1,0 @@
-declare module 'india-pincode-lookup';

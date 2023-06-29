@@ -1,21 +1,46 @@
 import { Request, Response } from "express";
 
-import PincodeDirectory from 'india-pincode-lookup';
+import pincodeData from '../data/pincodes.json';
+
+interface PincodeEntry {
+    pincode: number,
+    officeName: string
+}
 
 export default class PincodeController {
+
+    static lookupByPincode(pincode: string | number) {
+        if (typeof pincode === 'string') {
+            return (pincodeData as PincodeEntry[]).filter((e) => {
+                return e.pincode === +pincode;
+            });
+        } else if (typeof pincode === 'number') {
+            return (pincodeData as any[]).filter((e) => {
+                return e.pincode === pincode;
+            });
+        }
+    }
+
+    static lookupByCity(city: string) {
+        const regex = RegExp(city, 'i');
+
+        return (pincodeData as PincodeEntry[]).filter((e) => {
+            return e.officeName.match(regex);
+        });
+    }
 
     static async getPincodeByCity(req: Request, res: Response) {
         try {
             const { city } = req.body;
 
-            if(!city) {
+            if (!city) {
                 return res.status(400).send({ success: false, message: 'Required field "city" is missing' });
             }
 
-            const data = await PincodeDirectory.lookup(city);
+            const data = PincodeController.lookupByCity(city);
 
             return res.status(200).send({ success: false, data });
-        } catch(e) {
+        } catch (e) {
             console.log(e);
             return res.status(500).json({ success: false, message: 'Something went wrong.' });
         }
@@ -25,14 +50,14 @@ export default class PincodeController {
         try {
             const { pincode } = req.body;
 
-            if(!pincode) {
+            if (!pincode) {
                 return res.status(400).send({ success: false, message: 'Required field "pincode" is missing' });
             }
 
-            const data = await PincodeDirectory.lookup(pincode);
+            const data = PincodeController.lookupByPincode(pincode);
 
             return res.status(200).send({ success: false, data });
-        } catch(e) {
+        } catch (e) {
             console.log(e);
             return res.status(500).json({ success: false, message: 'Something went wrong.' });
         }
