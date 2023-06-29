@@ -3,6 +3,9 @@ import { Request, Response, Router } from "express";
 import userRouter from "./user.routes";
 import businessProfileRouter from "./businessProfile.routes";
 import invoiceRouter from "./invoice.routes";
+import pincodeRouter from "./pincode.routes";
+import cmsRouter from "./cms.routes";
+import postOfficeRouter from "./postOffice.routes";
 
 const router = Router();
 
@@ -11,6 +14,12 @@ router.use('/user', userRouter);
 router.use('/business', businessProfileRouter);
 
 router.use('/invoice', invoiceRouter);
+
+router.use('/cms', cmsRouter);
+
+router.use('/pincode', pincodeRouter);
+
+router.use('/postOffice', postOfficeRouter);
 
 router.get('/', (req, res) => {
     return res.send({ message: 'Up and running' });
