@@ -42,8 +42,8 @@ model User {
   businessProfile BusinessProfile?
   invoices        Invoice[]
   categories      Category[]
-  items Item[]
-  parties Party[]
+  items           Item[]
+  parties         Party[]
 }
 
 model Otp {
@@ -94,10 +94,10 @@ model Party {
   bankBranch        String?
   invoices          Invoice[]
   items             Item[]
-  userId        Int
-  user          User          @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  userId            Int
+  user              User      @relation(fields: [userId], references: [id])
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @default(now())
 }
 
 model Category {
@@ -154,8 +154,8 @@ model Item {
   invoiceItems  InvoiceItem[]
   userId        Int
   user          User          @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @default(now())
 }
 
 enum InvoiceType {
@@ -195,4 +195,19 @@ model InvoiceItem {
   item      Item    @relation(fields: [itemId], references: [id])
   invoiceId String
   invoice   Invoice @relation(fields: [invoiceId], references: [id])
+}
+
+model Profile {
+  userId         String   @id @unique @default(uuid())
+  name           String?
+  email          String?
+  phoneNumber    String?
+  businessName   String
+  contactAddress String
+  gstin          String?
+  paymentDetails String?
+  notes          String
+  logo           String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now())
 }
