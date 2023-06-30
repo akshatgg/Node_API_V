@@ -36,7 +36,7 @@ class ProfileController {
        
       res.status(201).json({ message: 'Profile added successfully' ,result:Profile });
     } catch (error) {
-        console.log(error)
+        //console.log(error)
       res.status(500).json({ success: false, message: 'Internal server error', errors:error });
     }
   }
@@ -47,7 +47,7 @@ class ProfileController {
         res.status(200).json({ success: true, allprofile });
 
     }catch(error){
-        res.status(500).json({ success: false, message: 'Internal server error' });
+      res.status(500).json({ success: false, message: 'Internal server error', errors:error });
 
     }
   }
