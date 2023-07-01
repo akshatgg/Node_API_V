@@ -8,6 +8,7 @@ import profileRouter from "./profile.routes";
 import pincodeRouter from "./pincode.routes";
 import cmsRouter from "./cms.routes";
 import postOfficeRouter from "./postOffice.routes";
+import libraryRouter from "./library.routes"
 const router = Router();
 
 router.use('/user', userRouter);
@@ -22,6 +23,8 @@ router.use('/cms', cmsRouter);
 router.use('/pincode', pincodeRouter);
 
 router.use('/postOffice', postOfficeRouter);
+
+router.use('/library',libraryRouter)
 
 
 router.get('/', (req, res) => {

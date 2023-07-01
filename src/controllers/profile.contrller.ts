@@ -9,7 +9,7 @@ class ProfileController {
   static async createProfile(req: Request, res: Response): Promise<void> {
     try {
       const {
-        userId,
+       
         name,
         email,
         phoneNumber,
