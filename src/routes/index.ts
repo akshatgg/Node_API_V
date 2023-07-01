@@ -4,7 +4,6 @@ import userRouter from "./user.routes";
 import businessProfileRouter from "./businessProfile.routes";
 import invoiceRouter from "./invoice.routes";
 
-import profileRouter from "./profile.routes";
 import pincodeRouter from "./pincode.routes";
 import cmsRouter from "./cms.routes";
 import postOfficeRouter from "./postOffice.routes";
@@ -21,7 +20,6 @@ router.use('/user', userRouter);
 router.use('/business', businessProfileRouter);
 
 router.use('/invoice', invoiceRouter);
-router.use('/api',profileRouter)
 
 router.use('/cms', cmsRouter);
 
