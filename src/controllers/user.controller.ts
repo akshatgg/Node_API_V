@@ -270,9 +270,7 @@ export default class UserController {
 
     static async changePassword(req: Request, res: Response) {
         try {
-            const token = TokenService.getTokenFromAuthHeader(req.headers.authorization);
-
-            const { id } = TokenService.decodeToken(token!);
+            const { id } = req.user!;
 
             const { newPassword, otp, otp_key } = req.body;
 
@@ -324,9 +322,7 @@ export default class UserController {
 
     static async updateProfile(req: Request, res: Response) {
         try {
-            const token = TokenService.getTokenFromAuthHeader(req.headers.authorization);
-
-            const { id } = TokenService.decodeToken(token!);
+            const { id } = req.user!;
 
             const { firstName, lastName, pin, gender, address, aadhaar, pan, phone } = req.body;
 
@@ -404,14 +400,6 @@ export default class UserController {
 
     static async getAllUsers(req: Request, res: Response) {
         try {
-            const token = TokenService.getTokenFromAuthHeader(req.headers.authorization);
-            
-            const user = TokenService.decodeToken(token!);
-
-            if(user.userType !== UserType.admin) {
-                return res.status(403).send({ success: false, message: 'Unauthorized access' });
-            }
-
             const { page: pageNumber, order = 'desc' } = req.query;
 
             const page = parseInt((pageNumber as string) || '0');

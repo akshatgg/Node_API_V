@@ -42,8 +42,10 @@ model User {
   businessProfile BusinessProfile?
   invoices        Invoice[]
   categories      Category[]
-  items Item[]
-  parties Party[]
+  items           Item[]
+  parties         Party[]
+  payments        Payment[]
+  orders          Order[]
 }
 
 model Otp {
@@ -94,10 +96,10 @@ model Party {
   bankBranch        String?
   invoices          Invoice[]
   items             Item[]
-  userId        Int
-  user          User          @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  userId            Int
+  user              User      @relation(fields: [userId], references: [id])
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @default(now())
 }
 
 model Category {
@@ -154,8 +156,8 @@ model Item {
   invoiceItems  InvoiceItem[]
   userId        Int
   user          User          @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @default(now())
 }
 
 enum InvoiceType {
@@ -195,4 +197,53 @@ model InvoiceItem {
   item      Item    @relation(fields: [itemId], references: [id])
   invoiceId String
   invoice   Invoice @relation(fields: [invoiceId], references: [id])
+}
+
+model Service {
+  id          String   @id @unique @default(uuid())
+  serviceName String
+  serviceType String?
+  imgUrl      String?
+  description String?
+  price       Decimal
+  gst         Decimal
+  documents   Json
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
+}
+
+enum OrderStatus {
+  pending
+  success
+  failed
+}
+
+model Order {
+  id            String      @id @unique @default(uuid())
+  services      Json
+  status        OrderStatus @default(pending)
+  price         Decimal
+  gst           Decimal
+  orderTotal    Decimal
+  stateOfSupply String
+  userId        Int
+  user          User        @relation(references: [id], fields: [userId])
+  payments      Payment[]
+}
+
+enum PaymentStatus {
+  created
+  success
+  failed
+}
+
+model Payment {
+  id                  String        @id @unique @default(uuid())
+  razorpay_order_id   String
+  razorpay_payment_id String
+  status              PaymentStatus @default(created)
+  userId              Int
+  user                User          @relation(fields: [userId], references: [id])
+  orderId             String
+  order               Order         @relation(fields: [orderId], references: [id])
 }

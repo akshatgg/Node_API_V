@@ -6,6 +6,10 @@ import invoiceRouter from "./invoice.routes";
 import pincodeRouter from "./pincode.routes";
 import cmsRouter from "./cms.routes";
 import postOfficeRouter from "./postOffice.routes";
+import sandboxRouter from "./sandbox.routes";
+import servicesRouter from "./services.routes";
+import paymentsRouter from "./payments.routes";
+import ordersRouter from "./orders.routes";
 
 const router = Router();
 
@@ -20,6 +24,14 @@ router.use('/cms', cmsRouter);
 router.use('/pincode', pincodeRouter);
 
 router.use('/postOffice', postOfficeRouter);
+
+router.use('/sandbox', sandboxRouter);
+
+router.use('/services', servicesRouter);
+
+router.use('/payments', paymentsRouter);
+
+router.use('/orders', ordersRouter);
 
 router.get('/', (req, res) => {
     return res.send({ message: 'Up and running' });

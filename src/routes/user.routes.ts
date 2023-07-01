@@ -1,12 +1,13 @@
 import { Router } from "express";
 import UserController from "../controllers/user.controller";
 import verifyToken from "../middlewares/verify-token";
+import adminCheck from "../middlewares/admin-check";
 
 const userRouter = Router();
 
 userRouter.get('/profile/:id', UserController.getUserById);
 
-userRouter.get('/get-all-users', verifyToken, UserController.getAllUsers);
+userRouter.get('/get-all-users', verifyToken, adminCheck, UserController.getAllUsers);
 
 userRouter.post('/sign-up', UserController.signUp);
 

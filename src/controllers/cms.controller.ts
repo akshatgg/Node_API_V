@@ -27,14 +27,6 @@ export default class CMSController {
 
     static async updateMainHeading(req: Request, res: Response) {
         try {
-            const token = TokenService.getTokenFromAuthHeader(req.headers.authorization);
-
-            const { userType } = TokenService.decodeToken(token!);
-
-            if(userType !== 'admin' && userType !== 'developer') {
-                return res.status(403).json({ success: false, message: 'Unauthorized access' });
-            }
-
             const { mainHeading } = req.body;
 
             cards.home.upper.mainHeading = mainHeading;
@@ -54,14 +46,6 @@ export default class CMSController {
 
     static async updateSubHeading(req: Request, res: Response) {
         try {
-            const token = TokenService.getTokenFromAuthHeader(req.headers.authorization);
-
-            const { userType } = TokenService.decodeToken(token!);
-
-            if(userType !== 'admin' && userType !== 'developer') {
-                return res.status(403).json({ success: false, message: 'Unauthorized access' });
-            }
-
             const { subHeading } = req.body;
 
             cards.home.upper.subHeading = subHeading;
@@ -81,14 +65,6 @@ export default class CMSController {
 
     static async updateButton(req: Request, res: Response) {
         try {
-            const token = TokenService.getTokenFromAuthHeader(req.headers.authorization);
-
-            const { userType } = TokenService.decodeToken(token!);
-
-            if(userType !== 'admin' && userType !== 'developer') {
-                return res.status(403).json({ success: false, message: 'Unauthorized access' });
-            }
-
             const { button } = req.body;
 
             cards.home.upper.button = button;
@@ -108,14 +84,6 @@ export default class CMSController {
 
     static async updateNavCards(req: Request, res: Response) {
         try {
-            const token = TokenService.getTokenFromAuthHeader(req.headers.authorization);
-
-            const { userType } = TokenService.decodeToken(token!);
-
-            if(userType !== 'admin' && userType !== 'developer') {
-                return res.status(403).json({ success: false, message: 'Unauthorized access' });
-            }
-
             const { navcards } = req.body;
 
             cards.home.navcards = navcards;

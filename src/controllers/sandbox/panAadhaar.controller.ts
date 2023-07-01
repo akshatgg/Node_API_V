@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import Sandbox from "../services/sandbox.service";
+import Sandbox from "../../services/sandbox.service";
 import axios from "axios";
 
 export default class PanAadhaarController {
@@ -16,7 +16,7 @@ export default class PanAadhaarController {
                 return res.status(400).json({ success: false, message: 'Enter a valid Aadhaar Number' });
             }
 
-            const endpoint = `${Sandbox.BASE_URL}/it-tools/pans/${pan}/pan-aadhaar-status?aadhaar_number=${aadhaar}`;
+            const endpoint = `${Sandbox.BASE_URL}/it-tools/pans/${pan}/pan-aadhaar-status`;
 
             const token = await Sandbox.generateAccessToken();
 
@@ -27,10 +27,14 @@ export default class PanAadhaarController {
                 'x-api-version': process.env.SANDBOX_API_VERSION
             };
 
-            const { data } = await axios.post(endpoint, {}, { headers });
+            const { data: { data } } = await axios.get(endpoint, {
+                headers,
+                params: {
+                    aadhaar_number: aadhaar
+                }
+            })            
 
             return res.status(200).send({ success: true, data });
-
         } catch (e) {
             console.log(e);
         }

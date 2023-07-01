@@ -6,17 +6,7 @@ import { prisma } from '../index';
 class InvoiceController {
     static async create(req: Request, res: Response): Promise<void> {
         try {
-            // Verify user login
-            const token = TokenService.getTokenFromAuthHeader(req.headers.authorization);
-
-            const { id: userId } = TokenService.decodeToken(token!);
-
-            // Check if the user exists
-            const user = await prisma.user.findUnique({ where: { id: userId } });
-            if (!user) {
-                res.status(401).json({ sucess: false, message: 'User not found' });
-                return;
-            }
+            const { id: userId } = req.user!;
 
             // Create the invoice
             const { invoiceNumber, type, partyId, phone, partyName, totalAmount, totalGst, stateOfSupply, cgst, sgst, igst, utgst, details, extraDetails, items } = req.body;
@@ -63,17 +53,7 @@ class InvoiceController {
 
     static async getAll(req: Request, res: Response): Promise<void> {
         try {
-            // Verify user login
-            const token = TokenService.getTokenFromAuthHeader(req.headers.authorization);
-
-            const { id: userId } = TokenService.decodeToken(token!);
-
-            // Check if the user exists
-            const user = await prisma.user.findUnique({ where: { id: userId } });
-            if (!user) {
-                res.status(401).json({ success: false, message: 'User not found' });
-                return;
-            }
+            const { id: userId } = req.user!;
 
             // Pagination parameters
             const { page = 1, limit = 10 } = req.query;
@@ -98,18 +78,6 @@ class InvoiceController {
 
     static async getById(req: Request, res: Response): Promise<void> {
         try {
-            // Verify user login
-            const token = TokenService.getTokenFromAuthHeader(req.headers.authorization);
-
-            const { id: userId } = TokenService.decodeToken(token!);
-
-            // Check if the user exists
-            const user = await prisma.user.findUnique({ where: { id: userId } });
-            if (!user) {
-                res.status(401).json({ sucess: false, message: 'User not found' });
-                return;
-            }
-
             const invoiceId = req.params.id;
 
             // Get the invoice by ID
@@ -128,20 +96,17 @@ class InvoiceController {
 
     static async update(req: Request, res: Response): Promise<void> {
         try {
-            // Verify user login
-            const token = TokenService.getTokenFromAuthHeader(req.headers.authorization);
-
-            const { id: userId } = TokenService.decodeToken(token!);
-
-            // Check if the user exists
-            const user = await prisma.user.findUnique({ where: { id: userId } });
-            if (!user) {
-                res.status(401).json({ sucess: false, message: 'User not found' });
-                return;
-            }
-
             const invoiceId = req.params.id;
             const { invoiceNumber, type, partyId, phone, partyName, totalAmount, totalGst, stateOfSupply, cgst, sgst, igst, utgst, details, extraDetails, items } = req.body;
+
+            const { id: userId } = req.user!;
+
+            const invoice = await prisma.invoice.findFirst({ where: { id: invoiceId, userId } });
+
+            if(!invoice) {
+                res.status(200).json({ success: false, message: 'Invoice not found' });
+                return;
+            }
 
             // Update the invoice
             const updatedInvoice: Invoice | null = await prisma.invoice.update({
@@ -171,11 +136,6 @@ class InvoiceController {
                 },
             });
 
-            if (!updatedInvoice) {
-                res.status(404).json({ sucess: false, message: 'Invoice not found' });
-                return;
-            }
-
             res.status(200).json({ sucess: true, updatedInvoice });
         } catch (error) {
             res.status(500).json({ sucess: false, message: 'Internal server error' });
@@ -184,27 +144,19 @@ class InvoiceController {
 
     static async delete(req: Request, res: Response): Promise<void> {
         try {
-            // Verify user login
-            const token = TokenService.getTokenFromAuthHeader(req.headers.authorization);
+            const invoiceId = req.params.id;
 
-            const { id: userId } = TokenService.decodeToken(token!);
+            const { id: userId } = req.user!;
 
-            // Check if the user exists
-            const user = await prisma.user.findUnique({ where: { id: userId } });
-            if (!user) {
-                res.status(401).json({ success: false, message: 'User not found' });
+            const invoice = await prisma.invoice.findFirst({ where: { id: invoiceId, userId } });
+
+            if(!invoice) {
+                res.status(200).json({ success: false, message: 'Invoice not found' });
                 return;
             }
-
-            const invoiceId = req.params.id;
 
             // Delete the invoice
             const deletedInvoice: Invoice | null = await prisma.invoice.delete({ where: { id: invoiceId } });
-
-            if (!deletedInvoice) {
-                res.status(404).json({ success: false, message: 'Invoice not found' });
-                return;
-            }
 
             res.status(200).json({ success: true, deletedInvoice });
         } catch (error) {
@@ -214,17 +166,7 @@ class InvoiceController {
 
     static async createParty(req: Request, res: Response): Promise<void> {
         try {
-            // Verify user login
-            const token = TokenService.getTokenFromAuthHeader(req.headers.authorization);
-
-            const { id: userId } = TokenService.decodeToken(token!);
-
-            // Check if the user exists
-            const user = await prisma.user.findUnique({ where: { id: userId } });
-            if (!user) {
-                res.status(401).json({ error: 'User not found' });
-                return;
-            }
+            const { id: userId } = req.user!;
 
             // Create the party
             const { partyName, type, gstin, pan, tan, upi, email, phone, address, bankName, bankAccountNumber, bankIfsc, bankBranch } = req.body;
@@ -256,27 +198,19 @@ class InvoiceController {
 
     static async deleteParty(req: Request, res: Response): Promise<void> {
         try {
-            // Verify user login
-            const token = TokenService.getTokenFromAuthHeader(req.headers.authorization);
+            const partyId = req.params.id;
 
-            const { id: userId } = TokenService.decodeToken(token!);
+            const { id: userId } = req.user!;
 
-            // Check if the user exists
-            const user = await prisma.user.findUnique({ where: { id: userId } });
-            if (!user) {
-                res.status(401).json({ success: false, message: 'User not found' });
+            const party = await prisma.invoice.findFirst({ where: { id: partyId, userId } });
+
+            if(!party) {
+                res.status(200).json({ success: false, message: 'Party not found' });
                 return;
             }
-
-            const partyId = req.params.id;
 
             // Delete the invoice
             const deletedParty: Party | null = await prisma.party.delete({ where: { id: partyId } });
-
-            if (!deletedParty) {
-                res.status(404).json({ success: false, message: 'Party not found' });
-                return;
-            }
 
             res.status(200).json({ success: true, deletedParty });
         } catch (error) {
@@ -286,17 +220,7 @@ class InvoiceController {
 
     static async createItem(req: Request, res: Response): Promise<void> {
         try {
-            // Verify user login
-            const token = TokenService.getTokenFromAuthHeader(req.headers.authorization);
-
-            const { id: userId } = TokenService.decodeToken(token!);
-
-            // Check if the user exists
-            const user = await prisma.user.findUnique({ where: { id: userId } });
-            if (!user) {
-                res.status(401).json({ success: false, message: 'User not found' });
-                return;
-            }
+            const { id: userId } = req.user!;
 
             // Create the item
             const { itemName, unit, price, openingStock, closingStock, purchasePrice, cgst, sgst, igst, utgst, taxExempted, description, hsnCode, categoryId, supplierId } = req.body;
@@ -331,27 +255,19 @@ class InvoiceController {
 
     static async deleteItem(req: Request, res: Response): Promise<void> {
         try {
-            // Verify user login
-            const token = TokenService.getTokenFromAuthHeader(req.headers.authorization);
+            const itemId = req.params.id;
 
-            const { id: userId } = TokenService.decodeToken(token!);
+            const { id: userId } = req.user!;
 
-            // Check if the user exists
-            const user = await prisma.user.findUnique({ where: { id: userId } });
-            if (!user) {
-                res.status(401).json({ success: false, message: 'User not found' });
+            const item = await prisma.item.findFirst({ where: { id: itemId, userId } });
+
+            if(!item) {
+                res.status(404).json({ success: false, message: 'Item does not exists.' });
                 return;
             }
-
-            const itemId = req.params.id;
 
             // Delete the invoice
             const deletedItem: Item | null = await prisma.item.delete({ where: { id: itemId } });
-
-            if (!deletedItem) {
-                res.status(404).json({ success: false, message: 'Item not found' });
-                return;
-            }
 
             res.status(200).json({ success: true, deletedItem });
         } catch (error) {
@@ -361,17 +277,7 @@ class InvoiceController {
 
     static async getAllParties(req: Request, res: Response): Promise<void> {
         try {
-            // Verify user login
-            const token = TokenService.getTokenFromAuthHeader(req.headers.authorization);
-
-            const { id: userId } = TokenService.decodeToken(token!);
-
-            // Check if the user exists
-            const user = await prisma.user.findUnique({ where: { id: userId } });
-            if (!user) {
-                res.status(401).json({ success: false, message: 'User not found' });
-                return;
-            }
+            const { id: userId } = req.user!;
 
             // Pagination parameters
             const { page = 1, limit = 10 } = req.query;
@@ -396,22 +302,12 @@ class InvoiceController {
 
     static async getPartyById(req: Request, res: Response): Promise<void> {
         try {
-            // Verify user login
-            const token = TokenService.getTokenFromAuthHeader(req.headers.authorization);
-
-            const { id: userId } = TokenService.decodeToken(token!);
-
-            // Check if the user exists
-            const user = await prisma.user.findUnique({ where: { id: userId } });
-            if (!user) {
-                res.status(401).json({ success: false, message: 'User not found' });
-                return;
-            }
+            const { id: userId } = req.user!;
 
             const partyId = req.params.id;
 
             // Get the party by ID
-            const party: Party | null = await prisma.party.findUnique({ where: { id: partyId } });
+            const party: Party | null = await prisma.party.findFirst({ where: { id: partyId, userId } });
 
             if (!party) {
                 res.status(404).json({ success: false, message: 'Party not found' });
@@ -426,17 +322,7 @@ class InvoiceController {
 
     static async getAllItems(req: Request, res: Response): Promise<void> {
         try {
-            // Verify user login
-            const token = TokenService.getTokenFromAuthHeader(req.headers.authorization);
-
-            const { id: userId } = TokenService.decodeToken(token!);
-
-            // Check if the user exists
-            const user = await prisma.user.findUnique({ where: { id: userId } });
-            if (!user) {
-                res.status(401).json({ success: false, message: 'User not found' });
-                return;
-            }
+            const { id: userId } = req.user!;
 
             // Pagination parameters
             const { page = 1, limit = 10 } = req.query;
@@ -461,22 +347,12 @@ class InvoiceController {
 
     static async getItemById(req: Request, res: Response): Promise<void> {
         try {
-            // Verify user login
-            const token = TokenService.getTokenFromAuthHeader(req.headers.authorization);
-
-            const { id: userId } = TokenService.decodeToken(token!);
-
-            // Check if the user exists
-            const user = await prisma.user.findUnique({ where: { id: userId } });
-            if (!user) {
-                res.status(401).json({ success: false, message: 'User not found' });
-                return;
-            }
+            const { id: userId } = req.user!;
 
             const itemId = req.params.id;
 
             // Get the party by ID
-            const item: Item | null = await prisma.item.findUnique({ where: { id: itemId } });
+            const item: Item | null = await prisma.item.findFirst({ where: { id: itemId, userId } });
 
             if (!item) {
                 res.status(404).json({ success: false, message: 'Item not found' });
