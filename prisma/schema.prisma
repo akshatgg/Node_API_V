@@ -247,3 +247,29 @@ model Payment {
   orderId             String
   order               Order         @relation(fields: [orderId], references: [id])
 }
+
+model Library {
+  id                  Int      @unique @default(autoincrement())
+  pan                 String
+  section             String
+  sub_section         String?
+  subject             String
+  ao_order            String
+  itat_no             String
+  rsa_no              String?
+  bench               String
+  appeal_no           String?
+  appellant           String?
+  respondent          String
+  appeal_type         String
+  appeal_filed_by     String
+  order_result        String
+  tribunal_order_date String
+  assessment_year     String
+  judgment            String
+  conclusion          String
+  download            String
+  upload              String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @default(now())
+}
