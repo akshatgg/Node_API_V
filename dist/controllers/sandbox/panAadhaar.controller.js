@@ -39,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var sandbox_service_1 = __importDefault(require("../services/sandbox.service"));
+var sandbox_service_1 = __importDefault(require("../../services/sandbox.service"));
 var axios_1 = __importDefault(require("axios"));
 var PanAadhaarController = /** @class */ (function () {
     function PanAadhaarController() {
@@ -58,7 +58,7 @@ var PanAadhaarController = /** @class */ (function () {
                         if (!aadhaar) {
                             return [2 /*return*/, res.status(400).json({ success: false, message: 'Enter a valid Aadhaar Number' })];
                         }
-                        endpoint = "".concat(sandbox_service_1.default.BASE_URL, "/it-tools/pans/").concat(pan, "/pan-aadhaar-status?aadhaar_number=").concat(aadhaar);
+                        endpoint = "".concat(sandbox_service_1.default.BASE_URL, "/it-tools/pans/").concat(pan, "/pan-aadhaar-status");
                         return [4 /*yield*/, sandbox_service_1.default.generateAccessToken()];
                     case 1:
                         token = _b.sent();
@@ -68,9 +68,14 @@ var PanAadhaarController = /** @class */ (function () {
                             'x-api-key': process.env.SANDBOX_KEY,
                             'x-api-version': process.env.SANDBOX_API_VERSION
                         };
-                        return [4 /*yield*/, axios_1.default.post(endpoint, {}, { headers: headers })];
+                        return [4 /*yield*/, axios_1.default.get(endpoint, {
+                                headers: headers,
+                                params: {
+                                    aadhaar_number: aadhaar
+                                }
+                            })];
                     case 2:
-                        data = (_b.sent()).data;
+                        data = (_b.sent()).data.data;
                         return [2 /*return*/, res.status(200).send({ success: true, data: data })];
                     case 3:
                         e_1 = _b.sent();

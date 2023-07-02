@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var token_service_1 = __importDefault(require("../services/token.service"));
+var client_1 = require("@prisma/client");
 function verifyToken(req, res, next) {
     var token = token_service_1.default.getTokenFromAuthHeader(req.headers.authorization);
     if (!token) {
@@ -13,6 +14,9 @@ function verifyToken(req, res, next) {
     if (!verified) {
         return res.status(401).send({ success: false, message: 'Unauthorized: Access is denied due to invalid credentials' });
     }
+    var user = token_service_1.default.decodeToken(token);
+    req.user = user;
+    req.isAdmin = user.userType === client_1.UserType.admin;
     next();
 }
 exports.default = verifyToken;

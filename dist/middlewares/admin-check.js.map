@@ -1,0 +1,1 @@
+{"version":3,"file":"admin-check.js","sourceRoot":"","sources":["../../src/middlewares/admin-check.ts"],"names":[],"mappings":";;AAIA,SAAwB,UAAU,CAAC,GAAY,EAAE,GAAa,EAAE,IAAkB;IAC9E,IAAG,GAAG,CAAC,OAAO,EAAE;QACZ,OAAO,GAAG,CAAC,MAAM,CAAC,GAAG,CAAC,CAAC,IAAI,CAAC,EAAE,OAAO,EAAE,KAAK,EAAE,OAAO,EAAE,sEAAsE,EAAE,CAAC,CAAC;KACpI;IAED,IAAI,EAAE,CAAC;AACX,CAAC;AAND,6BAMC"}

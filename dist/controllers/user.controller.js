@@ -348,13 +348,12 @@ var UserController = /** @class */ (function () {
     };
     UserController.changePassword = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var token, id, _a, newPassword, otp, otp_key, user, otpInstance, now, validTill, hash, e_6;
+            var id, _a, newPassword, otp, otp_key, user, otpInstance, now, validTill, hash, e_6;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 5, , 6]);
-                        token = token_service_1.default.getTokenFromAuthHeader(req.headers.authorization);
-                        id = token_service_1.default.decodeToken(token).id;
+                        id = req.user.id;
                         _a = req.body, newPassword = _a.newPassword, otp = _a.otp, otp_key = _a.otp_key;
                         if (!newPassword && newPassword.length >= 8) {
                             return [2 /*return*/, res.status(400).send({ success: false, message: "Please provide a new password of atleast 8 characters" })];
@@ -404,13 +403,12 @@ var UserController = /** @class */ (function () {
     };
     UserController.updateProfile = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var token, id, _a, firstName, lastName, pin, gender, address, aadhaar, pan, phone, user, e_7;
+            var id, _a, firstName, lastName, pin, gender, address, aadhaar, pan, phone, user, e_7;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 3, , 4]);
-                        token = token_service_1.default.getTokenFromAuthHeader(req.headers.authorization);
-                        id = token_service_1.default.decodeToken(token).id;
+                        id = req.user.id;
                         _a = req.body, firstName = _a.firstName, lastName = _a.lastName, pin = _a.pin, gender = _a.gender, address = _a.address, aadhaar = _a.aadhaar, pan = _a.pan, phone = _a.phone;
                         if (!firstName.length) {
                             return [2 /*return*/, res.status(400).send({ success: false, message: "First name cannot be empty" })];
@@ -495,16 +493,11 @@ var UserController = /** @class */ (function () {
     };
     UserController.getAllUsers = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var token, user, _a, pageNumber, _b, order, page, users, e_9;
+            var _a, pageNumber, _b, order, page, users, e_9;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
                         _c.trys.push([0, 2, , 3]);
-                        token = token_service_1.default.getTokenFromAuthHeader(req.headers.authorization);
-                        user = token_service_1.default.decodeToken(token);
-                        if (user.userType !== client_1.UserType.admin) {
-                            return [2 /*return*/, res.status(403).send({ success: false, message: 'Unauthorized access' })];
-                        }
                         _a = req.query, pageNumber = _a.page, _b = _a.order, order = _b === void 0 ? 'desc' : _b;
                         page = parseInt(pageNumber || '0');
                         return [4 /*yield*/, __1.prisma.user.findMany({

@@ -37,61 +37,64 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var index_1 = require("../index");
-var ServicesController = /** @class */ (function () {
-    function ServicesController() {
+var OrdersController = /** @class */ (function () {
+    function OrdersController() {
     }
-    ServicesController.createService = function (req, res) {
+    OrdersController.createOrder = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, serviceName, serviceType, imgUrl, description, price, gst, documents, service, error_1;
+            var _a, services, status, price, gst, orderTotal, stateOfSupply, payments, userId, order, error_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 2, , 3]);
-                        _a = req.body, serviceName = _a.serviceName, serviceType = _a.serviceType, imgUrl = _a.imgUrl, description = _a.description, price = _a.price, gst = _a.gst, documents = _a.documents;
-                        return [4 /*yield*/, index_1.prisma.service.create({
+                        _a = req.body, services = _a.services, status = _a.status, price = _a.price, gst = _a.gst, orderTotal = _a.orderTotal, stateOfSupply = _a.stateOfSupply, payments = _a.payments;
+                        userId = req.user.id;
+                        return [4 /*yield*/, index_1.prisma.order.create({
                                 data: {
-                                    serviceName: serviceName,
-                                    serviceType: serviceType,
-                                    imgUrl: imgUrl,
-                                    description: description,
+                                    services: services,
+                                    status: status,
                                     price: price,
+                                    userId: userId,
                                     gst: gst,
-                                    documents: documents,
+                                    orderTotal: orderTotal,
+                                    stateOfSupply: stateOfSupply,
+                                    payments: { create: payments },
                                 },
                             })];
                     case 1:
-                        service = _b.sent();
-                        return [2 /*return*/, res.json({ success: true, message: 'Service created successfully', data: service })];
+                        order = _b.sent();
+                        return [2 /*return*/, res.json({ success: true, message: 'Order created successfully', data: order })];
                     case 2:
                         error_1 = _b.sent();
-                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Failed to create service' })];
+                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Failed to create order' })];
                     case 3: return [2 /*return*/];
                 }
             });
         });
     };
-    ServicesController.getServices = function (_, res) {
+    OrdersController.getOrders = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var services, error_2;
+            var userId, orders, error_2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, index_1.prisma.service.findMany()];
+                        userId = req.user.id;
+                        return [4 /*yield*/, index_1.prisma.order.findMany({ where: { userId: userId } })];
                     case 1:
-                        services = _a.sent();
-                        return [2 /*return*/, res.json({ success: true, message: 'Services fetched successfully', data: services })];
+                        orders = _a.sent();
+                        return [2 /*return*/, res.json({ success: true, message: 'Orders fetched successfully', data: orders })];
                     case 2:
                         error_2 = _a.sent();
-                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Failed to fetch services' })];
+                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Failed to fetch orders' })];
                     case 3: return [2 /*return*/];
                 }
             });
         });
     };
-    ServicesController.getServiceById = function (req, res) {
+    OrdersController.getOrderById = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var id, service, error_3;
+            var id, userId, order, error_3;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -99,81 +102,96 @@ var ServicesController = /** @class */ (function () {
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 3, , 4]);
-                        return [4 /*yield*/, index_1.prisma.service.findUnique({ where: { id: id } })];
+                        userId = req.user.id;
+                        return [4 /*yield*/, index_1.prisma.order.findFirst({ where: { id: id, userId: userId } })];
                     case 2:
-                        service = _a.sent();
-                        if (service) {
-                            return [2 /*return*/, res.json({ success: true, message: 'Service fetched successfully', data: service })];
+                        order = _a.sent();
+                        if (order) {
+                            return [2 /*return*/, res.json({ success: true, message: 'Order fetched successfully', data: order })];
                         }
                         else {
-                            return [2 /*return*/, res.status(404).json({ success: false, message: 'Service not found' })];
+                            return [2 /*return*/, res.status(404).json({ success: false, message: 'Order not found' })];
                         }
                         return [3 /*break*/, 4];
                     case 3:
                         error_3 = _a.sent();
-                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Failed to fetch service' })];
+                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Failed to fetch order' })];
                     case 4: return [2 /*return*/];
                 }
             });
         });
     };
-    ServicesController.updateService = function (req, res) {
+    OrdersController.updateOrder = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var id, _a, serviceName, serviceType, imgUrl, description, price, gst, documents, updatedService, error_4;
+            var id, _a, services, status, price, gst, orderTotal, stateOfSupply, payments, userId, order, updatedOrder, error_4;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         id = req.params.id;
-                        _a = req.body, serviceName = _a.serviceName, serviceType = _a.serviceType, imgUrl = _a.imgUrl, description = _a.description, price = _a.price, gst = _a.gst, documents = _a.documents;
+                        _a = req.body, services = _a.services, status = _a.status, price = _a.price, gst = _a.gst, orderTotal = _a.orderTotal, stateOfSupply = _a.stateOfSupply, payments = _a.payments;
                         _b.label = 1;
                     case 1:
-                        _b.trys.push([1, 3, , 4]);
-                        return [4 /*yield*/, index_1.prisma.service.update({
+                        _b.trys.push([1, 4, , 5]);
+                        userId = req.user.id;
+                        return [4 /*yield*/, index_1.prisma.order.findFirst({ where: { id: id, userId: userId } })];
+                    case 2:
+                        order = _b.sent();
+                        if (!order) {
+                            return [2 /*return*/, res.status(404).send({ success: false, message: 'Order does not exists.' })];
+                        }
+                        return [4 /*yield*/, index_1.prisma.order.update({
                                 where: { id: id },
                                 data: {
-                                    serviceName: serviceName,
-                                    serviceType: serviceType,
-                                    imgUrl: imgUrl,
-                                    description: description,
+                                    services: services,
+                                    status: status,
                                     price: price,
                                     gst: gst,
-                                    documents: documents,
+                                    orderTotal: orderTotal,
+                                    stateOfSupply: stateOfSupply,
+                                    payments: { set: payments },
                                 },
                             })];
-                    case 2:
-                        updatedService = _b.sent();
-                        return [2 /*return*/, res.json({ success: true, message: 'Service updated successfully', data: updatedService })];
                     case 3:
+                        updatedOrder = _b.sent();
+                        return [2 /*return*/, res.json({ success: true, message: 'Order updated successfully', data: updatedOrder })];
+                    case 4:
                         error_4 = _b.sent();
-                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Failed to update service' })];
-                    case 4: return [2 /*return*/];
+                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Failed to update order' })];
+                    case 5: return [2 /*return*/];
                 }
             });
         });
     };
-    ServicesController.deleteService = function (req, res) {
+    OrdersController.deleteOrder = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var id, error_5;
+            var id, userId, order, error_5;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         id = req.params.id;
                         _a.label = 1;
                     case 1:
-                        _a.trys.push([1, 3, , 4]);
-                        return [4 /*yield*/, index_1.prisma.service.delete({ where: { id: id } })];
+                        _a.trys.push([1, 4, , 5]);
+                        userId = req.user.id;
+                        return [4 /*yield*/, index_1.prisma.order.findFirst({ where: { id: id, userId: userId } })];
                     case 2:
-                        _a.sent();
-                        return [2 /*return*/, res.json({ success: true, message: 'Service deleted successfully' })];
+                        order = _a.sent();
+                        if (!order) {
+                            return [2 /*return*/, res.status(404).send({ success: false, message: 'Order does not exists.' })];
+                        }
+                        return [4 /*yield*/, index_1.prisma.order.delete({ where: { id: id } })];
                     case 3:
+                        _a.sent();
+                        return [2 /*return*/, res.json({ success: true, message: 'Order deleted successfully' })];
+                    case 4:
                         error_5 = _a.sent();
-                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Failed to delete service' })];
-                    case 4: return [2 /*return*/];
+                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Failed to delete order' })];
+                    case 5: return [2 /*return*/];
                 }
             });
         });
     };
-    return ServicesController;
+    return OrdersController;
 }());
-exports.default = ServicesController;
-//# sourceMappingURL=services.controller.js.map
+exports.default = OrdersController;
+//# sourceMappingURL=orders.controller.js.map

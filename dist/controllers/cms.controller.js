@@ -40,7 +40,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var cards_json_1 = __importDefault(require("../config/cards.json"));
-var token_service_1 = __importDefault(require("../services/token.service"));
 var promises_1 = require("fs/promises");
 var __1 = require("..");
 var CMSController = /** @class */ (function () {
@@ -72,16 +71,11 @@ var CMSController = /** @class */ (function () {
     };
     CMSController.updateMainHeading = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var token, userType, mainHeading, e_1;
+            var mainHeading, e_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        token = token_service_1.default.getTokenFromAuthHeader(req.headers.authorization);
-                        userType = token_service_1.default.decodeToken(token).userType;
-                        if (userType !== 'admin' && userType !== 'developer') {
-                            return [2 /*return*/, res.status(403).json({ success: false, message: 'Unauthorized access' })];
-                        }
                         mainHeading = req.body.mainHeading;
                         cards_json_1.default.home.upper.mainHeading = mainHeading;
                         return [4 /*yield*/, CMSController.updateCards(cards_json_1.default)];
@@ -103,16 +97,11 @@ var CMSController = /** @class */ (function () {
     };
     CMSController.updateSubHeading = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var token, userType, subHeading, e_2;
+            var subHeading, e_2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        token = token_service_1.default.getTokenFromAuthHeader(req.headers.authorization);
-                        userType = token_service_1.default.decodeToken(token).userType;
-                        if (userType !== 'admin' && userType !== 'developer') {
-                            return [2 /*return*/, res.status(403).json({ success: false, message: 'Unauthorized access' })];
-                        }
                         subHeading = req.body.subHeading;
                         cards_json_1.default.home.upper.subHeading = subHeading;
                         return [4 /*yield*/, CMSController.updateCards(cards_json_1.default)];
@@ -134,16 +123,11 @@ var CMSController = /** @class */ (function () {
     };
     CMSController.updateButton = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var token, userType, button, e_3;
+            var button, e_3;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        token = token_service_1.default.getTokenFromAuthHeader(req.headers.authorization);
-                        userType = token_service_1.default.decodeToken(token).userType;
-                        if (userType !== 'admin' && userType !== 'developer') {
-                            return [2 /*return*/, res.status(403).json({ success: false, message: 'Unauthorized access' })];
-                        }
                         button = req.body.button;
                         cards_json_1.default.home.upper.button = button;
                         return [4 /*yield*/, CMSController.updateCards(cards_json_1.default)];
@@ -165,16 +149,11 @@ var CMSController = /** @class */ (function () {
     };
     CMSController.updateNavCards = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var token, userType, navcards, e_4;
+            var navcards, e_4;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        token = token_service_1.default.getTokenFromAuthHeader(req.headers.authorization);
-                        userType = token_service_1.default.decodeToken(token).userType;
-                        if (userType !== 'admin' && userType !== 'developer') {
-                            return [2 /*return*/, res.status(403).json({ success: false, message: 'Unauthorized access' })];
-                        }
                         navcards = req.body.navcards;
                         cards_json_1.default.home.navcards = navcards;
                         return [4 /*yield*/, CMSController.updateCards(cards_json_1.default)];
