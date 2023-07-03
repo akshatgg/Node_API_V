@@ -46,6 +46,7 @@ model User {
   parties         Party[]
   payments        Payment[]
   orders          Order[]
+  posts           Post[]
 }
 
 model Otp {
@@ -272,4 +273,15 @@ model Library {
   upload              String?
   createdAt           DateTime @default(now())
   updatedAt           DateTime @default(now())
+}
+
+model Post {
+  id        String      @unique @default(uuid())
+  userId    Int
+  title     String
+  content   String
+  imageUrl  String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }

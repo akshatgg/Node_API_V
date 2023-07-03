@@ -13,6 +13,7 @@ import paymentsRouter from "./payments.routes";
 import ordersRouter from "./orders.routes";
 
 import libraryRouter from "./library.routes"
+import blogRouter from "./blog.routes";
 const router = Router();
 
 router.use('/user', userRouter);
@@ -34,8 +35,10 @@ router.use('/services', servicesRouter);
 router.use('/payments', paymentsRouter);
 
 router.use('/orders', ordersRouter);
-router.use('/library',libraryRouter)
 
+router.use('/library', libraryRouter);
+
+router.use('/blog', blogRouter);
 
 router.get('/', (req, res) => {
     return res.send({ message: 'Up and running' });
