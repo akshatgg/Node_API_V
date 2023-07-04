@@ -16,6 +16,7 @@ import blogRouter from "./blog.routes";
 import panRouter from "./pan.routes";
 import gstRouter from "./gstin.routes";
 import accountancyRouter from "./accountancy.routes";
+import careerRouter from "./career.route"
 
 const router = Router();
 
@@ -46,6 +47,8 @@ router.use('/library', libraryRouter);
 router.use('/blog', blogRouter);
 
 router.use('/accountancy', accountancyRouter);
+
+router.use('/career', careerRouter)
 
 router.get('/', (req, res) => {
     return res.send({ message: 'Up and running' });

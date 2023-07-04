@@ -300,3 +300,16 @@ model Account {
   user          User      @relation(fields: [userId], references: [id])
   invoices      Invoice[]
 }
+
+model Career {
+  id       Int        @id @default(autoincrement())
+  careerId String
+  name     String
+  address  String
+  pin      String
+  email    String
+  mobile   String
+  skills   String
+  gender   UserGender
+  cv       String
+}
