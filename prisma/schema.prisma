@@ -313,3 +313,53 @@ model Career {
   gender   UserGender
   cv       String
 }
+
+enum paymentStatus {
+  paid
+  unpaid
+  overdue
+}
+
+enum paymentMethod {
+  cash
+  creditcard
+  upi
+  netbanking
+  cheque
+}
+
+model Billrecieve {
+  id              Int           @id @default(autoincrement())
+  billNumber      String
+  amount          String
+  tax             String
+  customerName    String
+  customerAddress String
+  contact         String
+  itemQuantity    String
+  itemPrice       String
+  itemDescription String
+  paymentStatus   paymentStatus @default(unpaid)
+  paymentMethod   paymentMethod @default(cash)
+  dueDate         String
+  comment         String?
+}
+
+model Billpayable {
+  id              Int           @id @default(autoincrement())
+  supplierName    String
+  supplierAddress String
+  contact         String
+  billDate        String
+  dueDate         String
+  billAmount      String
+  billNumber      String
+  billDiscription String
+  paymentMethod   paymentMethod @default(cash)
+  transactionId   String?
+  paymentDate     String
+  paymentAmount   String
+  tax             String
+  comment         String?
+  invoiceNumber   String?
+}

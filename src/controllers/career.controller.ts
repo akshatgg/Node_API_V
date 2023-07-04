@@ -9,6 +9,14 @@ export default class CareerController {
         try {
             const cv: string = req.file?.path as string
             const { name, address, pin, email, mobile, skills, gender, careerId } = req.body
+            if (!cv) {
+                res.status(400).send({ success: false, message: "cv is missing" });
+                return
+            }
+            if (!name || !address || !pin || !email || !mobile || !skills || !gender || !careerId) {
+                res.status(400).send({ success: false, message: "plz provide all require body fields" });
+                return
+            }
 
             //  const { id: careerId } = req.user!
             const bill: Career = await prisma.career.create({
