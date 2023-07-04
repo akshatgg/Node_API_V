@@ -32,7 +32,21 @@ export default class BlogController {
 
     static async getAllPosts(req: Request, res: Response): Promise<Response> {
         try {
-            const posts = await prisma.post.findMany();
+            // Pagination parameters
+            const { page = 1, limit = 10 } = req.query;
+            const parsedPage = parseInt(page.toString(), 10);
+            const parsedLimit = parseInt(limit.toString(), 10);
+
+            // Calculate the offset based on the page and limit
+            const offset = (parsedPage - 1) * parsedLimit;
+            
+            const posts = await prisma.post.findMany({
+                skip: offset,
+                take: parsedLimit,
+                orderBy: {
+                    createdAt: 'desc',
+                }
+            });
 
             return res.status(200).send({ success: true, data: { posts } });
         } catch (error) {

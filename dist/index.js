@@ -8,15 +8,21 @@ var express_1 = __importDefault(require("express"));
 var client_1 = require("@prisma/client");
 var cors_1 = __importDefault(require("cors"));
 var helmet_1 = __importDefault(require("helmet"));
+var express_rate_limit_1 = require("express-rate-limit");
 var dotenv_1 = require("dotenv");
 var routes_1 = __importDefault(require("./routes"));
 (0, dotenv_1.config)();
 var PORT = process.env.PORT || 8080;
 exports.prisma = new client_1.PrismaClient();
 var app = (0, express_1.default)();
+var limiter = (0, express_rate_limit_1.rateLimit)({
+    windowMs: 15 * 60 * 1000,
+    max: 100, // maximum 100 requests per windowMs
+});
+app.use((0, helmet_1.default)());
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
-app.use((0, helmet_1.default)());
+app.use(limiter);
 app.use(function (err, req, res, next) {
     console.error(err.stack);
     return res.status(500).json({ error: 'Internal Server Error' });

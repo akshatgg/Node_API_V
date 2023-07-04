@@ -7,13 +7,16 @@ import invoiceRouter from "./invoice.routes";
 import pincodeRouter from "./pincode.routes";
 import cmsRouter from "./cms.routes";
 import postOfficeRouter from "./postOffice.routes";
-import sandboxRouter from "./sandbox.routes";
 import servicesRouter from "./services.routes";
 import paymentsRouter from "./payments.routes";
 import ordersRouter from "./orders.routes";
 
 import libraryRouter from "./library.routes"
 import blogRouter from "./blog.routes";
+import panRouter from "./pan.routes";
+import gstRouter from "./gstin.routes";
+import accountancyRouter from "./accountancy.routes";
+
 const router = Router();
 
 router.use('/user', userRouter);
@@ -28,7 +31,9 @@ router.use('/pincode', pincodeRouter);
 
 router.use('/postOffice', postOfficeRouter);
 
-router.use('/sandbox', sandboxRouter);
+router.use('/pan', panRouter);
+
+router.use('/gst', gstRouter);
 
 router.use('/services', servicesRouter);
 
@@ -39,6 +44,8 @@ router.use('/orders', ordersRouter);
 router.use('/library', libraryRouter);
 
 router.use('/blog', blogRouter);
+
+router.use('/accountancy', accountancyRouter);
 
 router.get('/', (req, res) => {
     return res.send({ message: 'Up and running' });

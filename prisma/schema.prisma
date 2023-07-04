@@ -47,6 +47,7 @@ model User {
   payments        Payment[]
   orders          Order[]
   posts           Post[]
+  accounts        Account[]
 }
 
 model Otp {
@@ -59,7 +60,7 @@ model Otp {
 }
 
 model BusinessProfile {
-  id            Int      @unique @default(autoincrement())
+  id            Int      @id @default(autoincrement())
   businessName  String
   pan           String?
   tan           String?
@@ -81,7 +82,7 @@ enum PartyType {
 }
 
 model Party {
-  id                String    @id @unique @default(uuid())
+  id                String    @id @default(uuid())
   partyName         String
   type              PartyType
   gstin             String?
@@ -104,7 +105,7 @@ model Party {
 }
 
 model Category {
-  id           String @id @unique @default(uuid())
+  id           String @id @default(uuid())
   categoryName String
   userId       Int
   user         User   @relation(fields: [userId], references: [id])
@@ -136,7 +137,7 @@ enum ItemUnit {
 }
 
 model Item {
-  id            String        @id @unique @default(uuid())
+  id            String        @id @default(uuid())
   itemName      String
   unit          ItemUnit      @default(pieces)
   price         Decimal
@@ -169,7 +170,7 @@ enum InvoiceType {
 }
 
 model Invoice {
-  id            String        @id @unique @default(uuid())
+  id            String        @id @default(uuid())
   invoiceNumber Int
   type          InvoiceType
   partyId       String
@@ -186,6 +187,7 @@ model Invoice {
   details       String?
   extraDetails  String?
   items         InvoiceItem[]
+  accounts      Account[]
   userId        Int
   user          User          @relation(fields: [userId], references: [id])
   createdAt     DateTime      @default(now())
@@ -193,7 +195,7 @@ model Invoice {
 }
 
 model InvoiceItem {
-  id        String  @id @unique @default(uuid())
+  id        String  @id @default(uuid())
   itemId    String
   item      Item    @relation(fields: [itemId], references: [id])
   invoiceId String
@@ -201,7 +203,7 @@ model InvoiceItem {
 }
 
 model Service {
-  id          String   @id @unique @default(uuid())
+  id          String   @id @default(uuid())
   serviceName String
   serviceType String?
   imgUrl      String?
@@ -220,7 +222,7 @@ enum OrderStatus {
 }
 
 model Order {
-  id            String      @id @unique @default(uuid())
+  id            String      @id @default(uuid())
   services      Json
   status        OrderStatus @default(pending)
   price         Decimal
@@ -239,7 +241,7 @@ enum PaymentStatus {
 }
 
 model Payment {
-  id                  String        @id @unique @default(uuid())
+  id                  String        @id @default(uuid())
   razorpay_order_id   String
   razorpay_payment_id String
   status              PaymentStatus @default(created)
@@ -250,7 +252,7 @@ model Payment {
 }
 
 model Library {
-  id                  Int      @unique @default(autoincrement())
+  id                  Int      @id @default(autoincrement())
   pan                 String
   section             String
   sub_section         String?
@@ -276,7 +278,7 @@ model Library {
 }
 
 model Post {
-  id        String      @unique @default(uuid())
+  id        String   @id @default(uuid())
   userId    Int
   title     String
   content   String
@@ -284,4 +286,17 @@ model Post {
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
+}
+
+model Account {
+  id            String    @id @default(uuid())
+  accountName   String
+  totalDebit    Decimal   @default(0.0)
+  totalCredit   Decimal   @default(0.0)
+  debitBalance  Decimal   @default(0.0)
+  creditBalance Decimal   @default(0.0)
+  date          DateTime  @default(now())
+  userId        Int
+  user          User      @relation(fields: [userId], references: [id])
+  invoices      Invoice[]
 }
