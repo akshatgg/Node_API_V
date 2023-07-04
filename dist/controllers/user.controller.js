@@ -348,55 +348,41 @@ var UserController = /** @class */ (function () {
     };
     UserController.changePassword = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var id, _a, newPassword, otp, otp_key, user, otpInstance, now, validTill, hash, e_6;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var id, newPassword, user, hash, e_6;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        _b.trys.push([0, 5, , 6]);
+                        _a.trys.push([0, 4, , 5]);
                         id = req.user.id;
-                        _a = req.body, newPassword = _a.newPassword, otp = _a.otp, otp_key = _a.otp_key;
+                        newPassword = req.body.newPassword;
                         if (!newPassword && newPassword.length >= 8) {
                             return [2 /*return*/, res.status(400).send({ success: false, message: "Please provide a new password of atleast 8 characters" })];
-                        }
-                        if (!otp || !otp_key) {
-                            return [2 /*return*/, res.status(400).send({ success: false, message: "Not OTP Provided" })];
                         }
                         return [4 /*yield*/, __1.prisma.user.findUnique({
                                 where: { id: id }
                             })];
                     case 1:
-                        user = _b.sent();
+                        user = _a.sent();
                         if (!user) {
                             return [2 /*return*/, res.status(401).send({ success: false, message: 'User does not exists' })];
                         }
-                        return [4 /*yield*/, __1.prisma.otp.findFirst({ where: { id: parseInt(otp_key), user: user, otp: otp } })];
-                    case 2:
-                        otpInstance = _b.sent();
-                        if (!otpInstance) {
-                            return [2 /*return*/, res.status(401).send({ success: false, message: 'Invalid OTP' })];
-                        }
-                        now = new Date();
-                        validTill = (0, util_1.addMinutesToTime)(otpInstance.createdAt, 15);
-                        if ((otpInstance === null || otpInstance === void 0 ? void 0 : otpInstance.used) || now > validTill) {
-                            return [2 /*return*/, res.status(401).send({ success: false, message: 'This OTP has already been used or expired' })];
-                        }
                         return [4 /*yield*/, UserController.hashPassword(newPassword)];
-                    case 3:
-                        hash = _b.sent();
+                    case 2:
+                        hash = _a.sent();
                         return [4 /*yield*/, __1.prisma.user.update({
                                 where: { id: id },
                                 data: {
                                     password: hash
                                 }
                             })];
-                    case 4:
-                        _b.sent();
+                    case 3:
+                        _a.sent();
                         return [2 /*return*/, res.status(200).send({ success: true, message: 'Password changed' })];
-                    case 5:
-                        e_6 = _b.sent();
+                    case 4:
+                        e_6 = _a.sent();
                         console.log(e_6);
                         return [2 /*return*/, res.status(500).send({ success: false, message: 'Something went wrong' })];
-                    case 6: return [2 /*return*/];
+                    case 5: return [2 /*return*/];
                 }
             });
         });
