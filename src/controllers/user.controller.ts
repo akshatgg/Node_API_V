@@ -272,14 +272,10 @@ export default class UserController {
         try {
             const { id } = req.user!;
 
-            const { newPassword, otp, otp_key } = req.body;
+            const { newPassword } = req.body;
 
             if(!newPassword && newPassword.length >= 8) {
                 return res.status(400).send({ success: false, message: "Please provide a new password of atleast 8 characters" });
-            }
-
-            if(!otp || !otp_key) {
-                return res.status(400).send({ success: false, message: "Not OTP Provided" });
             }
 
             const user = await prisma.user.findUnique({
@@ -288,20 +284,6 @@ export default class UserController {
 
             if (!user) {
                 return res.status(401).send({ success: false, message: 'User does not exists' });
-            }
-
-            const otpInstance = await prisma.otp.findFirst({ where: { id: parseInt(otp_key), user, otp } });
-
-            if (!otpInstance) {
-                return res.status(401).send({ success: false, message: 'Invalid OTP' });
-            }
-
-            const now = new Date();
-
-            const validTill = addMinutesToTime(otpInstance.createdAt, 15);
-
-            if (otpInstance?.used || now > validTill) {
-                return res.status(401).send({ success: false, message: 'This OTP has already been used or expired' });
             }
 
             const hash = await UserController.hashPassword(newPassword);
