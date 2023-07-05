@@ -48,6 +48,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var __1 = require("../..");
+var runtime_1 = require("@prisma/client/runtime");
 var AccountController = /** @class */ (function () {
     function AccountController() {
     }
@@ -171,30 +172,33 @@ var AccountController = /** @class */ (function () {
     };
     AccountController.getAccountsByUser = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var userId, _a, _b, page, _c, limit, parsedPage, parsedLimit, offset, accounts, e_4;
+            var userId, _a, _b, page, _c, limit, parsedPage, parsedLimit, offset, count, totalPages, accounts, e_4;
             return __generator(this, function (_d) {
                 switch (_d.label) {
                     case 0:
-                        _d.trys.push([0, 2, , 3]);
+                        _d.trys.push([0, 3, , 4]);
                         userId = req.user.id;
                         _a = req.query, _b = _a.page, page = _b === void 0 ? 1 : _b, _c = _a.limit, limit = _c === void 0 ? 10 : _c;
                         parsedPage = parseInt(page.toString(), 10);
                         parsedLimit = parseInt(limit.toString(), 10);
                         offset = (parsedPage - 1) * parsedLimit;
+                        return [4 /*yield*/, __1.prisma.account.count({ where: { userId: userId } })];
+                    case 1:
+                        count = _d.sent();
+                        totalPages = Math.ceil(count / parsedLimit);
                         return [4 /*yield*/, __1.prisma.account.findMany({
                                 where: { userId: userId },
                                 skip: offset,
                                 take: parsedLimit,
                             })];
-                    case 1:
-                        accounts = _d.sent();
-                        res.status(200).json({ success: true, data: { accounts: accounts } });
-                        return [3 /*break*/, 3];
                     case 2:
+                        accounts = _d.sent();
+                        return [2 /*return*/, res.status(200).json({ success: true, data: { totalPages: totalPages, totalAccounts: count, accounts: accounts } })];
+                    case 3:
                         e_4 = _d.sent();
                         console.log(e_4);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
-                    case 3: return [2 /*return*/];
+                    case 4: return [2 /*return*/];
                 }
             });
         });
@@ -216,8 +220,7 @@ var AccountController = /** @class */ (function () {
                             })];
                     case 1:
                         account = _a.sent();
-                        res.status(200).json({ success: true, data: { account: account } });
-                        return [3 /*break*/, 3];
+                        return [2 /*return*/, res.status(200).json({ success: true, data: { account: account } })];
                     case 2:
                         e_5 = _a.sent();
                         console.log(e_5);
@@ -226,6 +229,168 @@ var AccountController = /** @class */ (function () {
                 }
             });
         });
+    };
+    AccountController.getAccountsByName = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var accountName, userId, _a, _b, page, _c, limit, parsedPage, parsedLimit, offset, count, totalPages, accounts, e_6;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
+                    case 0:
+                        _d.trys.push([0, 3, , 4]);
+                        accountName = req.body.accountName;
+                        userId = req.user.id;
+                        _a = req.query, _b = _a.page, page = _b === void 0 ? 1 : _b, _c = _a.limit, limit = _c === void 0 ? 10 : _c;
+                        parsedPage = parseInt(page.toString(), 10);
+                        parsedLimit = parseInt(limit.toString(), 10);
+                        offset = (parsedPage - 1) * parsedLimit;
+                        return [4 /*yield*/, __1.prisma.account.count({ where: { userId: userId } })];
+                    case 1:
+                        count = _d.sent();
+                        totalPages = Math.ceil(count / parsedLimit);
+                        return [4 /*yield*/, __1.prisma.account.findMany({
+                                where: { userId: userId, accountName: accountName },
+                                skip: offset,
+                                take: parsedLimit,
+                            })];
+                    case 2:
+                        accounts = _d.sent();
+                        return [2 /*return*/, res.status(200).json({ success: true, data: { totalPages: totalPages, totalAccounts: count, accountName: accountName, accounts: accounts } })];
+                    case 3:
+                        e_6 = _d.sent();
+                        console.log(e_6);
+                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    AccountController.getAccountCountByUser = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var userId, count, e_7;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        userId = req.user.id;
+                        return [4 /*yield*/, __1.prisma.account.count({
+                                where: { userId: userId }
+                            })];
+                    case 1:
+                        count = _a.sent();
+                        return [2 /*return*/, res.status(200).json({ success: true, count: count })];
+                    case 2:
+                        e_7 = _a.sent();
+                        console.log(e_7);
+                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    // TODO: Fix this stuff, make it more robust
+    AccountController.creditAccount = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var userId, _a, id, amount, parsedAmount, account, totalCredit, updatedAccount, e_8;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _b.trys.push([0, 2, , 3]);
+                        userId = req.user.id;
+                        _a = req.body, id = _a.id, amount = _a.amount;
+                        parsedAmount = parseFloat(amount);
+                        return [4 /*yield*/, __1.prisma.account.findFirst({
+                                where: {
+                                    id: id,
+                                    userId: userId,
+                                }
+                            })];
+                    case 1:
+                        account = _b.sent();
+                        if (!account) {
+                            return [2 /*return*/, res.status(404).json({ success: false, message: 'Account not found' })];
+                        }
+                        totalCredit = account.totalCredit.toNumber() + parsedAmount;
+                        account.totalCredit = new runtime_1.Decimal(totalCredit);
+                        updatedAccount = this.balanceAccount(account);
+                        return [2 /*return*/, res.status(200).json({
+                                sucess: true,
+                                message: "Account ".concat(account.accountName, " credited with amount ").concat(amount),
+                                data: updatedAccount
+                            })];
+                    case 2:
+                        e_8 = _b.sent();
+                        console.log(e_8);
+                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    AccountController.debitAccount = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/];
+            });
+        });
+    };
+    AccountController.updateAccountBalance = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/];
+            });
+        });
+    };
+    AccountController.balanceAccount = function (account) {
+        return __awaiter(this, void 0, void 0, function () {
+            var balance, amount, side, updatedBalance, updatedAccount;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        balance = AccountController.getBalance(account);
+                        if (!balance) {
+                            return [2 /*return*/];
+                        }
+                        amount = balance.amount, side = balance.side;
+                        updatedBalance = {
+                            debitBalance: account.debitBalance.toNumber(),
+                            creditBalance: account.creditBalance.toNumber(),
+                        };
+                        if (side === 'credit') {
+                            updatedBalance.creditBalance = amount;
+                            updatedBalance.debitBalance = 0;
+                        }
+                        else {
+                            updatedBalance.debitBalance = amount;
+                            updatedBalance.creditBalance = 0;
+                        }
+                        return [4 /*yield*/, __1.prisma.account.update({
+                                where: { id: account.id },
+                                data: updatedBalance
+                            })];
+                    case 1:
+                        updatedAccount = _a.sent();
+                        return [2 /*return*/, updatedAccount];
+                }
+            });
+        });
+    };
+    AccountController.getBalance = function (account) {
+        var debit_side = account.totalDebit.toNumber();
+        var credit_side = account.totalCredit.toNumber();
+        if (debit_side > credit_side) {
+            var amount = debit_side - credit_side;
+            return {
+                side: 'credit',
+                amount: amount,
+            };
+        }
+        else if (credit_side > debit_side) {
+            var amount = credit_side - debit_side;
+            return {
+                side: 'debit',
+                amount: amount,
+            };
+        }
     };
     return AccountController;
 }());
