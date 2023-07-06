@@ -306,7 +306,7 @@ export default class UserController {
         try {
             const { id } = req.user!;
 
-            const { firstName, lastName, pin, gender, address, aadhaar, pan, phone } = req.body;
+            const { firstName, lastName, fatherName, pin, gender, address, aadhaar, pan, phone } = req.body;
 
             if (!firstName.length) {
                 return res.status(400).send({ success: false, message: "First name cannot be empty" });
@@ -315,6 +315,8 @@ export default class UserController {
             if (phone && !validatePhone(phone)) {
                 return res.status(400).send({ success: false, message: "Please enter a valid phone number" });
             }
+
+            console.log(req.body)
 
             const user = await prisma.user.findFirst({ where: { id } });
 
