@@ -389,19 +389,20 @@ var UserController = /** @class */ (function () {
     };
     UserController.updateProfile = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var id, _a, firstName, lastName, pin, gender, address, aadhaar, pan, phone, user, e_7;
+            var id, _a, firstName, lastName, fatherName, pin, gender, address, aadhaar, pan, phone, user, e_7;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 3, , 4]);
                         id = req.user.id;
-                        _a = req.body, firstName = _a.firstName, lastName = _a.lastName, pin = _a.pin, gender = _a.gender, address = _a.address, aadhaar = _a.aadhaar, pan = _a.pan, phone = _a.phone;
+                        _a = req.body, firstName = _a.firstName, lastName = _a.lastName, fatherName = _a.fatherName, pin = _a.pin, gender = _a.gender, address = _a.address, aadhaar = _a.aadhaar, pan = _a.pan, phone = _a.phone;
                         if (!firstName.length) {
                             return [2 /*return*/, res.status(400).send({ success: false, message: "First name cannot be empty" })];
                         }
                         if (phone && !(0, util_1.validatePhone)(phone)) {
                             return [2 /*return*/, res.status(400).send({ success: false, message: "Please enter a valid phone number" })];
                         }
+                        console.log(req.body);
                         return [4 /*yield*/, __1.prisma.user.findFirst({ where: { id: id } })];
                     case 1:
                         user = _b.sent();
