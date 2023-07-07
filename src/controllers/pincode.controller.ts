@@ -39,7 +39,7 @@ export default class PincodeController {
 
             const data = PincodeController.lookupByCity(city);
 
-            return res.status(200).send({ success: false, data });
+            return res.status(200).send({ success: true, data });
         } catch (e) {
             console.log(e);
             return res.status(500).json({ success: false, message: 'Something went wrong.' });
@@ -56,7 +56,7 @@ export default class PincodeController {
 
             const data = PincodeController.lookupByPincode(pincode);
 
-            return res.status(200).send({ success: false, data });
+            return res.status(200).send({ success: true, data });
         } catch (e) {
             console.log(e);
             return res.status(500).json({ success: false, message: 'Something went wrong.' });

@@ -71,7 +71,7 @@ var PincodeController = /** @class */ (function () {
                         return [2 /*return*/, res.status(400).send({ success: false, message: 'Required field "city" is missing' })];
                     }
                     data = PincodeController.lookupByCity(city);
-                    return [2 /*return*/, res.status(200).send({ success: false, data: data })];
+                    return [2 /*return*/, res.status(200).send({ success: true, data: data })];
                 }
                 catch (e) {
                     console.log(e);
@@ -91,7 +91,7 @@ var PincodeController = /** @class */ (function () {
                         return [2 /*return*/, res.status(400).send({ success: false, message: 'Required field "pincode" is missing' })];
                     }
                     data = PincodeController.lookupByPincode(pincode);
-                    return [2 /*return*/, res.status(200).send({ success: false, data: data })];
+                    return [2 /*return*/, res.status(200).send({ success: true, data: data })];
                 }
                 catch (e) {
                     console.log(e);

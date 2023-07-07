@@ -70,7 +70,7 @@ var PostOfficeController = /** @class */ (function () {
                         return [4 /*yield*/, PostOfficeController.getPostData(pincode)];
                     case 1:
                         data = _a.sent();
-                        return [2 /*return*/, res.status(200).send({ success: false, data: data })];
+                        return [2 /*return*/, res.status(200).send({ success: true, data: data })];
                     case 2:
                         e_1 = _a.sent();
                         console.log(e_1);
