@@ -1,13 +1,14 @@
 import { Request, Response } from "express";
 
-import cards from '../config/cards.json';
-import TokenService from "../services/token.service";
+import cards from '../../cards.json';
 import { writeFile } from "fs/promises";
 import { prisma } from "..";
+import { join } from "path";
+import { cwd } from "process";
 
 export default class CMSController {
 
-    static cardFilePath = '../config/cards.json';
+    static cardFilePath = join(cwd(), '../../cards.json');
 
     static async updateCards(cards: object) {
         await writeFile(CMSController.cardFilePath, JSON.stringify(cards));
