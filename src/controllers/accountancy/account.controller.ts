@@ -22,7 +22,7 @@ export default class AccountController {
             const account = await prisma.account.create({
                 data: {
                     accountName,
-                    date,
+                    date: new Date(date),
                     totalCredit,
                     totalDebit,
                     debitBalance,
@@ -71,7 +71,7 @@ export default class AccountController {
                 },
                 data: {
                     accountName,
-                    date,
+                    date: new Date(date),
                     ...(invoices && {
                         invoices: {
                             updateMany: invoices,

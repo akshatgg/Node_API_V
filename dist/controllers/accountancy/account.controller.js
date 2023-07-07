@@ -70,7 +70,7 @@ var AccountController = /** @class */ (function () {
                         return [4 /*yield*/, __1.prisma.account.create({
                                 data: {
                                     accountName: accountName,
-                                    date: date,
+                                    date: new Date(date),
                                     totalCredit: totalCredit,
                                     totalDebit: totalDebit,
                                     debitBalance: debitBalance,
@@ -121,7 +121,7 @@ var AccountController = /** @class */ (function () {
                                 where: {
                                     id: id
                                 },
-                                data: __assign(__assign({ accountName: accountName, date: date }, (invoices && {
+                                data: __assign(__assign({ accountName: accountName, date: new Date(date) }, (invoices && {
                                     invoices: {
                                         updateMany: invoices,
                                     }
