@@ -10,7 +10,7 @@ var accountancyRouter = (0, express_1.Router)();
 accountancyRouter.get('/accounts/', verify_token_1.default, account_controller_1.default.getAccountsByUser);
 accountancyRouter.get('/accounts/account/:id', verify_token_1.default, account_controller_1.default.getAccountById);
 accountancyRouter.post('/accounts/create', verify_token_1.default, account_controller_1.default.createAccount);
-accountancyRouter.put('/accounts/update/:id', verify_token_1.default, account_controller_1.default.createAccount);
+accountancyRouter.put('/accounts/update/:id', verify_token_1.default, account_controller_1.default.updateAccount);
 accountancyRouter.delete('/accounts/delete/:id', verify_token_1.default, account_controller_1.default.deleteAccount);
 exports.default = accountancyRouter;
 //# sourceMappingURL=accountancy.routes.js.map
