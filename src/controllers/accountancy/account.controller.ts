@@ -45,7 +45,9 @@ export default class AccountController {
         try {
             const { id: userId } = req.user!;
 
-            const { id, accountName, invoices, date, totalDebit, totalCredit, debitBalance, creditBalance } = req.body;
+            const { id } = req.params;
+
+            const { accountName, invoices, date, totalDebit, totalCredit, debitBalance, creditBalance } = req.body;
 
             if (!id) {
                 return res.status(400).json({ success: false, message: 'Param ID is missing' });
@@ -84,7 +86,7 @@ export default class AccountController {
                 }
             });
 
-            return res.status(201).json({ success: true, message: 'Account updated', data: { account: updatedAccount } });
+            return res.status(200).json({ success: true, message: 'Account updated', data: { account: updatedAccount } });
         } catch (e) {
             console.log(e);
             return res.status(500).json({ success: false, message: 'Something went wrong' });
@@ -95,7 +97,7 @@ export default class AccountController {
         try {
             const { id: userId } = req.user!;
 
-            const { id } = req.body;
+            const { id } = req.params;
 
             if (!id) {
                 return res.status(400).json({ success: false, message: 'Param ID is missing' });
@@ -158,6 +160,10 @@ export default class AccountController {
             const account = await prisma.account.findFirst({
                 where: { id, userId },
             });
+
+            if(!account) {
+                return res.status(404).json({ success: false, message: 'Account not found' });
+            }
 
             return res.status(200).json({ success: true, data: { account } });
         } catch (e) {

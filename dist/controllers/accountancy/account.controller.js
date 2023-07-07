@@ -95,13 +95,14 @@ var AccountController = /** @class */ (function () {
     };
     AccountController.updateAccount = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var userId, _a, id, accountName, invoices, date, totalDebit, totalCredit, debitBalance, creditBalance, account, updatedAccount, e_2;
+            var userId, id, _a, accountName, invoices, date, totalDebit, totalCredit, debitBalance, creditBalance, account, updatedAccount, e_2;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 3, , 4]);
                         userId = req.user.id;
-                        _a = req.body, id = _a.id, accountName = _a.accountName, invoices = _a.invoices, date = _a.date, totalDebit = _a.totalDebit, totalCredit = _a.totalCredit, debitBalance = _a.debitBalance, creditBalance = _a.creditBalance;
+                        id = req.params.id;
+                        _a = req.body, accountName = _a.accountName, invoices = _a.invoices, date = _a.date, totalDebit = _a.totalDebit, totalCredit = _a.totalCredit, debitBalance = _a.debitBalance, creditBalance = _a.creditBalance;
                         if (!id) {
                             return [2 /*return*/, res.status(400).json({ success: false, message: 'Param ID is missing' })];
                         }
@@ -129,7 +130,7 @@ var AccountController = /** @class */ (function () {
                             })];
                     case 2:
                         updatedAccount = _b.sent();
-                        return [2 /*return*/, res.status(201).json({ success: true, message: 'Account updated', data: { account: updatedAccount } })];
+                        return [2 /*return*/, res.status(200).json({ success: true, message: 'Account updated', data: { account: updatedAccount } })];
                     case 3:
                         e_2 = _b.sent();
                         console.log(e_2);
@@ -147,7 +148,7 @@ var AccountController = /** @class */ (function () {
                     case 0:
                         _a.trys.push([0, 3, , 4]);
                         userId = req.user.id;
-                        id = req.body.id;
+                        id = req.params.id;
                         if (!id) {
                             return [2 /*return*/, res.status(400).json({ success: false, message: 'Param ID is missing' })];
                         }
@@ -220,6 +221,9 @@ var AccountController = /** @class */ (function () {
                             })];
                     case 1:
                         account = _a.sent();
+                        if (!account) {
+                            return [2 /*return*/, res.status(404).json({ success: false, message: 'Account not found' })];
+                        }
                         return [2 /*return*/, res.status(200).json({ success: true, data: { account: account } })];
                     case 2:
                         e_5 = _a.sent();

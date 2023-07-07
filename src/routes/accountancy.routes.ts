@@ -10,8 +10,8 @@ accountancyRouter.get('/accounts/account/:id', verifyToken, AccountController.ge
 
 accountancyRouter.post('/accounts/create', verifyToken, AccountController.createAccount);
 
-accountancyRouter.post('/accounts/update', verifyToken, AccountController.createAccount);
+accountancyRouter.put('/accounts/update/:id', verifyToken, AccountController.createAccount);
 
-accountancyRouter.post('/accounts/delete', verifyToken, AccountController.deleteAccount);
+accountancyRouter.delete('/accounts/delete/:id', verifyToken, AccountController.deleteAccount);
 
 export default accountancyRouter;
