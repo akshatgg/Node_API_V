@@ -23,13 +23,17 @@ export default class PanController {
                 'x-api-version': process.env.SANDBOX_API_VERSION
             };
 
-            const { data: { data } } = await axios.post(endpoint, {
+            const { status, data: { data } } = await axios.post(endpoint, {
                 pan,
                 consent: 'Y',
                 reason: 'For KYC of User',
             }, {
                 headers,
             });
+
+            if(status !== 200) {
+                return res.status(500).send({ success: false, message: "Something went wrong" });
+            }
 
             return res.status(200).send({ success: true, data });
         } catch (e) {

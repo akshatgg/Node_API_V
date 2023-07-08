@@ -46,11 +46,11 @@ var PanAadhaarController = /** @class */ (function () {
     }
     PanAadhaarController.checkLinkStatus = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, pan, aadhaar, endpoint, token, headers, data, e_1;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var _a, pan, aadhaar, endpoint, token, headers, _b, status, data, e_1;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
                     case 0:
-                        _b.trys.push([0, 3, , 4]);
+                        _c.trys.push([0, 3, , 4]);
                         _a = req.body, pan = _a.pan, aadhaar = _a.aadhaar;
                         if (!pan) {
                             return [2 /*return*/, res.status(400).json({ success: false, message: 'Enter a valid PAN Number' })];
@@ -61,7 +61,7 @@ var PanAadhaarController = /** @class */ (function () {
                         endpoint = "".concat(sandbox_service_1.default.BASE_URL, "/it-tools/pans/").concat(pan, "/pan-aadhaar-status");
                         return [4 /*yield*/, sandbox_service_1.default.generateAccessToken()];
                     case 1:
-                        token = _b.sent();
+                        token = _c.sent();
                         headers = {
                             'Authorization': token,
                             'accept': 'application/json',
@@ -75,10 +75,13 @@ var PanAadhaarController = /** @class */ (function () {
                                 }
                             })];
                     case 2:
-                        data = (_b.sent()).data.data;
+                        _b = _c.sent(), status = _b.status, data = _b.data.data;
+                        if (status !== 200) {
+                            return [2 /*return*/, res.status(500).send({ success: false, message: "Something went wrong" })];
+                        }
                         return [2 /*return*/, res.status(200).send({ success: true, data: data })];
                     case 3:
-                        e_1 = _b.sent();
+                        e_1 = _c.sent();
                         console.log(e_1);
                         return [3 /*break*/, 4];
                     case 4: return [2 /*return*/];

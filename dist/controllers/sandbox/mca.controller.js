@@ -46,11 +46,11 @@ var MCAController = /** @class */ (function () {
     }
     MCAController.getCompanyByCIN = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var cin, endpoint, token, headers, data, e_1;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var cin, endpoint, token, headers, _a, status, data, e_1;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
-                        _a.trys.push([0, 3, , 4]);
+                        _b.trys.push([0, 3, , 4]);
                         cin = req.query.cin;
                         if (!cin) {
                             return [2 /*return*/, res.status(400).json({ success: false, message: 'Query parameter CIN was not provided' })];
@@ -58,7 +58,7 @@ var MCAController = /** @class */ (function () {
                         endpoint = "".concat(sandbox_service_1.default.BASE_URL, "/mca/companies/").concat(cin);
                         return [4 /*yield*/, sandbox_service_1.default.generateAccessToken()];
                     case 1:
-                        token = _a.sent();
+                        token = _b.sent();
                         headers = {
                             'Authorization': token,
                             'accept': 'application/json',
@@ -69,10 +69,13 @@ var MCAController = /** @class */ (function () {
                                 headers: headers
                             })];
                     case 2:
-                        data = (_a.sent()).data.data;
+                        _a = _b.sent(), status = _a.status, data = _a.data.data;
+                        if (status !== 200) {
+                            return [2 /*return*/, res.status(500).send({ success: false, message: "Something went wrong" })];
+                        }
                         return [2 /*return*/, res.status(200).json({ success: true, data: data })];
                     case 3:
-                        e_1 = _a.sent();
+                        e_1 = _b.sent();
                         console.log(e_1);
                         return [2 /*return*/, res.status(500).json({ status: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];

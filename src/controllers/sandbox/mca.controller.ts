@@ -23,9 +23,13 @@ export default class MCAController {
                 'x-api-version': process.env.SANDBOX_API_VERSION
             };
 
-            const { data: { data } } = await axios.get(endpoint, {
+            const { status, data: { data } } = await axios.get(endpoint, {
                 headers
             });
+
+            if(status !== 200) {
+                return res.status(500).send({ success: false, message: "Something went wrong" });
+            }
             
             return res.status(200).json({ success: true, data });
         } catch(e) {

@@ -46,11 +46,11 @@ var PanController = /** @class */ (function () {
     }
     PanController.getAdvancePanDetails = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var pan, endpoint, token, headers, data, e_1;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var pan, endpoint, token, headers, _a, status, data, e_1;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
-                        _a.trys.push([0, 3, , 4]);
+                        _b.trys.push([0, 3, , 4]);
                         pan = req.query.pan;
                         if (!pan) {
                             return [2 /*return*/, res.status(400).json({ success: false, message: 'Enter a valid PAN Number' })];
@@ -58,7 +58,7 @@ var PanController = /** @class */ (function () {
                         endpoint = "".concat(sandbox_service_1.default.BASE_URL, "/kyc/pan");
                         return [4 /*yield*/, sandbox_service_1.default.generateAccessToken()];
                     case 1:
-                        token = _a.sent();
+                        token = _b.sent();
                         headers = {
                             'Authorization': token,
                             'accept': 'application/json',
@@ -73,10 +73,13 @@ var PanController = /** @class */ (function () {
                                 headers: headers,
                             })];
                     case 2:
-                        data = (_a.sent()).data.data;
+                        _a = _b.sent(), status = _a.status, data = _a.data.data;
+                        if (status !== 200) {
+                            return [2 /*return*/, res.status(500).send({ success: false, message: "Something went wrong" })];
+                        }
                         return [2 /*return*/, res.status(200).send({ success: true, data: data })];
                     case 3:
-                        e_1 = _a.sent();
+                        e_1 = _b.sent();
                         console.log(e_1);
                         return [3 /*break*/, 4];
                     case 4: return [2 /*return*/];

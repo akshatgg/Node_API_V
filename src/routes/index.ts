@@ -14,12 +14,13 @@ import ordersRouter from "./orders.routes";
 import libraryRouter from "./library.routes"
 import blogRouter from "./blog.routes";
 import panRouter from "./pan.routes";
-import gstRouter from "./gstin.routes";
+import gstRouter from "./gst.routes";
 import accountancyRouter from "./accountancy.routes";
 import careerRouter from "./career.route"
 import billRecieveRouter from "./billrecieve.routes";
 import billPayableRouter from "./billpayable.routes";
 import mcaRouter from "./mca.routes";
+import calculatorRoutes from "./calculators.routes";
 const router = Router();
 
 router.use('/user', userRouter);
@@ -51,6 +52,8 @@ router.use('/blog', blogRouter);
 router.use('/accountancy', accountancyRouter);
 
 router.use('/mca', mcaRouter);
+
+router.use('/calculator', calculatorRoutes);
 
 router.use('/career', careerRouter);
 

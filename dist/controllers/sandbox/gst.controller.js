@@ -47,11 +47,11 @@ var GSTController = /** @class */ (function () {
     }
     GSTController.searchByGSTIN = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var gstin, endpoint, token, headers, data, e_1;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var gstin, endpoint, token, headers, _a, status, data, e_1;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
-                        _a.trys.push([0, 3, , 4]);
+                        _b.trys.push([0, 3, , 4]);
                         gstin = req.body.gstin;
                         if (!(0, util_1.validateGSTIN)(gstin)) {
                             return [2 /*return*/, res.status(400).json({ success: false, message: "Please enter valid GSTIN" })];
@@ -59,7 +59,7 @@ var GSTController = /** @class */ (function () {
                         endpoint = "".concat(sandbox_service_1.default.BASE_URL, "/gsp/public/gstin/");
                         return [4 /*yield*/, sandbox_service_1.default.generateAccessToken()];
                     case 1:
-                        token = _a.sent();
+                        token = _b.sent();
                         headers = {
                             'Authorization': token,
                             'accept': 'application/json',
@@ -73,11 +73,260 @@ var GSTController = /** @class */ (function () {
                                 }
                             })];
                     case 2:
-                        data = (_a.sent()).data.data;
+                        _a = _b.sent(), status = _a.status, data = _a.data.data;
+                        if (status !== 200) {
+                            return [2 /*return*/, res.status(500).send({ success: false, message: "Something went wrong" })];
+                        }
                         return [2 /*return*/, res.status(200).send({ success: true, data: data })];
                     case 3:
-                        e_1 = _a.sent();
+                        e_1 = _b.sent();
                         console.log(e_1);
+                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    GSTController.searchGSTINNumberByPan = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, pan, gst_state_code, endpoint, token, headers, _b, status, data, e_2;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        _c.trys.push([0, 3, , 4]);
+                        _a = req.query, pan = _a.pan, gst_state_code = _a.gst_state_code;
+                        if (!pan || !gst_state_code) {
+                            return [2 /*return*/, res.status(400).json({ success: false, message: "Required query params missing" })];
+                        }
+                        endpoint = "".concat(sandbox_service_1.default.BASE_URL, "/gsp/public/pan/").concat(pan, "?state_code=").concat(gst_state_code);
+                        return [4 /*yield*/, sandbox_service_1.default.generateAccessToken()];
+                    case 1:
+                        token = _c.sent();
+                        headers = {
+                            'Authorization': token,
+                            'accept': 'application/json',
+                            'x-api-key': process.env.SANDBOX_KEY,
+                            'x-api-version': process.env.SANDBOX_API_VERSION
+                        };
+                        return [4 /*yield*/, axios_1.default.get(endpoint, {
+                                headers: headers,
+                            })];
+                    case 2:
+                        _b = _c.sent(), status = _b.status, data = _b.data.data;
+                        if (status !== 200) {
+                            return [2 /*return*/, res.status(500).send({ success: false, message: "Something went wrong" })];
+                        }
+                        return [2 /*return*/, res.status(200).send({ success: true, data: data })];
+                    case 3:
+                        e_2 = _c.sent();
+                        console.log(e_2);
+                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    GSTController.trackGSTReturn = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, gstin, financialYear, endpoint, token, headers, _b, status, data, e_3;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        _c.trys.push([0, 3, , 4]);
+                        _a = req.body, gstin = _a.gstin, financialYear = _a.financialYear;
+                        if (!(0, util_1.validateGSTIN)(gstin)) {
+                            return [2 /*return*/, res.status(400).json({ success: false, message: "Please enter valid GSTIN" })];
+                        }
+                        if (!financialYear) {
+                            return [2 /*return*/, res.status(400).json({ success: false, message: "Please enter valid Financial Year" })];
+                        }
+                        endpoint = "".concat(sandbox_service_1.default.BASE_URL, "/gsp/public/gstr?gstin=").concat(gstin, "&financial_year=").concat(financialYear);
+                        return [4 /*yield*/, sandbox_service_1.default.generateAccessToken()];
+                    case 1:
+                        token = _c.sent();
+                        headers = {
+                            'Authorization': token,
+                            'accept': 'application/json',
+                            'x-api-key': process.env.SANDBOX_KEY,
+                            'x-api-version': process.env.SANDBOX_API_VERSION
+                        };
+                        return [4 /*yield*/, axios_1.default.get(endpoint, {
+                                headers: headers,
+                                params: {
+                                    gstin: gstin
+                                }
+                            })];
+                    case 2:
+                        _b = _c.sent(), status = _b.status, data = _b.data.data;
+                        if (status !== 200) {
+                            return [2 /*return*/, res.status(500).send({ success: false, message: "Something went wrong" })];
+                        }
+                        return [2 /*return*/, res.status(200).send({ success: true, data: data })];
+                    case 3:
+                        e_3 = _c.sent();
+                        console.log(e_3);
+                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    GSTController.proceedToFileGstr = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, gstin, returnPeriod, year, month, returnType, isNil, endpoint, token, headers, _b, status, data, e_4;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        _c.trys.push([0, 3, , 4]);
+                        _a = req.body, gstin = _a.gstin, returnPeriod = _a.returnPeriod, year = _a.year, month = _a.month, returnType = _a.returnType, isNil = _a.isNil;
+                        if (!(0, util_1.validateGSTIN)(gstin)) {
+                            return [2 /*return*/, res.status(400).json({ success: false, message: "Please enter valid GSTIN" })];
+                        }
+                        if (!returnPeriod || !year || !month || !returnType || !isNil) {
+                            return [2 /*return*/, res.status(400).json({ success: false, message: "Required Body Params missing" })];
+                        }
+                        endpoint = "".concat(sandbox_service_1.default.BASE_URL, "/gsp/tax-payer/").concat(gstin, "/").concat(returnType, "/").concat(year, "/").concat(month, "/proceed?is_nil=").concat(isNil);
+                        return [4 /*yield*/, sandbox_service_1.default.generateAccessToken()];
+                    case 1:
+                        token = _c.sent();
+                        headers = {
+                            'Authorization': token,
+                            'accept': 'application/json',
+                            'x-api-key': process.env.SANDBOX_KEY,
+                            'x-api-version': process.env.SANDBOX_API_VERSION
+                        };
+                        return [4 /*yield*/, axios_1.default.post(endpoint, {
+                                gstin: gstin,
+                                ret_period: returnPeriod
+                            }, {
+                                headers: headers,
+                            })];
+                    case 2:
+                        _b = _c.sent(), status = _b.status, data = _b.data.data;
+                        if (status !== 200) {
+                            return [2 /*return*/, res.status(500).send({ success: false, message: "Something went wrong" })];
+                        }
+                        return [2 /*return*/, res.status(200).send({ success: true, data: data })];
+                    case 3:
+                        e_4 = _c.sent();
+                        console.log(e_4);
+                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    GSTController.registerForGST = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, gstin, payload, endpoint, token, headers, _b, status, data, e_5;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        _c.trys.push([0, 3, , 4]);
+                        _a = req.body, gstin = _a.gstin, payload = _a.payload;
+                        if (!(0, util_1.validateGSTIN)(gstin)) {
+                            return [2 /*return*/, res.status(400).json({ success: false, message: "Please enter valid GSTIN" })];
+                        }
+                        endpoint = "".concat(sandbox_service_1.default.BASE_URL, "/gsp/tax-payer/").concat(gstin, "/registration");
+                        return [4 /*yield*/, sandbox_service_1.default.generateAccessToken()];
+                    case 1:
+                        token = _c.sent();
+                        headers = {
+                            'Authorization': token,
+                            'accept': 'application/json',
+                            'x-api-key': process.env.SANDBOX_KEY,
+                            'x-api-version': process.env.SANDBOX_API_VERSION
+                        };
+                        return [4 /*yield*/, axios_1.default.post(endpoint, payload, {
+                                headers: headers,
+                            })];
+                    case 2:
+                        _b = _c.sent(), status = _b.status, data = _b.data.data;
+                        if (status !== 200) {
+                            return [2 /*return*/, res.status(500).send({ success: false, message: "Something went wrong" })];
+                        }
+                        return [2 /*return*/, res.status(200).send({ success: true, data: data })];
+                    case 3:
+                        e_5 = _c.sent();
+                        console.log(e_5);
+                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    GSTController.generateOTP = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, gstin, username, endpoint, token, headers, _b, status, data, e_6;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        _c.trys.push([0, 3, , 4]);
+                        _a = req.body, gstin = _a.gstin, username = _a.username;
+                        if (!(0, util_1.validateGSTIN)(gstin)) {
+                            return [2 /*return*/, res.status(400).json({ success: false, message: "Please enter valid GSTIN" })];
+                        }
+                        endpoint = "".concat(sandbox_service_1.default.BASE_URL, "/gsp/tax-payer/").concat(gstin, "/otp?username=").concat(username);
+                        return [4 /*yield*/, sandbox_service_1.default.generateAccessToken()];
+                    case 1:
+                        token = _c.sent();
+                        headers = {
+                            'Authorization': token,
+                            'accept': 'application/json',
+                            'x-api-key': process.env.SANDBOX_KEY,
+                            'x-api-version': process.env.SANDBOX_API_VERSION
+                        };
+                        return [4 /*yield*/, axios_1.default.post(endpoint, {}, {
+                                headers: headers,
+                            })];
+                    case 2:
+                        _b = _c.sent(), status = _b.status, data = _b.data.data;
+                        if (status === 401) {
+                            return [2 /*return*/, res.status(401).send({ success: false, message: 'Unauthorized Access' })];
+                        }
+                        return [2 /*return*/, res.status(200).send({ success: true, data: data })];
+                    case 3:
+                        e_6 = _c.sent();
+                        console.log(e_6);
+                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    GSTController.verifyOTP = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, gstin, username, otp, endpoint, token, headers, response, e_7;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _b.trys.push([0, 3, , 4]);
+                        _a = req.body, gstin = _a.gstin, username = _a.username, otp = _a.otp;
+                        if (!(0, util_1.validateGSTIN)(gstin)) {
+                            return [2 /*return*/, res.status(400).json({ success: false, message: "Please enter valid GSTIN" })];
+                        }
+                        endpoint = "".concat(sandbox_service_1.default.BASE_URL, "/gsp/tax-payer/").concat(gstin, "/otp/verify?username=").concat(username, "&otp=").concat(otp);
+                        return [4 /*yield*/, sandbox_service_1.default.generateAccessToken()];
+                    case 1:
+                        token = _b.sent();
+                        headers = {
+                            'Authorization': token,
+                            'accept': 'application/json',
+                            'x-api-key': process.env.SANDBOX_KEY,
+                            'x-api-version': process.env.SANDBOX_API_VERSION
+                        };
+                        return [4 /*yield*/, axios_1.default.post(endpoint, {}, {
+                                headers: headers,
+                            })];
+                    case 2:
+                        response = _b.sent();
+                        if (response.status !== 200) {
+                            return [2 /*return*/, res.status(500).send({ success: true, message: "Could not authenticate. Something went wrong" })];
+                        }
+                        return [2 /*return*/, res.status(200).send({ success: true, message: "GSTIN: ".concat(gstin, " authenticated successfully!") })];
+                    case 3:
+                        e_7 = _b.sent();
+                        console.log(e_7);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
