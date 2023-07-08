@@ -66,7 +66,7 @@ var PincodeController = /** @class */ (function () {
             var city, data;
             return __generator(this, function (_a) {
                 try {
-                    city = req.body.city;
+                    city = req.query.city;
                     if (!city) {
                         return [2 /*return*/, res.status(400).send({ success: false, message: 'Required field "city" is missing' })];
                     }
@@ -86,7 +86,7 @@ var PincodeController = /** @class */ (function () {
             var pincode, data;
             return __generator(this, function (_a) {
                 try {
-                    pincode = req.body.pincode;
+                    pincode = req.query.pincode;
                     if (!pincode) {
                         return [2 /*return*/, res.status(400).send({ success: false, message: 'Required field "pincode" is missing' })];
                     }

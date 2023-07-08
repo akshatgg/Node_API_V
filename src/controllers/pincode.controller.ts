@@ -31,13 +31,13 @@ export default class PincodeController {
 
     static async getPincodeByCity(req: Request, res: Response) {
         try {
-            const { city } = req.body;
+            const { city } = req.query;
 
             if (!city) {
                 return res.status(400).send({ success: false, message: 'Required field "city" is missing' });
             }
 
-            const data = PincodeController.lookupByCity(city);
+            const data = PincodeController.lookupByCity(city as string);
 
             return res.status(200).send({ success: true, data });
         } catch (e) {
@@ -48,13 +48,13 @@ export default class PincodeController {
 
     static async getInfoByPincode(req: Request, res: Response) {
         try {
-            const { pincode } = req.body;
+            const { pincode } = req.query;
 
             if (!pincode) {
                 return res.status(400).send({ success: false, message: 'Required field "pincode" is missing' });
             }
 
-            const data = PincodeController.lookupByPincode(pincode);
+            const data = PincodeController.lookupByPincode(pincode as string);
 
             return res.status(200).send({ success: true, data });
         } catch (e) {

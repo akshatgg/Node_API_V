@@ -51,7 +51,7 @@ var PostOfficeController = /** @class */ (function () {
                     case 0: return [4 /*yield*/, (0, axios_1.default)("http://www.postalpincode.in/api/pincode/".concat(pincode))];
                     case 1:
                         res = _a.sent();
-                        return [2 /*return*/, res.data()];
+                        return [2 /*return*/, res.data];
                 }
             });
         });
@@ -63,7 +63,7 @@ var PostOfficeController = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        pincode = req.body.pincode;
+                        pincode = req.query.pincode;
                         if (!pincode) {
                             return [2 /*return*/, res.status(400).send({ success: false, message: 'Required field "pincode" is missing' })];
                         }
