@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { prisma } from '../index';
-import TokenService from '../services/token.service';
 
 export default class OrdersController {
     public static async createOrder(req: Request, res: Response): Promise<Response> {
@@ -23,6 +22,7 @@ export default class OrdersController {
             });
             return res.json({ success: true, message: 'Order created successfully', data: order });
         } catch (error) {
+            console.log(error);
             return res.status(500).json({ success: false, message: 'Failed to create order' });
         }
     }

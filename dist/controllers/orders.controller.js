@@ -66,6 +66,7 @@ var OrdersController = /** @class */ (function () {
                         return [2 /*return*/, res.json({ success: true, message: 'Order created successfully', data: order })];
                     case 2:
                         error_1 = _b.sent();
+                        console.log(error_1);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Failed to create order' })];
                     case 3: return [2 /*return*/];
                 }
