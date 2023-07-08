@@ -19,6 +19,7 @@ import accountancyRouter from "./accountancy.routes";
 import careerRouter from "./career.route"
 import billRecieveRouter from "./billrecieve.routes";
 import billPayableRouter from "./billpayable.routes";
+import mcaRouter from "./mca.routes";
 const router = Router();
 
 router.use('/user', userRouter);
@@ -49,11 +50,13 @@ router.use('/blog', blogRouter);
 
 router.use('/accountancy', accountancyRouter);
 
-router.use('/career', careerRouter)
+router.use('/mca', mcaRouter);
 
-router.use('/billrecieve', billRecieveRouter)
+router.use('/career', careerRouter);
 
-router.use('/billpayable', billPayableRouter)
+router.use('/billrecieve', billRecieveRouter);
+
+router.use('/billpayable', billPayableRouter);
 
 router.get('/', (req, res) => {
     return res.send({ message: 'Up and running' });
