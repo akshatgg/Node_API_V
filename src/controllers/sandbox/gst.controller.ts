@@ -7,7 +7,7 @@ export default class GSTController {
 
     static async searchByGSTIN(req: Request, res: Response) {
         try {
-            const { gstin } = req.body;
+            const { gstin } = req.params;
 
             if(!validateGSTIN(gstin)) {
                 return res.status(400).json({ success: false, message: "Please enter valid GSTIN" });

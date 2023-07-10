@@ -41,6 +41,8 @@ export default class PanAadhaarController {
             return res.status(200).send({ success: true, data });
         } catch (e) {
             console.log(e);
+
+            return res.status(500).send({ success: false, message: "Something went wrong" });
         }
     }
 

@@ -8,7 +8,7 @@ var gst_controller_1 = __importDefault(require("../controllers/sandbox/gst.contr
 var verify_token_1 = __importDefault(require("../middlewares/verify-token"));
 var body_validator_1 = __importDefault(require("../middlewares/body-validator"));
 var gstRouter = (0, express_1.Router)();
-gstRouter.get('/search/gstin', verify_token_1.default, gst_controller_1.default.searchByGSTIN);
+gstRouter.get('/search/gstin/:gstin', verify_token_1.default, gst_controller_1.default.searchByGSTIN);
 gstRouter.get('/search/gstin-by-pan', verify_token_1.default, gst_controller_1.default.searchGSTINNumberByPan);
 gstRouter.post('/return/track', verify_token_1.default, body_validator_1.default, gst_controller_1.default.trackGSTReturn);
 gstRouter.post('/tax-payer/registration', verify_token_1.default, body_validator_1.default, gst_controller_1.default.registerForGST);

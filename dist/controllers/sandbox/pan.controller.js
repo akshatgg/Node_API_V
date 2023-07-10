@@ -81,7 +81,7 @@ var PanController = /** @class */ (function () {
                     case 3:
                         e_1 = _b.sent();
                         console.log(e_1);
-                        return [3 /*break*/, 4];
+                        return [2 /*return*/, res.status(500).send({ success: false, message: "Something went wrong" })];
                     case 4: return [2 /*return*/];
                 }
             });

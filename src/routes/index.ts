@@ -20,7 +20,11 @@ import careerRouter from "./career.route"
 import billRecieveRouter from "./billrecieve.routes";
 import billPayableRouter from "./billpayable.routes";
 import mcaRouter from "./mca.routes";
-import calculatorRoutes from "./calculators.routes";
+import calculatorRouter from "./calculators.routes";
+import tanRouter from "./tan.routes";
+import bankRouter from "./bank.routes";
+import aadhaarRouter from "./aadhaar.routes";
+import loanRouter from "./loan.routes";
 const router = Router();
 
 router.use('/user', userRouter);
@@ -53,9 +57,17 @@ router.use('/accountancy', accountancyRouter);
 
 router.use('/mca', mcaRouter);
 
-router.use('/calculator', calculatorRoutes);
+router.use('/tan', tanRouter);
+
+router.use('/bank', bankRouter);
+
+router.use('/aadhaar', aadhaarRouter);
+
+router.use('/calculator', calculatorRouter);
 
 router.use('/career', careerRouter);
+
+router.use('/loan', loanRouter);
 
 router.use('/billrecieve', billRecieveRouter);
 

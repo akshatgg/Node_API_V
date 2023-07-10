@@ -5,7 +5,7 @@ import bodyValidator from "../middlewares/body-validator";
 
 const gstRouter = Router();
 
-gstRouter.get('/search/gstin', verifyToken, GSTController.searchByGSTIN);
+gstRouter.get('/search/gstin/:gstin', verifyToken, GSTController.searchByGSTIN);
 
 gstRouter.get('/search/gstin-by-pan', verifyToken, GSTController.searchGSTINNumberByPan);
 

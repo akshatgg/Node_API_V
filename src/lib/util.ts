@@ -1,8 +1,8 @@
-const GSTIN_RGX = /^[0-9]{2}[a-zA-Z]{5}[0-9]{4}[a-zA-Z]{1}[1-9A-Za-z]{1}[CZ]{1}[0-9a-zA-Z]{1}$|^[0-9]{4}[a-zA-Z]{3}[0-9]{5}[uUnN]{2}[0-9a-zA-Z]{1}$/;
+export const GSTIN_RGX = /^[0-9]{2}[a-zA-Z]{5}[0-9]{4}[a-zA-Z]{1}[1-9A-Za-z]{1}[CZ]{1}[0-9a-zA-Z]{1}$|^[0-9]{4}[a-zA-Z]{3}[0-9]{5}[uUnN]{2}[0-9a-zA-Z]{1}$/;
 
 const EMAIL_RGX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
-const PHONE_NUMBER_RGX = /^(\+\d{1,3})?(\d{10})$/;
+export const PHONE_NUMBER_RGX = /^(\+\d{1,3})?(\d{10})$/;
 
 export const validateEmail = (email: string): boolean => EMAIL_RGX.test(email);
 

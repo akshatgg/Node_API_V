@@ -2,17 +2,17 @@ import { Request, Response } from "express";
 import Sandbox from "../../services/sandbox.service";
 import axios from "axios";
 
-export default class PanController {
+export default class TanController {
 
-    static async getAdvancePanDetails(req: Request, res: Response) {
+    static async searchByTanNo(req: Request, res: Response) {
         try {
-            const { pan } = req.query;
+            const { tan } = req.query;
 
-            if (!pan) {
-                return res.status(400).json({ success: false, message: 'Enter a valid PAN Number' });
+            if (!tan) {
+                return res.status(400).json({ success: false, message: 'Enter a valid TAN Number' });
             }
 
-            const endpoint = `${Sandbox.BASE_URL}/kyc/pan`;
+            const endpoint = `${Sandbox.BASE_URL}/itd/portal/public/tans/${tan}?consent=y&reason=For%20KYC%20of%20the%20organization`;
 
             const token = await Sandbox.generateAccessToken();
 
@@ -23,11 +23,7 @@ export default class PanController {
                 'x-api-version': process.env.SANDBOX_API_VERSION
             };
 
-            const { status, data: { data } } = await axios.post(endpoint, {
-                pan,
-                consent: 'Y',
-                reason: 'For KYC of User',
-            }, {
+            const { status, data: { data } } = await axios.get(endpoint, {
                 headers,
             });
 
@@ -38,7 +34,6 @@ export default class PanController {
             return res.status(200).send({ success: true, data });
         } catch (e) {
             console.log(e);
-
             return res.status(500).send({ success: false, message: "Something went wrong" });
         }
     }

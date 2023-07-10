@@ -52,7 +52,7 @@ var GSTController = /** @class */ (function () {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 3, , 4]);
-                        gstin = req.body.gstin;
+                        gstin = req.params.gstin;
                         if (!(0, util_1.validateGSTIN)(gstin)) {
                             return [2 /*return*/, res.status(400).json({ success: false, message: "Please enter valid GSTIN" })];
                         }

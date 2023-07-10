@@ -7,10 +7,10 @@ var express_1 = require("express");
 var verify_token_1 = __importDefault(require("../middlewares/verify-token"));
 var calculators_controller_1 = __importDefault(require("../controllers/sandbox/calculators.controller"));
 var body_validator_1 = __importDefault(require("../middlewares/body-validator"));
-var calculatorRoutes = (0, express_1.Router)();
-calculatorRoutes.post('/income-tax/new-regime', verify_token_1.default, body_validator_1.default, calculators_controller_1.default.incomeTaxNewRegime);
-calculatorRoutes.post('/income-tax/old-regime', verify_token_1.default, body_validator_1.default, calculators_controller_1.default.incomeTaxOldRegime);
-calculatorRoutes.post('/advance-income-tax/old-regime', verify_token_1.default, body_validator_1.default, calculators_controller_1.default.advanceIncomeTaxOldRegime);
-calculatorRoutes.post('/advance-income-tax/new-regime', verify_token_1.default, body_validator_1.default, calculators_controller_1.default.advanceIncomeTaxNewRegime);
-exports.default = calculatorRoutes;
+var calculatorRouter = (0, express_1.Router)();
+calculatorRouter.post('/income-tax/new-regime', verify_token_1.default, body_validator_1.default, calculators_controller_1.default.incomeTaxNewRegime);
+calculatorRouter.post('/income-tax/old-regime', verify_token_1.default, body_validator_1.default, calculators_controller_1.default.incomeTaxOldRegime);
+calculatorRouter.post('/advance-income-tax/old-regime', verify_token_1.default, body_validator_1.default, calculators_controller_1.default.advanceIncomeTaxOldRegime);
+calculatorRouter.post('/advance-income-tax/new-regime', verify_token_1.default, body_validator_1.default, calculators_controller_1.default.advanceIncomeTaxNewRegime);
+exports.default = calculatorRouter;
 //# sourceMappingURL=calculators.routes.js.map

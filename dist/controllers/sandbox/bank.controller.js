@@ -41,24 +41,61 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var sandbox_service_1 = __importDefault(require("../../services/sandbox.service"));
 var axios_1 = __importDefault(require("axios"));
-var PanAadhaarController = /** @class */ (function () {
-    function PanAadhaarController() {
+var BankController = /** @class */ (function () {
+    function BankController() {
     }
-    PanAadhaarController.checkLinkStatus = function (req, res) {
+    BankController.getBankDetailsByIfsc = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, pan, aadhaar, endpoint, token, headers, _b, status, data, e_1;
+            var ifsc, endpoint, token, headers, _a, status, data, e_1;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _b.trys.push([0, 3, , 4]);
+                        ifsc = req.query.ifsc;
+                        if (!ifsc) {
+                            return [2 /*return*/, res.status(400).json({ success: false, message: 'Query Parameter "ifsc" is missing' })];
+                        }
+                        endpoint = "".concat(sandbox_service_1.default.BASE_URL, "/bank/").concat(ifsc);
+                        return [4 /*yield*/, sandbox_service_1.default.generateAccessToken()];
+                    case 1:
+                        token = _b.sent();
+                        headers = {
+                            'Authorization': token,
+                            'accept': 'application/json',
+                            'x-api-key': process.env.SANDBOX_KEY,
+                            'x-api-version': process.env.SANDBOX_API_VERSION
+                        };
+                        return [4 /*yield*/, axios_1.default.get(endpoint, {
+                                headers: headers,
+                            })];
+                    case 2:
+                        _a = _b.sent(), status = _a.status, data = _a.data;
+                        if (status !== 200) {
+                            return [2 /*return*/, res.status(500).send({ success: false, message: "Something went wrong" })];
+                        }
+                        console.log(data);
+                        return [2 /*return*/, res.status(200).send({ success: true, data: data })];
+                    case 3:
+                        e_1 = _b.sent();
+                        console.log(e_1);
+                        return [2 /*return*/, res.status(500).send({ success: false, message: "Something went wrong" })];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    BankController.verifyBankAccount = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, ifsc, name, accountNumber, mobile, endpoint, token, headers, _b, status, data, e_2;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
                         _c.trys.push([0, 3, , 4]);
-                        _a = req.body, pan = _a.pan, aadhaar = _a.aadhaar;
-                        if (!pan) {
-                            return [2 /*return*/, res.status(400).json({ success: false, message: 'Enter a valid PAN Number' })];
+                        _a = req.body, ifsc = _a.ifsc, name = _a.name, accountNumber = _a.accountNumber, mobile = _a.mobile;
+                        if (!ifsc || !name || !accountNumber || !mobile) {
+                            return [2 /*return*/, res.status(400).json({ success: false, message: 'Required Query Parameters are missing' })];
                         }
-                        if (!aadhaar) {
-                            return [2 /*return*/, res.status(400).json({ success: false, message: 'Enter a valid Aadhaar Number' })];
-                        }
-                        endpoint = "".concat(sandbox_service_1.default.BASE_URL, "/it-tools/pans/").concat(pan, "/pan-aadhaar-status");
+                        endpoint = "".concat(sandbox_service_1.default.BASE_URL, "/bank/").concat(ifsc, "/accounts/").concat(accountNumber, "/verify?name=").concat(name, "&mobile=").concat(mobile);
                         return [4 /*yield*/, sandbox_service_1.default.generateAccessToken()];
                     case 1:
                         token = _c.sent();
@@ -70,9 +107,6 @@ var PanAadhaarController = /** @class */ (function () {
                         };
                         return [4 /*yield*/, axios_1.default.get(endpoint, {
                                 headers: headers,
-                                params: {
-                                    aadhaar_number: aadhaar
-                                }
                             })];
                     case 2:
                         _b = _c.sent(), status = _b.status, data = _b.data.data;
@@ -81,15 +115,15 @@ var PanAadhaarController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, data: data })];
                     case 3:
-                        e_1 = _c.sent();
-                        console.log(e_1);
+                        e_2 = _c.sent();
+                        console.log(e_2);
                         return [2 /*return*/, res.status(500).send({ success: false, message: "Something went wrong" })];
                     case 4: return [2 /*return*/];
                 }
             });
         });
     };
-    return PanAadhaarController;
+    return BankController;
 }());
-exports.default = PanAadhaarController;
-//# sourceMappingURL=panAadhaar.controller.js.map
+exports.default = BankController;
+//# sourceMappingURL=bank.controller.js.map

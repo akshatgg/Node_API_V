@@ -48,6 +48,9 @@ model User {
   orders          Order[]
   posts           Post[]
   accounts        Account[]
+  bankAccounts BankDetails[]
+  loans LoanApplication[]
+  documents UploadedDocument[]
 }
 
 model Otp {
@@ -362,4 +365,123 @@ model Billpayable {
   tax             String
   comment         String?
   invoiceNumber   String?
+}
+
+
+enum DocumentType {
+  pdf
+  image
+  other
+}
+
+model UploadedDocument {
+  id String @id @default(uuid())
+  url String?
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+  docId String? @unique
+  file LoanDocument? @relation(fields: [docId], references: [id])
+  applicationId String
+  application LoanApplication @relation(fields: [applicationId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model LoanDocument {
+  id String @id @default(uuid())
+  name String
+  shortName String
+  mandatory Boolean @default(false)
+  type DocumentType
+  description String?
+  documents UploadedDocument[]
+  loans Loan[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+enum LoanType {
+  personal
+  education
+  home
+  business
+  car
+}
+
+model Loan {
+  id String @id @default(uuid())
+  type LoanType
+  name String
+  shortName String?
+  description String?
+  documents LoanDocument[]
+  maxAmount Decimal?
+  minAmount Decimal?
+  applications LoanApplication[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+enum Nationality {
+  resident
+  nri
+  foreign
+}
+
+enum LoanStatus {
+  pending
+  processing
+  review
+  accepted
+  rejected
+}
+
+model LoanApplication {
+  id String @id @default(uuid())
+  loanId String
+  loan Loan @relation(fields: [loanId], references: [id])
+  loanAmount Decimal
+  loanStatus LoanStatus @default(pending)
+  applicantName String
+  applicantAge Int
+  applicantGender UserGender
+  nationality Nationality
+  description String
+  salaried Boolean
+  documents UploadedDocument[]
+  bankAccountId String
+  bankDetails BankDetails @relation(fields: [bankAccountId], references: [id])
+  phone String?
+  email String?
+  address String?
+  permanentAddress String
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+enum BankAccountType {
+  savings
+  current
+  nri
+  fcnr
+  rd
+  fd
+  salary
+}
+
+model BankDetails {
+  id String @id @default(uuid())
+  accountHolderName String
+  bankName String
+  bankAccountNo String
+  bankIfsc String
+  bankBranch String
+  bankAccountType BankAccountType
+  loans LoanApplication[]
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
