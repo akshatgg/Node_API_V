@@ -376,13 +376,12 @@ enum DocumentType {
 
 model UploadedDocument {
   id String @id @default(uuid())
-  url String?
   userId Int
   user User @relation(fields: [userId], references: [id])
-  docId String? @unique
-  file LoanDocument? @relation(fields: [docId], references: [id])
-  applicationId String
-  application LoanApplication @relation(fields: [applicationId], references: [id])
+  fileName String
+  docs LoanDocument[]
+  applicationId String?
+  application LoanApplication? @relation(fields: [applicationId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 }

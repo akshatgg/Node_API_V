@@ -25,6 +25,7 @@ import tanRouter from "./tan.routes";
 import bankRouter from "./bank.routes";
 import aadhaarRouter from "./aadhaar.routes";
 import loanRouter from "./loan.routes";
+import documentRouter from "./document.routes";
 const router = Router();
 
 router.use('/user', userRouter);
@@ -68,6 +69,8 @@ router.use('/calculator', calculatorRouter);
 router.use('/career', careerRouter);
 
 router.use('/loan', loanRouter);
+
+router.use('/documents', documentRouter);
 
 router.use('/billrecieve', billRecieveRouter);
 
