@@ -183,6 +183,8 @@ export default class LoanController {
         }
     }
 
+    // FOR ADMIN
+
     static async createLoan(req: Request, res: Response) {
         try {
             const { name, shortName, type, description, minAmount, maxAmount, documents, } = LoanSchema.parse(req.body);
