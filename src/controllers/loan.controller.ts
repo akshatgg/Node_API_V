@@ -82,7 +82,7 @@ export default class LoanController {
                     description,
                     bankAccountId: bankDetails.id,
                     documents: {
-                        connect: documents.map(id => ({ id, userId })),
+                        connect: documents.map(id => ({ id })),
                     },
                 },
                 include: {
@@ -98,6 +98,7 @@ export default class LoanController {
                 }
             });
         } catch (e) {
+            console.log(e);
             if (e instanceof ZodError) {
                 return res.status(400).json({ success: false, message: e.message });
             }
