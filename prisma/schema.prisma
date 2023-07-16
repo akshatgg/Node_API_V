@@ -29,6 +29,7 @@ model User {
   password        String
   firstName       String
   lastName        String?
+  fatherName      String?
   phone           String?
   gender          UserGender
   address         String?
@@ -416,6 +417,7 @@ model Loan {
   documents LoanDocument[]
   maxAmount Decimal?
   minAmount Decimal?
+  interest Decimal
   applications LoanApplication[]
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())

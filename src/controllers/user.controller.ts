@@ -1,10 +1,30 @@
 import { Request, Response } from "express";
 import { prisma } from "..";
-import { addMinutesToTime, generateOTP, validateEmail, validatePhone } from "../lib/util";
+import { PHONE_NUMBER_RGX, addMinutesToTime, generateOTP, validateEmail, validatePhone } from "../lib/util";
 import bcrypt from 'bcrypt';
 import EmailService from "../services/email.service";
 import TokenService from "../services/token.service";
 import { UserGender, UserType } from "@prisma/client";
+import { ZodError, z } from "zod";
+
+const UserSchema = z.object({
+    firstName: z.string({ required_error: "First name is required" }).min(1, "First name must be atleast 1 character long"), 
+    lastName: z.string().optional(), 
+    gender: z.nativeEnum(UserGender), 
+    email: z.string().toLowerCase().email(), 
+    password: z.string().min(6, 'Password must be atleast 6 characters long'), 
+    phone: z.string().regex(PHONE_NUMBER_RGX, 'Enter a valid 10 digit phone number'),
+    fatherName: z.string().optional(), 
+    pin: z.string().min(6), 
+    address: z.string().optional(), 
+    aadhaar: z.string().length(12).optional(), 
+    pan: z.string().length(10).optional(), 
+});
+
+const LoginSchema = z.object({
+    email: z.string().toLowerCase().email(), 
+    password: z.string({ required_error: 'Please enter your password' }), 
+});
 
 export default class UserController {
     static SALT_ROUNDS = 10;
@@ -44,27 +64,7 @@ export default class UserController {
 
     static async signUp(req: Request, res: Response) {
         try {
-            const { firstName, lastName, gender, email, password, phone } = req.body;
-
-            if (!firstName.length) {
-                return res.status(400).send({ success: false, message: "First name cannot be empty" });
-            }
-
-            if (!email || !validateEmail(email)) {
-                return res.status(400).send({ success: false, message: "Please enter a valid email address" });
-            }
-
-            if (phone && !validatePhone(phone)) {
-                return res.status(400).send({ success: false, message: "Please enter a valid phone number" });
-            }
-
-            if (!password && password.length >= 8) {
-                return res.status(400).send({ success: false, message: "Password cannot be empty and must be atleas 8 characters long" });
-            }
-
-            if(!(gender in UserGender)) {
-                return res.status(400).send({ success: false, message: "Please select a valid gender" });
-            }
+            const { firstName, lastName, gender, fatherName, aadhaar, pan, pin, email, password, phone } = UserSchema.parse(req.body);
 
             const found = await prisma.user.findFirst({
                 where: {
@@ -89,6 +89,10 @@ export default class UserController {
                     gender,
                     password: hash,
                     phone,
+                    fatherName, 
+                    aadhaar, 
+                    pan, 
+                    pin,
                     verified: false,
                 }
             });
@@ -113,13 +117,16 @@ export default class UserController {
             });
         } catch (e) {
             console.error(e);
+            if(e instanceof ZodError) {
+                return res.status(400).send({ success: false, message: e.message });
+            }
             return res.status(500).send({ success: false, message: 'Something went wrong' });
         }
     }
 
     static async login(req: Request, res: Response) {
         try {
-            const { email, password } = req.body;
+            const { email, password } = LoginSchema.parse(req.body);
 
             const user = await prisma.user.findUnique({
                 where: { email }
@@ -146,6 +153,9 @@ export default class UserController {
             });
         } catch (e) {
             console.error(e);
+            if(e instanceof ZodError) {
+                return res.status(400).send({ success: false, message: e.message });
+            }
             return res.status(500).send({ success: false, message: 'Something went wrong' });
         }
     }
@@ -153,6 +163,10 @@ export default class UserController {
     static async forgotPassword(req: Request, res: Response) {
         try {
             const { email } = req.body;
+
+            if(!email && !validateEmail(email)) {
+                return res.status(400).send({ success: false, message: 'Email is required' });
+            }
 
             const user = await prisma.user.findUnique({
                 where: { email }
@@ -332,6 +346,7 @@ export default class UserController {
                     firstName,
                     lastName,
                     gender: gender ?? user.gender,
+                    fatherName,
                     pin: pin ?? user.pin,
                     pan: pan ?? user.pan,
                     aadhaar: aadhaar ?? user.aadhaar,

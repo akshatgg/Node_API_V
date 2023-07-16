@@ -46,6 +46,7 @@ const LoanSchema = z.object({
     })),
     maxAmount: z.number().optional(),
     minAmount: z.number().optional(),
+    interest: z.number()
 });
 
 export default class LoanController {
@@ -188,7 +189,7 @@ export default class LoanController {
 
     static async createLoan(req: Request, res: Response) {
         try {
-            const { name, shortName, type, description, minAmount, maxAmount, documents, } = LoanSchema.parse(req.body);
+            const { name, shortName, type, description, minAmount, maxAmount, documents, interest } = LoanSchema.parse(req.body);
 
             const loan = await prisma.loan.create({
                 data: {
@@ -197,6 +198,7 @@ export default class LoanController {
                     type,
                     minAmount,
                     maxAmount,
+                    interest,
                     description,
                     documents: {
                         connectOrCreate: documents.map(document => ({
