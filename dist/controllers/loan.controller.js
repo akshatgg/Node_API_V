@@ -114,30 +114,31 @@ var LoanSchema = zod_1.default.object({
     })),
     maxAmount: zod_1.default.number().optional(),
     minAmount: zod_1.default.number().optional(),
+    interest: zod_1.default.number()
 });
 var LoanController = /** @class */ (function () {
     function LoanController() {
     }
     LoanController.applyForLoan = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var userId_1, data, loanId, documents, amount, description, _a, applicantName, applicantAge, applicantGender, nationality, salaried, bankDetailsData, permanentAddress, address, bankDetails, application, e_1;
+            var userId, data, loanId, documents, amount, description, _a, applicantName, applicantAge, applicantGender, nationality, salaried, bankDetailsData, permanentAddress, address, bankDetails, application, e_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 3, , 4]);
-                        userId_1 = req.user.id;
+                        userId = req.user.id;
                         data = LoanApplicationSchema.parse(req.body);
                         loanId = data.loanId, documents = data.documents, amount = data.amount, description = data.description;
                         _a = data.applicantDetails, applicantName = _a.applicantName, applicantAge = _a.applicantAge, applicantGender = _a.applicantGender, nationality = _a.nationality, salaried = _a.salaried, bankDetailsData = _a.bankDetails, permanentAddress = _a.permanentAddress, address = _a.address;
                         return [4 /*yield*/, __1.prisma.bankDetails.create({
-                                data: __assign(__assign({}, bankDetailsData), { userId: userId_1 }),
+                                data: __assign(__assign({}, bankDetailsData), { userId: userId }),
                             })];
                     case 1:
                         bankDetails = _b.sent();
                         return [4 /*yield*/, __1.prisma.loanApplication.create({
                                 data: {
                                     loanId: loanId,
-                                    userId: userId_1,
+                                    userId: userId,
                                     applicantName: applicantName,
                                     applicantAge: applicantAge,
                                     applicantGender: applicantGender,
@@ -149,7 +150,7 @@ var LoanController = /** @class */ (function () {
                                     description: description,
                                     bankAccountId: bankDetails.id,
                                     documents: {
-                                        connect: documents.map(function (id) { return ({ id: id, userId: userId_1 }); }),
+                                        connect: documents.map(function (id) { return ({ id: id }); }),
                                     },
                                 },
                                 include: {
@@ -167,6 +168,7 @@ var LoanController = /** @class */ (function () {
                             })];
                     case 3:
                         e_1 = _b.sent();
+                        console.log(e_1);
                         if (e_1 instanceof zod_1.ZodError) {
                             return [2 /*return*/, res.status(400).json({ success: false, message: e_1.message })];
                         }
@@ -263,14 +265,15 @@ var LoanController = /** @class */ (function () {
             });
         });
     };
+    // FOR ADMIN
     LoanController.createLoan = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, name, shortName, type, description, minAmount, maxAmount, documents, loan, e_4;
+            var _a, name, shortName, type, description, minAmount, maxAmount, documents, interest, loan, e_4;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 2, , 3]);
-                        _a = LoanSchema.parse(req.body), name = _a.name, shortName = _a.shortName, type = _a.type, description = _a.description, minAmount = _a.minAmount, maxAmount = _a.maxAmount, documents = _a.documents;
+                        _a = LoanSchema.parse(req.body), name = _a.name, shortName = _a.shortName, type = _a.type, description = _a.description, minAmount = _a.minAmount, maxAmount = _a.maxAmount, documents = _a.documents, interest = _a.interest;
                         return [4 /*yield*/, __1.prisma.loan.create({
                                 data: {
                                     name: name,
@@ -278,6 +281,7 @@ var LoanController = /** @class */ (function () {
                                     type: type,
                                     minAmount: minAmount,
                                     maxAmount: maxAmount,
+                                    interest: interest,
                                     description: description,
                                     documents: {
                                         connectOrCreate: documents.map(function (document) { return ({

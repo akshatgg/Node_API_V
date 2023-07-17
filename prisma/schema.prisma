@@ -52,6 +52,7 @@ model User {
   bankAccounts BankDetails[]
   loans LoanApplication[]
   documents UploadedDocument[]
+  insurances Insurance[]
 }
 
 model Otp {
@@ -481,6 +482,21 @@ model BankDetails {
   bankBranch String
   bankAccountType BankAccountType
   loans LoanApplication[]
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model Insurance {
+  id String @id @default(uuid())
+  type String
+  name String
+  mobile String
+  address String
+  dob DateTime
+  maritalStatus String
+  gender UserGender
   userId Int
   user User @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())

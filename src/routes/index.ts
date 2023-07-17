@@ -72,6 +72,8 @@ router.use('/loan', loanRouter);
 
 router.use('/documents', documentRouter);
 
+router.use('/insurance', documentRouter);
+
 router.use('/billrecieve', billRecieveRouter);
 
 router.use('/billpayable', billPayableRouter);

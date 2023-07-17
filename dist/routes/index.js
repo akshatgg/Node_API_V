@@ -27,6 +27,7 @@ var tan_routes_1 = __importDefault(require("./tan.routes"));
 var bank_routes_1 = __importDefault(require("./bank.routes"));
 var aadhaar_routes_1 = __importDefault(require("./aadhaar.routes"));
 var loan_routes_1 = __importDefault(require("./loan.routes"));
+var document_routes_1 = __importDefault(require("./document.routes"));
 var router = (0, express_1.Router)();
 router.use('/user', user_routes_1.default);
 router.use('/business', businessProfile_routes_1.default);
@@ -49,6 +50,8 @@ router.use('/aadhaar', aadhaar_routes_1.default);
 router.use('/calculator', calculators_routes_1.default);
 router.use('/career', career_route_1.default);
 router.use('/loan', loan_routes_1.default);
+router.use('/documents', document_routes_1.default);
+router.use('/insurance', document_routes_1.default);
 router.use('/billrecieve', billrecieve_routes_1.default);
 router.use('/billpayable', billpayable_routes_1.default);
 router.get('/', function (req, res) {
