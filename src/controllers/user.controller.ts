@@ -15,10 +15,10 @@ const UserSchema = z.object({
     password: z.string().min(6, 'Password must be atleast 6 characters long'), 
     phone: z.string().regex(PHONE_NUMBER_RGX, 'Enter a valid 10 digit phone number'),
     fatherName: z.string().optional(), 
-    pin: z.string().min(6), 
+    pin: z.string().optional(), 
     address: z.string().optional(), 
-    aadhaar: z.string().length(12).optional(), 
-    pan: z.string().length(10).optional(), 
+    aadhaar: z.string().optional(), 
+    pan: z.string().optional(), 
 });
 
 const LoginSchema = z.object({

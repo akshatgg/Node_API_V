@@ -54,10 +54,10 @@ var UserSchema = zod_1.z.object({
     password: zod_1.z.string().min(6, 'Password must be atleast 6 characters long'),
     phone: zod_1.z.string().regex(util_1.PHONE_NUMBER_RGX, 'Enter a valid 10 digit phone number'),
     fatherName: zod_1.z.string().optional(),
-    pin: zod_1.z.string().min(6),
+    pin: zod_1.z.string().optional(),
     address: zod_1.z.string().optional(),
-    aadhaar: zod_1.z.string().length(12).optional(),
-    pan: zod_1.z.string().length(10).optional(),
+    aadhaar: zod_1.z.string().optional(),
+    pan: zod_1.z.string().optional(),
 });
 var LoginSchema = zod_1.z.object({
     email: zod_1.z.string().toLowerCase().email(),
