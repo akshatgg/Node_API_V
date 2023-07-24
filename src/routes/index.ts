@@ -15,7 +15,7 @@ import libraryRouter from "./library.routes"
 import blogRouter from "./blog.routes";
 import panRouter from "./pan.routes";
 import gstRouter from "./gst.routes";
-import accountancyRouter from "./accountancy.routes";
+
 import careerRouter from "./career.route"
 import billRecieveRouter from "./billrecieve.routes";
 import billPayableRouter from "./billpayable.routes";
@@ -26,6 +26,7 @@ import bankRouter from "./bank.routes";
 import aadhaarRouter from "./aadhaar.routes";
 import loanRouter from "./loan.routes";
 import documentRouter from "./document.routes";
+import accountancyRouter from "./accountancys.routes"
 const router = Router();
 
 router.use('/user', userRouter);
@@ -54,7 +55,7 @@ router.use('/library', libraryRouter);
 
 router.use('/blog', blogRouter);
 
-router.use('/accountancy', accountancyRouter);
+
 
 router.use('/mca', mcaRouter);
 
@@ -77,6 +78,8 @@ router.use('/insurance', documentRouter);
 router.use('/billrecieve', billRecieveRouter);
 
 router.use('/billpayable', billPayableRouter);
+
+router.use('/account', accountancyRouter)
 
 router.get('/', (req, res) => {
     return res.send({ message: 'Up and running' });

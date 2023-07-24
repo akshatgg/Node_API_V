@@ -12,6 +12,7 @@ const InsuranceSchema = z.object({
     gender: z.nativeEnum(UserGender),
     type: z.string(),
     dob: z.coerce.date(),
+    
 });
 
 export default class InsuranceController {

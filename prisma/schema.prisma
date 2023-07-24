@@ -23,9 +23,9 @@ enum UserGender {
 }
 
 model User {
-  id              Int              @id @default(autoincrement())
-  createdAt       DateTime         @default(now())
-  email           String           @unique
+  id              Int                @id @default(autoincrement())
+  createdAt       DateTime           @default(now())
+  email           String             @unique
   password        String
   firstName       String
   lastName        String?
@@ -37,8 +37,8 @@ model User {
   aadhaar         String?
   pan             String?
   dob             DateTime?
-  verified        Boolean          @default(false)
-  userType        UserType         @default(normal)
+  verified        Boolean            @default(false)
+  userType        UserType           @default(normal)
   otps            Otp[]
   businessProfile BusinessProfile?
   invoices        Invoice[]
@@ -49,10 +49,12 @@ model User {
   orders          Order[]
   posts           Post[]
   accounts        Account[]
-  bankAccounts BankDetails[]
-  loans LoanApplication[]
-  documents UploadedDocument[]
-  insurances Insurance[]
+  bankAccounts    BankDetails[]
+  loans           LoanApplication[]
+  documents       UploadedDocument[]
+  insurances      Insurance[]
+  ledger          Ledger[]
+  journalEntry    JournalEntry[]
 }
 
 model Otp {
@@ -369,7 +371,6 @@ model Billpayable {
   invoiceNumber   String?
 }
 
-
 enum DocumentType {
   pdf
   image
@@ -377,28 +378,28 @@ enum DocumentType {
 }
 
 model UploadedDocument {
-  id String @id @default(uuid())
-  userId Int
-  user User @relation(fields: [userId], references: [id])
-  fileName String
-  docs LoanDocument[]
+  id            String           @id @default(uuid())
+  userId        Int
+  user          User             @relation(fields: [userId], references: [id])
+  fileName      String
+  docs          LoanDocument[]
   applicationId String?
-  application LoanApplication? @relation(fields: [applicationId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  application   LoanApplication? @relation(fields: [applicationId], references: [id])
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @default(now())
 }
 
 model LoanDocument {
-  id String @id @default(uuid())
-  name String
-  shortName String
-  mandatory Boolean @default(false)
-  type DocumentType
+  id          String             @id @default(uuid())
+  name        String
+  shortName   String
+  mandatory   Boolean            @default(false)
+  type        DocumentType
   description String?
-  documents UploadedDocument[]
-  loans Loan[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  documents   UploadedDocument[]
+  loans       Loan[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @default(now())
 }
 
 enum LoanType {
@@ -410,18 +411,18 @@ enum LoanType {
 }
 
 model Loan {
-  id String @id @default(uuid())
-  type LoanType
-  name String
-  shortName String?
-  description String?
-  documents LoanDocument[]
-  maxAmount Decimal?
-  minAmount Decimal?
-  interest Decimal
+  id           String            @id @default(uuid())
+  type         LoanType
+  name         String
+  shortName    String?
+  description  String?
+  documents    LoanDocument[]
+  maxAmount    Decimal?
+  minAmount    Decimal?
+  interest     Decimal
   applications LoanApplication[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @default(now())
 }
 
 enum Nationality {
@@ -439,28 +440,28 @@ enum LoanStatus {
 }
 
 model LoanApplication {
-  id String @id @default(uuid())
-  loanId String
-  loan Loan @relation(fields: [loanId], references: [id])
-  loanAmount Decimal
-  loanStatus LoanStatus @default(pending)
-  applicantName String
-  applicantAge Int
-  applicantGender UserGender
-  nationality Nationality
-  description String
-  salaried Boolean
-  documents UploadedDocument[]
-  bankAccountId String
-  bankDetails BankDetails @relation(fields: [bankAccountId], references: [id])
-  phone String?
-  email String?
-  address String?
+  id               String             @id @default(uuid())
+  loanId           String
+  loan             Loan               @relation(fields: [loanId], references: [id])
+  loanAmount       Decimal
+  loanStatus       LoanStatus         @default(pending)
+  applicantName    String
+  applicantAge     Int
+  applicantGender  UserGender
+  nationality      Nationality
+  description      String
+  salaried         Boolean
+  documents        UploadedDocument[]
+  bankAccountId    String
+  bankDetails      BankDetails        @relation(fields: [bankAccountId], references: [id])
+  phone            String?
+  email            String?
+  address          String?
   permanentAddress String
-  userId Int
-  user User @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  userId           Int
+  user             User               @relation(fields: [userId], references: [id])
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @default(now())
 }
 
 enum BankAccountType {
@@ -474,31 +475,130 @@ enum BankAccountType {
 }
 
 model BankDetails {
-  id String @id @default(uuid())
+  id                String            @id @default(uuid())
   accountHolderName String
-  bankName String
-  bankAccountNo String
-  bankIfsc String
-  bankBranch String
-  bankAccountType BankAccountType
-  loans LoanApplication[]
-  userId Int
-  user User @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  bankName          String
+  bankAccountNo     String
+  bankIfsc          String
+  bankBranch        String
+  bankAccountType   BankAccountType
+  loans             LoanApplication[]
+  userId            Int
+  user              User              @relation(fields: [userId], references: [id])
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @default(now())
 }
 
 model Insurance {
-  id String @id @default(uuid())
-  type String
-  name String
-  mobile String
-  address String
-  dob DateTime
+  id            String     @id @default(uuid())
+  type          String
+  name          String
+  mobile        String
+  address       String
+  dob           DateTime
   maritalStatus String
-  gender UserGender
-  userId Int
-  user User @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  gender        UserGender
+  userId        Int
+  user          User       @relation(fields: [userId], references: [id])
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @default(now())
+}
+
+//accountancy for ladger creation
+enum Under {
+  sales
+  Revenue
+}
+
+enum NAME {
+  sales
+  cash
+  Rent
+  Expense
+}
+
+enum CurrencyType {
+  INR
+  USD
+  EUR
+  RUB
+}
+
+model Ledger {
+  id             Int              @id @default(autoincrement())
+  name           NAME             @default(cash)
+  under          Under            @default(sales)
+  openingBalance String
+  date           String?
+  amount         String
+  debitBalance   String
+  creditBalance  String
+  currency       CurrencyType     @default(INR)
+  userId         Int
+  user           User             @relation(fields: [userId], references: [id])
+  mailingDetails MailingDetails[]
+  gstDetails     GSTDetails[]
+  bankingDetails BankingDetail[]
+}
+
+model MailingDetails {
+  id               Int    @id @default(autoincrement())
+  address          String
+  contact          String
+  emailAddress     String
+  mailingDetailsId Int
+  mailingDetails   Ledger @relation(fields: [mailingDetailsId], references: [id])
+}
+
+model GSTDetails {
+  id         Int     @id @default(autoincrement())
+  gstin      String
+  state      String?
+  category   String?
+  gstId      Int
+  gstDetails Ledger  @relation(fields: [gstId], references: [id])
+}
+
+model BankingDetail {
+  id            Int    @id @default(autoincrement())
+  accountNumber String
+  ifscCode      String
+  branchDetails String
+  bankId        Int
+  BankDetails   Ledger @relation(fields: [bankId], references: [id])
+}
+
+model JournalEntry {
+  id           Int          @id @default(autoincrement())
+  date         String
+  debitAmount  String
+  creditAmount String
+  particular   String?
+  currency     CurrencyType @default(INR)
+  narration    String?
+  userId       Int
+  user         User         @relation(fields: [userId], references: [id])
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @default(now())
+
+  extraDetail    ExtraDetails[]
+  gstInformation GstInformation[]
+}
+
+model ExtraDetails {
+  id                   Int          @id @default(autoincrement())
+  costCenterAllocation String
+  projectAllocation    String
+  batchNumber          String
+  extraDetailsId       Int
+  extraDetail          JournalEntry @relation(fields: [extraDetailsId], references: [id])
+}
+
+model GstInformation {
+  id               Int          @id @default(autoincrement())
+  gstIn            String
+  taxCategories    String
+  taxAmount        String
+  gstInformationId Int
+  gstInformation   JournalEntry @relation(fields: [gstInformationId], references: [id])
 }
