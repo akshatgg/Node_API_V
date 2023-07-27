@@ -55,6 +55,7 @@ model User {
   insurances      Insurance[]
   ledger          Ledger[]
   journalEntry    JournalEntry[]
+  Acc_Payments    Acc_Payments[]
 }
 
 model Otp {
@@ -601,4 +602,40 @@ model GstInformation {
   taxAmount        String
   gstInformationId Int
   gstInformation   JournalEntry @relation(fields: [gstInformationId], references: [id])
+}
+
+model Acc_Payments {
+  id                Int                 @id @default(autoincrement())
+  date              String
+  partyRecipient    String
+  paymentDetails    Acc_PaymentDetail[]
+  bankOrCashLedger  String?
+  billAllocation    Bills[]
+  narration         String?
+  gstIn             String?
+  taxAmount         String?
+  taxCategories     String?
+  AdditionalDetails String?
+
+  currency CurrencyType? @default(INR)
+  userId   Int
+  user     User          @relation(fields: [userId], references: [id])
+}
+
+model Bills {
+  id         Int           @id @default(autoincrement())
+  billNumber String
+  amount     String
+  discount   String
+  billId     Int
+  bill       Acc_Payments? @relation(fields: [billId], references: [id])
+}
+
+model Acc_PaymentDetail {
+  id              Int           @id @default(autoincrement())
+  paymentMode     paymentMethod
+  paymentDetailId Int
+  paymentDetail   Acc_Payments  @relation(fields: [paymentDetailId], references: [id])
+  referenceNo     String?
+  chequeNo        String?
 }
