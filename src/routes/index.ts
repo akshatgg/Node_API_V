@@ -2,6 +2,7 @@ import { Request, Response, Router } from "express";
 
 import userRouter from "./user.routes";
 import businessProfileRouter from "./businessProfile.routes";
+import businessSettingRouter from "./businessSetting.routes";
 import invoiceRouter from "./invoice.routes";
 
 import pincodeRouter from "./pincode.routes";
@@ -55,7 +56,7 @@ router.use('/library', libraryRouter);
 
 router.use('/blog', blogRouter);
 
-
+router.use('/businessSetting',businessSettingRouter)
 
 router.use('/mca', mcaRouter);
 

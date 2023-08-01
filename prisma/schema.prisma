@@ -56,6 +56,7 @@ model User {
   ledger          Ledger[]
   journalEntry    JournalEntry[]
   Acc_Payments    Acc_Payments[]
+  businessSetting BusinessSetting[]
 }
 
 model Otp {
@@ -638,4 +639,23 @@ model Acc_PaymentDetail {
   paymentDetail   Acc_Payments  @relation(fields: [paymentDetailId], references: [id])
   referenceNo     String?
   chequeNo        String?
+}
+model BusinessSetting{
+   id              Int           @id @default(autoincrement())
+   phone String
+   email String
+   gstNo String
+   panNo String
+   street String
+   state String
+   pin String
+   city String
+   accountNo String
+   ifscCode String
+   bank_branchName String
+   acc_holderName String
+   industryType String
+   businessType String
+   userId       Int
+  user         User   @relation(fields: [userId], references: [id])
 }
