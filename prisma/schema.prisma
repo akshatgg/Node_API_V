@@ -178,6 +178,13 @@ enum InvoiceType {
   purchase_return
 }
 
+enum ModeOfPayment {
+  cash
+  bank
+  upi
+  credit
+}
+
 model Invoice {
   id            String        @id @default(uuid())
   invoiceNumber Int
@@ -196,6 +203,8 @@ model Invoice {
   details       String?
   extraDetails  String?
   items         InvoiceItem[]
+  modeOfPayment ModeOfPayment
+  credit        Boolean
   accounts      Account[]
   userId        Int
   user          User          @relation(fields: [userId], references: [id])
@@ -206,6 +215,8 @@ model Invoice {
 model InvoiceItem {
   id        String  @id @default(uuid())
   itemId    String
+  quantity  Int
+  discount  Decimal  @default(0.0)
   item      Item    @relation(fields: [itemId], references: [id])
   invoiceId String
   invoice   Invoice @relation(fields: [invoiceId], references: [id])

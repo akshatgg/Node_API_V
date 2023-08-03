@@ -9,7 +9,7 @@ class InvoiceController {
             const { id: userId } = req.user!;
 
             // Create the invoice
-            const { invoiceNumber, type, partyId, phone, partyName, totalAmount, totalGst, stateOfSupply, cgst, sgst, igst, utgst, details, extraDetails, items } = req.body;
+            const { invoiceNumber, type, partyId, phone, partyName, totalAmount, totalGst, stateOfSupply, cgst, sgst, igst, utgst, details, extraDetails, items, modeOfPayment, credit = false } = req.body;
 
             if(partyId) {
                 const party = await prisma.party.findUnique({ where: { id: partyId } });
@@ -36,6 +36,8 @@ class InvoiceController {
                     utgst,
                     details,
                     extraDetails,
+                    modeOfPayment,
+                    credit,
                     items: {
                         create: items,
                     },
