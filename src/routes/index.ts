@@ -28,6 +28,7 @@ import aadhaarRouter from "./aadhaar.routes";
 import loanRouter from "./loan.routes";
 import documentRouter from "./document.routes";
 import accountancyRouter from "./accountancys.routes"
+import visitorRouter from "./visitorCounter.routes"
 const router = Router();
 
 router.use('/user', userRouter);
@@ -81,6 +82,9 @@ router.use('/billrecieve', billRecieveRouter);
 router.use('/billpayable', billPayableRouter);
 
 router.use('/account', accountancyRouter)
+
+router.use('/visitorCount',visitorRouter)
+
 
 router.get('/', (req, res) => {
     return res.send({ message: 'Up and running' });

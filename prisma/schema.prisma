@@ -659,3 +659,9 @@ model BusinessSetting{
    userId       Int
   user         User   @relation(fields: [userId], references: [id])
 }
+
+model Visitor{
+   id              Int           @id @default(autoincrement())
+   count     Int     @default(0)
+  createdAt DateTime @default(now())
+}
