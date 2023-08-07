@@ -6,7 +6,7 @@ import queryValidator from "../middlewares/query-validator";
 
 const panRouter = Router();
 
-panRouter.get('/pan-aadhaar-link-status', verifyToken, PanAadhaarController.checkLinkStatus);
+panRouter.get('/pan-aadhaar-link-status', verifyToken,queryValidator(['pan','aadhaar']), PanAadhaarController.checkLinkStatus);
 
 panRouter.get('/get-pan-details', verifyToken, queryValidator(['pan']), PanController.getAdvancePanDetails);
 

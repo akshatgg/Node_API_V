@@ -6,7 +6,7 @@ export default class PanAadhaarController {
 
     static async checkLinkStatus(req: Request, res: Response) {
         try {
-            const { pan, aadhaar } = req.body;
+            const { pan, aadhaar } = req.query;
 
             if (!pan) {
                 return res.status(400).json({ success: false, message: 'Enter a valid PAN Number' });
