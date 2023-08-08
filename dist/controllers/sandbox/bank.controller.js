@@ -123,6 +123,45 @@ var BankController = /** @class */ (function () {
             });
         });
     };
+    BankController.upiVerification = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, virtual_payment_address, name, endpoint, token, headers, _b, status, data, e_3;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        _c.trys.push([0, 3, , 4]);
+                        _a = req.query, virtual_payment_address = _a.virtual_payment_address, name = _a.name;
+                        if (!virtual_payment_address || !name) {
+                            return [2 /*return*/, res.status(400).json({ success: false, message: 'Required Query parameter was not provided' })];
+                        }
+                        endpoint = "".concat(sandbox_service_1.default.BASE_URL, "/bank/upi/").concat(virtual_payment_address);
+                        return [4 /*yield*/, sandbox_service_1.default.generateAccessToken()];
+                    case 1:
+                        token = _c.sent();
+                        headers = {
+                            'Authorization': token,
+                            'accept': 'application/json',
+                            'x-api-key': process.env.SANDBOX_KEY,
+                            'x-api-version': process.env.SANDBOX_API_VERSION
+                        };
+                        return [4 /*yield*/, axios_1.default.get(endpoint, {
+                                headers: headers
+                            })];
+                    case 2:
+                        _b = _c.sent(), status = _b.status, data = _b.data.data;
+                        if (status !== 200) {
+                            return [2 /*return*/, res.status(500).send({ success: false, message: "Something went wrong" })];
+                        }
+                        return [2 /*return*/, res.status(200).json({ success: true, data: data })];
+                    case 3:
+                        e_3 = _c.sent();
+                        console.log(e_3);
+                        return [2 /*return*/, res.status(500).json({ status: false, message: 'Something went wrong ,' })];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
+    };
     return BankController;
 }());
 exports.default = BankController;

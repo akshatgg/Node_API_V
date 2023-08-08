@@ -10,4 +10,5 @@ bankRouter.get('/details', verifyToken, queryValidator(['ifsc']), BankController
 
 bankRouter.post('/verify-account', verifyToken, bodyValidator, BankController.verifyBankAccount);
 
+bankRouter.get('/upi-verify', verifyToken, queryValidator(['virtual_payment_address']), BankController.upiVerification);
 export default bankRouter;

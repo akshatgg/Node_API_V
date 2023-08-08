@@ -11,5 +11,6 @@ var query_validator_1 = __importDefault(require("../middlewares/query-validator"
 var bankRouter = (0, express_1.Router)();
 bankRouter.get('/details', verify_token_1.default, (0, query_validator_1.default)(['ifsc']), bank_controller_1.default.getBankDetailsByIfsc);
 bankRouter.post('/verify-account', verify_token_1.default, body_validator_1.default, bank_controller_1.default.verifyBankAccount);
+bankRouter.get('/upi-verify', verify_token_1.default, (0, query_validator_1.default)(['virtual_payment_address']), bank_controller_1.default.upiVerification);
 exports.default = bankRouter;
 //# sourceMappingURL=bank.routes.js.map

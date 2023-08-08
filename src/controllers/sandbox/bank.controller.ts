@@ -74,4 +74,38 @@ export default class BankController {
         }
     }
 
+    static async upiVerification(req: Request, res: Response) {
+        try {
+            const { virtual_payment_address,name } = req.query;
+
+            if(!virtual_payment_address || !name) {
+                return res.status(400).json({ success: false, message: 'Required Query parameter was not provided' });
+            }
+
+            const endpoint = `${Sandbox.BASE_URL}/bank/upi/${virtual_payment_address}`;
+
+            const token = await Sandbox.generateAccessToken();
+
+            const headers = {
+                'Authorization': token,
+                'accept': 'application/json',
+                'x-api-key': process.env.SANDBOX_KEY,
+                'x-api-version': process.env.SANDBOX_API_VERSION
+            };
+
+            const { status, data: { data } } = await axios.get(endpoint, {
+                headers
+            });
+
+            if(status !== 200) {
+                return res.status(500).send({ success: false, message: "Something went wrong" });
+            }
+            
+            return res.status(200).json({ success: true, data });
+        } catch(e) {
+            console.log(e);
+            return res.status(500).json({ status: false, message: 'Something went wrong ,' });
+        }
+    }
+
 }
