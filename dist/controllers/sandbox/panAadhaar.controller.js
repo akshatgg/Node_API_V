@@ -51,7 +51,7 @@ var PanAadhaarController = /** @class */ (function () {
                 switch (_c.label) {
                     case 0:
                         _c.trys.push([0, 3, , 4]);
-                        _a = req.body, pan = _a.pan, aadhaar = _a.aadhaar;
+                        _a = req.query, pan = _a.pan, aadhaar = _a.aadhaar;
                         if (!pan) {
                             return [2 /*return*/, res.status(400).json({ success: false, message: 'Enter a valid PAN Number' })];
                         }

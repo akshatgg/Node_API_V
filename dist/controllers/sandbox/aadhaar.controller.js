@@ -44,9 +44,90 @@ var axios_1 = __importDefault(require("axios"));
 var AadhaarController = /** @class */ (function () {
     function AadhaarController() {
     }
-    AadhaarController.verifyAadhaar = function (req, res) {
+    AadhaarController.aadharGenerateOtp = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
             var aadhaar_number, endpoint, token, headers, _a, status, data, e_1;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _b.trys.push([0, 3, , 4]);
+                        aadhaar_number = req.body.aadhaar_number;
+                        if (!aadhaar_number) {
+                            return [2 /*return*/, res.status(400).json({ success: false, message: 'Body parameter aadhaar_number was not provided' })];
+                        }
+                        endpoint = "".concat(sandbox_service_1.default.BASE_URL, "/kyc/aadhaar/okyc/otp");
+                        return [4 /*yield*/, sandbox_service_1.default.generateAccessToken()];
+                    case 1:
+                        token = _b.sent();
+                        headers = {
+                            'Authorization': token,
+                            'accept': 'application/json',
+                            'x-api-key': process.env.SANDBOX_KEY,
+                            'x-api-version': process.env.SANDBOX_API_VERSION
+                        };
+                        return [4 /*yield*/, axios_1.default.post(endpoint, req.body, {
+                                headers: headers
+                            })];
+                    case 2:
+                        _a = _b.sent(), status = _a.status, data = _a.data.data;
+                        if (status !== 200) {
+                            return [2 /*return*/, res.status(500).send({ success: false, message: "Something went wrong" })];
+                        }
+                        return [2 /*return*/, res.status(200).json({ success: true, data: data })];
+                    case 3:
+                        e_1 = _b.sent();
+                        console.log(e_1);
+                        return [2 /*return*/, res.status(500).json({ status: false, message: 'Something went wrong' })];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    AadhaarController.aadhaarVerifyOtp = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, otp, ref_id, endpoint, token, headers, response, e_2;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _b.trys.push([0, 3, , 4]);
+                        _a = req.body, otp = _a.otp, ref_id = _a.ref_id;
+                        if (!otp) {
+                            return [2 /*return*/, res.status(400).json({ success: false, message: 'Body parameter otp was not provided' })];
+                        }
+                        if (!ref_id) {
+                            return [2 /*return*/, res.status(400).json({ success: false, message: 'Body parameter ref_id was not provided' })];
+                        }
+                        endpoint = "".concat(sandbox_service_1.default.BASE_URL, "/kyc/aadhaar/okyc/otp/verify");
+                        return [4 /*yield*/, sandbox_service_1.default.generateAccessToken()];
+                    case 1:
+                        token = _b.sent();
+                        headers = {
+                            'Authorization': token,
+                            'accept': 'application/json',
+                            'x-api-key': process.env.SANDBOX_KEY,
+                            'x-api-version': process.env.SANDBOX_API_VERSION
+                        };
+                        return [4 /*yield*/, axios_1.default.post(endpoint, req.body, {
+                                headers: headers,
+                            })];
+                    case 2:
+                        response = _b.sent();
+                        if (response.status !== 200) {
+                            return [2 /*return*/, res.status(500).json({ success: false, message: "Could not verify. Something went wrong" })];
+                        }
+                        return [2 /*return*/, res.status(200).send({ success: true, message: "OTP: ".concat(otp, " verify successfully!") })];
+                    case 3:
+                        e_2 = _b.sent();
+                        // console.log(e);
+                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong ' })];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    AadhaarController.verifyAadhaar = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var aadhaar_number, endpoint, token, headers, _a, status, data, e_3;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -74,8 +155,8 @@ var AadhaarController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, data: data })];
                     case 3:
-                        e_1 = _b.sent();
-                        console.log(e_1);
+                        e_3 = _b.sent();
+                        console.log(e_3);
                         return [2 /*return*/, res.status(500).send({ success: false, message: "Something went wrong" })];
                     case 4: return [2 /*return*/];
                 }

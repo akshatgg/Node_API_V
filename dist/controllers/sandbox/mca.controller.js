@@ -83,6 +83,45 @@ var MCAController = /** @class */ (function () {
             });
         });
     };
+    MCAController.getDirectorByDIN = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var din, endpoint, token, headers, _a, status, data, e_2;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _b.trys.push([0, 3, , 4]);
+                        din = req.query.din;
+                        if (!din) {
+                            return [2 /*return*/, res.status(400).json({ success: false, message: 'Query parameter DIN was not provided' })];
+                        }
+                        endpoint = "".concat(sandbox_service_1.default.BASE_URL, "/mca/directors/").concat(din);
+                        return [4 /*yield*/, sandbox_service_1.default.generateAccessToken()];
+                    case 1:
+                        token = _b.sent();
+                        headers = {
+                            'Authorization': token,
+                            'accept': 'application/json',
+                            'x-api-key': process.env.SANDBOX_KEY,
+                            'x-api-version': process.env.SANDBOX_API_VERSION
+                        };
+                        return [4 /*yield*/, axios_1.default.get(endpoint, {
+                                headers: headers
+                            })];
+                    case 2:
+                        _a = _b.sent(), status = _a.status, data = _a.data.data;
+                        if (status !== 200) {
+                            return [2 /*return*/, res.status(500).send({ success: false, message: "Something went wrong" })];
+                        }
+                        return [2 /*return*/, res.status(200).json({ success: true, data: data })];
+                    case 3:
+                        e_2 = _b.sent();
+                        console.log(e_2);
+                        return [2 /*return*/, res.status(500).json({ status: false, message: 'Something went wrong' })];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
+    };
     return MCAController;
 }());
 exports.default = MCAController;

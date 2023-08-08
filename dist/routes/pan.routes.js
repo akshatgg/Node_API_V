@@ -9,7 +9,7 @@ var panAadhaar_controller_1 = __importDefault(require("../controllers/sandbox/pa
 var pan_controller_1 = __importDefault(require("../controllers/sandbox/pan.controller"));
 var query_validator_1 = __importDefault(require("../middlewares/query-validator"));
 var panRouter = (0, express_1.Router)();
-panRouter.get('/pan-aadhaar-link-status', verify_token_1.default, panAadhaar_controller_1.default.checkLinkStatus);
+panRouter.get('/pan-aadhaar-link-status', verify_token_1.default, (0, query_validator_1.default)(['pan', 'aadhaar']), panAadhaar_controller_1.default.checkLinkStatus);
 panRouter.get('/get-pan-details', verify_token_1.default, (0, query_validator_1.default)(['pan']), pan_controller_1.default.getAdvancePanDetails);
 exports.default = panRouter;
 //# sourceMappingURL=pan.routes.js.map
