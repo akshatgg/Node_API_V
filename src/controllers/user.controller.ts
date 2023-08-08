@@ -4,7 +4,7 @@ import { PHONE_NUMBER_RGX, addMinutesToTime, generateOTP, validateEmail, validat
 import bcrypt from 'bcrypt';
 import EmailService from "../services/email.service";
 import TokenService from "../services/token.service";
-import { UserGender, UserType } from "@prisma/client";
+import { UserGender } from "@prisma/client";
 import { ZodError, z } from "zod";
 
 const UserSchema = z.object({
