@@ -64,7 +64,7 @@ export default class BlogController {
                 return res.status(404).send({ success: false, message: 'Blog Post Not Found' });
             }
 
-            return res.status(200).send({ success: true, data: post });;
+            return res.status(200).send({ success: true, data: post });
         } catch (error) {
             return res.status(500).send({ success: false, message: 'Something went wrong' });
         }

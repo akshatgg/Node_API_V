@@ -1,7 +1,19 @@
 import { Request, Response } from "express";
-import { validateGSTIN } from "../../lib/util";
+import { GSTIN_RGX, validateGSTIN } from "../../lib/util";
 import Sandbox from "../../services/sandbox.service";
 import axios from "axios";
+import { z } from "zod";
+
+const GSTR4_SCHEMA = z.object({
+    gstin: z.string({ required_error: 'GSTIN Number is required' }).regex(GSTIN_RGX, "Invalid GSTIN Number"),
+    fp: z.number(),
+    txos: z.object({
+        samt: z.number(),
+        rt: z.number(),
+        camt: z.number(),
+        trnovr: z.number(),
+    }),
+});
 
 export default class GSTController {
 
@@ -252,6 +264,91 @@ export default class GSTController {
             }
 
             return res.status(200).send({ success: true, message: `GSTIN: ${gstin} authenticated successfully!` });
+        } catch(e) {
+            console.log(e);
+            return res.status(500).json({ success: false, message: 'Something went wrong' });
+        }
+    }
+
+    /**
+     * GSTR-4
+     */
+
+    static async uploadGSTR4(req: Request, res: Response) {
+        try {
+            const data = GSTR4_SCHEMA.parse(req.body);
+
+            const { year, month } = req.params;
+
+            if(!year || !month) {
+                return res.status(400).send({ success: false, message: 'Year and Month are required' });
+            }
+
+            const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${data.gstin}/gstrs/gstr-4/${year}/${month}`;
+
+            const token = await Sandbox.generateAccessToken();
+
+            const headers = {
+                'Authorization': token,
+                'accept': 'application/json',
+                'x-api-key': process.env.SANDBOX_KEY,
+                'x-api-version': process.env.SANDBOX_API_VERSION
+            };
+
+            const response = await axios.post(endpoint, data, {
+                headers,
+            });
+
+            if(response.status !== 200) {
+                return res.status(500).send({ success: true, message: "Could not upload GSTR 4" });
+            }
+
+            return res.status(200).send({ success: true, message: `GSTR-4 Uploaded successfully!`, reference_id: response.data.reference_id });
+        } catch(e) {
+            console.log(e);
+            return res.status(500).json({ success: false, message: 'Something went wrong' });
+        }
+    }
+
+    /**
+     * GSTR-3B
+     */
+
+    static async uploadGSTR3B(req: Request, res: Response) {
+        try {
+            const body = req.body;
+
+            const { gstin, year, month } = req.params;
+
+            if(!validateGSTIN(gstin)) {
+                return res.status(400).send({ success: false, message: 'Invalid GSTIN Number' });
+            }
+
+            if(!year || !month) {
+                return res.status(400).send({ success: false, message: 'Year and Month are required' });
+            }
+
+
+            const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/gstrs/gstr-3b/${year}/${month}/file`;
+
+            const token = await Sandbox.generateAccessToken();
+
+            const headers = {
+                'Authorization': token,
+                'accept': 'application/json',
+                'x-api-key': process.env.SANDBOX_KEY,
+                'x-api-version': process.env.SANDBOX_API_VERSION
+            };
+
+            const response = await axios.post(endpoint, body, {
+                headers,
+            });
+
+            if(response.status !== 200) {
+                return res.status(500).send({ success: true, message: "Could not upload GSTR 4" });
+            }
+
+            return res.status(200).send({ success: true, message: `GSTR-4 Uploaded successfully!`, reference_id: response.data.reference_id });
         } catch(e) {
             console.log(e);
             return res.status(500).json({ success: false, message: 'Something went wrong' });
