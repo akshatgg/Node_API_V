@@ -57,6 +57,7 @@ model User {
   journalEntry    JournalEntry[]
   Acc_Payments    Acc_Payments[]
   businessSetting BusinessSetting[]
+  registerStartup RegisterStartup[]
 }
 
 model Otp {
@@ -216,7 +217,7 @@ model InvoiceItem {
   id        String  @id @default(uuid())
   itemId    String
   quantity  Int
-  discount  Decimal  @default(0.0)
+  discount  Decimal @default(0.0)
   item      Item    @relation(fields: [itemId], references: [id])
   invoiceId String
   invoice   Invoice @relation(fields: [invoiceId], references: [id])
@@ -651,28 +652,37 @@ model Acc_PaymentDetail {
   referenceNo     String?
   chequeNo        String?
 }
-model BusinessSetting{
-   id              Int           @id @default(autoincrement())
-   phone String
-   email String
-   gstNo String
-   panNo String
-   street String
-   state String
-   pin String
-   city String
-   accountNo String
-   ifscCode String
-   bank_branchName String
-   acc_holderName String
-   industryType String
-   businessType String
-   userId       Int
-  user         User   @relation(fields: [userId], references: [id])
+
+model BusinessSetting {
+  id              Int    @id @default(autoincrement())
+  phone           String
+  email           String
+  gstNo           String
+  panNo           String
+  street          String
+  state           String
+  pin             String
+  city            String
+  accountNo       String
+  ifscCode        String
+  bank_branchName String
+  acc_holderName  String
+  industryType    String
+  businessType    String
+  userId          Int
+  user            User   @relation(fields: [userId], references: [id])
 }
 
-model Visitor{
-   id              Int           @id @default(autoincrement())
-   count     Int     @default(0)
+model Visitor {
+  id        Int      @id @default(autoincrement())
+  count     Int      @default(0)
   createdAt DateTime @default(now())
+}
+
+model RegisterStartup {
+  id          Int    @id @default(autoincrement())
+  title String
+  image       String
+  userId      Int
+  user        User   @relation(fields: [userId], references: [id])
 }
