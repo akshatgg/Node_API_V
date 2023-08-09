@@ -19,8 +19,14 @@ gstRouter.post('/tax-payer/verify-otp', verifyToken, bodyValidator, GSTControlle
 
 gstRouter.post('/tax-payer/file/proceed', verifyToken, bodyValidator, GSTController.proceedToFileGstr);
 
-gstRouter.post('/tax-payer/file/gstr-4', verifyToken, bodyValidator, GSTController.uploadGSTR4);
+gstRouter.post('/tax-payer/file/gstr-4/:gstin/:year/:month', verifyToken, bodyValidator, GSTController.uploadGSTR4);
 
-gstRouter.post('/tax-payer/file/gstr-3b', verifyToken, bodyValidator, GSTController.uploadGSTR3B);
+gstRouter.post('/tax-payer/file/gstr-3b/:gstin/:year/:month', verifyToken, bodyValidator, GSTController.uploadGSTR3B);
+
+gstRouter.post('/tax-payer/file/gstr-3b/:gstin/:year/:month', verifyToken, bodyValidator, GSTController.uploadGSTR3B);
+
+gstRouter.post('/tax-payer/file/gstr-3b/:gstin/:year/:month/file', verifyToken, bodyValidator, GSTController.uploadGSTR3B);
+
+gstRouter.get('/tax-payer/summary/gstr-3b/:gstin/:year/:month', verifyToken, GSTController.getGSTR3BSummary);
 
 export default gstRouter;
