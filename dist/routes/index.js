@@ -31,6 +31,7 @@ var document_routes_1 = __importDefault(require("./document.routes"));
 var accountancys_routes_1 = __importDefault(require("./accountancys.routes"));
 var visitorCounter_routes_1 = __importDefault(require("./visitorCounter.routes"));
 var registerStartup_routes_1 = __importDefault(require("./registerStartup,routes"));
+var contactUs_routes_1 = __importDefault(require("./contactUs.routes"));
 var router = (0, express_1.Router)();
 router.use('/user', user_routes_1.default);
 router.use('/business', businessProfile_routes_1.default);
@@ -60,6 +61,7 @@ router.use('/billpayable', billpayable_routes_1.default);
 router.use('/account', accountancys_routes_1.default);
 router.use('/visitorCount', visitorCounter_routes_1.default);
 router.use('/Startup', registerStartup_routes_1.default);
+router.use('/contactUs', contactUs_routes_1.default);
 router.get('/', function (req, res) {
     return res.send({ message: 'Up and running' });
 });
