@@ -334,6 +334,8 @@ model Career {
   skills   String
   gender   UserGender
   cv       String
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @default(now())
 }
 
 enum paymentStatus {
