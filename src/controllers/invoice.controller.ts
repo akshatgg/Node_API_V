@@ -204,19 +204,20 @@ class InvoiceController {
 
             const { id: userId } = req.user!;
 
-            const party = await prisma.invoice.findFirst({ where: { id: partyId, userId } });
+            const party = await prisma.party.findFirst({ where: { id: partyId, userId } });
 
             if(!party) {
                 res.status(200).json({ success: false, message: 'Party not found' });
                 return;
             }
 
-            // Delete the invoice
+            // Delete the party
             const deletedParty: Party | null = await prisma.party.delete({ where: { id: partyId } });
 
             res.status(200).json({ success: true, deletedParty });
         } catch (error) {
             res.status(500).json({ success: false, message: 'Internal server error' });
+            console.log(error)
         }
     }
 
