@@ -10,6 +10,11 @@ class InvoiceController {
 
             // Create the invoice
             const { invoiceNumber, type, partyId, phone, partyName, totalAmount, totalGst, stateOfSupply, cgst, sgst, igst, utgst, details, extraDetails, items, modeOfPayment, credit = false } = req.body;
+                      console.log(req.body)
+            if(!invoiceNumber || !type || !partyId ||phone || !partyName  || !totalAmount|| !totalGst|| !stateOfSupply|| !cgst|| !sgst||  !igst|| !utgst|| !details|| !extraDetails|| !items ||  !modeOfPayment|| ! credit) {
+                res.status(401).json({ sucess: false, message: 'body parameter are missing' });
+                return;
+            }
 
             if(partyId) {
                 const party = await prisma.party.findUnique({ where: { id: partyId } });
@@ -44,10 +49,10 @@ class InvoiceController {
                     userId,
                 },
             });
-
+            console.log(invoice)
             res.status(201).json(invoice);
         } catch (error) {
-            console.log(error);
+            console.error(error)
             res.status(500).json({ sucess: false, message: 'Internal server error' });
         }
     }

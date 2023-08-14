@@ -6,7 +6,7 @@ export class RegisterStartupController {
     static async RegisterStartup(req: Request, res: Response): Promise<void> {
         try {
             const image: string = req.file?.path as string
-            const { title } = req.body
+            const { title,categories } = req.body
             const { id: userId } = req.user!;
 
             if (!title) {
@@ -17,6 +17,11 @@ export class RegisterStartupController {
                 res.status(400).json({ success: false, message: 'Required Query image was not provided' });
                 return
             }
+            if (!categories) {
+                res.status(400).json({ success: false, message: 'Required Query categories was not provided' });
+                return
+            }
+
             const existingUser = await prisma.user.findUnique({ where: { id: userId } });
             if (!existingUser) {
                 res.status(404).json({ error: 'User not found' });
@@ -24,7 +29,7 @@ export class RegisterStartupController {
             }
             const newRegisterStarup: RegisterStartup = await prisma.registerStartup.create({
                 data: {
-                    title, image, userId,
+                    title, image, userId,categories
                 }
             })
             res.status(201).json({ result: newRegisterStarup, message: 'Sucessfull Register Startup Setting created' });
