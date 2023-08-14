@@ -46,13 +46,14 @@ export default class CareerController {
     //find one career
     static async findOneCareer(req: Request, res: Response): Promise<void> {
         try {
-            const id = req.params.id;
-            const { id: careerId } = req.user!
-            const Career: Career | null = await prisma.career.findFirst({
-                where: {
-                    id: careerId
-                },
-            });
+           
+            const id = parseInt(req.params.id);
+
+            const Career: Career | null = await prisma.career.findUnique({
+              where: {
+                id,
+              },
+            })
 
             if (!Career) {
                 res.status(404).json({ success: false, message: 'career not found' });
