@@ -44,44 +44,43 @@ var RegisterStartupController = /** @class */ (function () {
     RegisterStartupController.RegisterStartup = function (req, res) {
         var _a;
         return __awaiter(this, void 0, void 0, function () {
-            var image, title, userId, existingUser, newRegisterStarup, error_1;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var image, _b, title, categories, userId, existingUser, newRegisterStarup, error_1;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
                     case 0:
-                        _b.trys.push([0, 3, , 4]);
+                        _c.trys.push([0, 3, , 4]);
                         image = (_a = req.file) === null || _a === void 0 ? void 0 : _a.path;
-                        title = req.body.title;
+                        _b = req.body, title = _b.title, categories = _b.categories;
                         userId = req.user.id;
                         if (!title) {
-                            res.status(400).json({ success: false, message: 'Required Query title name was not provided' });
-                            return [2 /*return*/];
+                            return [2 /*return*/, res.status(400).json({ success: false, message: 'Required Query title name was not provided' })];
                         }
                         if (!image) {
-                            res.status(400).json({ success: false, message: 'Required Query image was not provided' });
-                            return [2 /*return*/];
+                            return [2 /*return*/, res.status(400).json({ success: false, message: 'Required Query image was not provided' })];
+                        }
+                        if (!categories) {
+                            return [2 /*return*/, res.status(400).json({ success: false, message: 'Required Query categories was not provided' })];
                         }
                         return [4 /*yield*/, index_1.prisma.user.findUnique({ where: { id: userId } })];
                     case 1:
-                        existingUser = _b.sent();
+                        existingUser = _c.sent();
                         if (!existingUser) {
-                            res.status(404).json({ error: 'User not found' });
-                            return [2 /*return*/];
+                            return [2 /*return*/, res.status(404).json({ error: 'User not found' })];
                         }
                         return [4 /*yield*/, index_1.prisma.registerStartup.create({
                                 data: {
                                     title: title,
                                     image: image,
                                     userId: userId,
+                                    categories: categories
                                 }
                             })];
                     case 2:
-                        newRegisterStarup = _b.sent();
-                        res.status(201).json({ result: newRegisterStarup, message: 'Sucessfull Register Startup Setting created' });
-                        return [3 /*break*/, 4];
+                        newRegisterStarup = _c.sent();
+                        return [2 /*return*/, res.status(201).json({ result: newRegisterStarup, message: 'Sucessfull Register Startup Setting created' })];
                     case 3:
-                        error_1 = _b.sent();
-                        res.status(500).json({ success: false, message: 'Internal server error', errors: error_1 });
-                        return [3 /*break*/, 4];
+                        error_1 = _c.sent();
+                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Internal server error', errors: error_1 })];
                     case 4: return [2 /*return*/];
                 }
             });
@@ -97,12 +96,10 @@ var RegisterStartupController = /** @class */ (function () {
                         return [4 /*yield*/, index_1.prisma.registerStartup.findMany({})];
                     case 1:
                         AllStartup = _a.sent();
-                        res.status(200).json({ success: true, AllStartup: AllStartup });
-                        return [3 /*break*/, 3];
+                        return [2 /*return*/, res.status(200).json({ success: true, AllStartup: AllStartup })];
                     case 2:
                         error_2 = _a.sent();
-                        res.status(500).json({ success: false, message: 'Internal server error', errors: error_2 });
-                        return [3 /*break*/, 3];
+                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Internal server error', errors: error_2 })];
                     case 3: return [2 /*return*/];
                 }
             });
@@ -122,15 +119,12 @@ var RegisterStartupController = /** @class */ (function () {
                     case 1:
                         Startup = _a.sent();
                         if (!Startup) {
-                            res.status(404).json({ sucess: false, message: 'Startup not found' });
-                            return [2 /*return*/];
+                            return [2 /*return*/, res.status(404).json({ sucess: false, message: 'Startup not found' })];
                         }
-                        res.status(200).json(Startup);
-                        return [3 /*break*/, 3];
+                        return [2 /*return*/, res.status(200).json(Startup)];
                     case 2:
                         error_3 = _a.sent();
-                        res.status(500).json({ sucess: false, message: 'Internal server error' });
-                        return [3 /*break*/, 3];
+                        return [2 /*return*/, res.status(500).json({ sucess: false, message: 'Internal server error' })];
                     case 3: return [2 /*return*/];
                 }
             });
@@ -149,13 +143,11 @@ var RegisterStartupController = /** @class */ (function () {
                             })];
                     case 1:
                         deletedStartup = _a.sent();
-                        res.status(200).json({ success: true, deletedStartup: deletedStartup, message: "Register Startup deleted sucessfully" });
-                        return [3 /*break*/, 3];
+                        return [2 /*return*/, res.status(200).json({ success: true, deletedStartup: deletedStartup, message: "Register Startup deleted sucessfully" })];
                     case 2:
                         error_4 = _a.sent();
                         console.log(error_4);
-                        res.status(500).json({ success: false, message: 'Internal server error' });
-                        return [3 /*break*/, 3];
+                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Internal server error' })];
                     case 3: return [2 /*return*/];
                 }
             });

@@ -111,16 +111,15 @@ var CareerController = /** @class */ (function () {
     //find one career
     CareerController.findOneCareer = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var id, careerId, Career, error_3;
+            var id, Career, error_3;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        id = req.params.id;
-                        careerId = req.user.id;
-                        return [4 /*yield*/, index_1.prisma.career.findFirst({
+                        id = parseInt(req.params.id);
+                        return [4 /*yield*/, index_1.prisma.career.findUnique({
                                 where: {
-                                    id: careerId
+                                    id: id,
                                 },
                             })];
                     case 1:

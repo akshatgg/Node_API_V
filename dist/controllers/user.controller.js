@@ -288,6 +288,7 @@ var UserController = /** @class */ (function () {
                                     pan: true,
                                     email: true,
                                     phone: true,
+                                    pin: true,
                                     userType: true,
                                     verified: true,
                                     createdAt: true,
@@ -473,6 +474,7 @@ var UserController = /** @class */ (function () {
                                     phone: true,
                                     pan: true,
                                     userType: true,
+                                    pin: true
                                 },
                                 where: {
                                     id: {
@@ -516,6 +518,7 @@ var UserController = /** @class */ (function () {
                                     pan: true,
                                     createdAt: true,
                                     userType: true,
+                                    pin: true
                                 },
                                 orderBy: {
                                     createdAt: order === 'asc' ? 'asc' : 'desc',
