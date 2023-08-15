@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { Invoice, InvoiceItem, Item, Party } from '@prisma/client';
-import TokenService from '../services/token.service'; // Import your token service
 import { prisma } from '../index';
 
 class InvoiceController {
