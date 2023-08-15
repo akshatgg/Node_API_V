@@ -4,27 +4,29 @@ import TokenService from '../services/token.service'; // Import your token servi
 import { prisma } from '../index';
 
 class InvoiceController {
-    static async create(req: Request, res: Response): Promise<void> {
+
+    static async create(req: Request, res: Response) {
         try {
             const { id: userId } = req.user!;
-
+    
             // Create the invoice
             const { invoiceNumber, type, partyId, phone, partyName, totalAmount, totalGst, stateOfSupply, cgst, sgst, igst, utgst, details, extraDetails, items, modeOfPayment, credit = false } = req.body;
-
+    
             if(partyId) {
                 const party = await prisma.party.findUnique({ where: { id: partyId } });
-
+    
                 if(!party) {
-                    res.status(401).json({ sucess: false, message: 'Party not found' });
-                    return;
+                    return res.status(401).json({ sucess: false, message: 'Party not found' });
                 }
             }
-
+    
             const invoice: Invoice = await prisma.invoice.create({
                 data: {
                     invoiceNumber,
                     type,
-                    partyId,
+                    party: {
+                        connect: { id: partyId } // Connect an existing party by ID
+                    },
                     phone,
                     partyName,
                     totalAmount,
@@ -39,19 +41,23 @@ class InvoiceController {
                     modeOfPayment,
                     credit,
                     items: {
-                        create: items,
+                        create: items.map(({ id, quantity } : { id: string, quantity: number }) => ({
+                            item: { connect: { id } },
+                            quantity
+                        })),
                     },
-                    userId,
+                    user: {
+                        connect: { id: userId } // Connect the user by ID
+                    },
                 },
             });
-
-            res.status(201).json(invoice);
+    
+            return res.status(201).json(invoice);
         } catch (error) {
             console.log(error);
-            res.status(500).json({ sucess: false, message: 'Internal server error' });
+            return res.status(500).json({ sucess: false, message: 'Internal server error' });
         }
-    }
-
+    }    
 
     static async getAll(req: Request, res: Response): Promise<void> {
         try {
