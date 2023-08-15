@@ -681,12 +681,18 @@ model Visitor {
   count     Int      @default(0)
   createdAt DateTime @default(now())
 }
-
+enum StartupCategory{
+  registration
+  companyRegistration
+  returns
+  audits
+}
 model RegisterStartup {
   id          Int    @id @default(autoincrement())
   title String
   image       String
   userId      Int
+  categories  StartupCategory
   user        User   @relation(fields: [userId], references: [id])
 }
 model ContactUs{

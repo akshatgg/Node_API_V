@@ -215,6 +215,7 @@ export default class UserController {
                     pan: true,
                     email: true,
                     phone: true,
+                    pin:true,
                     userType: true,
                     verified: true,
                     createdAt: true,
@@ -378,6 +379,7 @@ export default class UserController {
                     phone: true,
                     pan: true,
                     userType: true,
+                    pin:true
                 },
                 where: {
                     id: {
@@ -415,6 +417,7 @@ export default class UserController {
                     pan: true,
                     createdAt: true,
                     userType: true,
+                    pin:true
                 },
                 orderBy: {
                     createdAt: order === 'asc' ? 'asc' : 'desc',

@@ -7,6 +7,7 @@ var express_1 = require("express");
 var gst_controller_1 = __importDefault(require("../controllers/sandbox/gst.controller"));
 var verify_token_1 = __importDefault(require("../middlewares/verify-token"));
 var body_validator_1 = __importDefault(require("../middlewares/body-validator"));
+var query_validator_1 = __importDefault(require("../middlewares/query-validator"));
 var gstRouter = (0, express_1.Router)();
 gstRouter.get('/search/gstin/:gstin', verify_token_1.default, gst_controller_1.default.searchByGSTIN);
 gstRouter.get('/search/gstin-by-pan', verify_token_1.default, gst_controller_1.default.searchGSTINNumberByPan);
@@ -20,5 +21,26 @@ gstRouter.post('/tax-payer/file/gstr-3b/:gstin/:year/:month', verify_token_1.def
 gstRouter.post('/tax-payer/file/gstr-3b/:gstin/:year/:month', verify_token_1.default, body_validator_1.default, gst_controller_1.default.uploadGSTR3B);
 gstRouter.post('/tax-payer/file/gstr-3b/:gstin/:year/:month/file', verify_token_1.default, body_validator_1.default, gst_controller_1.default.uploadGSTR3B);
 gstRouter.get('/tax-payer/summary/gstr-3b/:gstin/:year/:month', verify_token_1.default, gst_controller_1.default.getGSTR3BSummary);
+//   ********* GSTR -1 ************
+gstRouter.get('/tax-payer/file/gstr-1/at', verify_token_1.default, (0, query_validator_1.default)(['gstin', 'year', 'month']), gst_controller_1.default.gstr1AT);
+gstRouter.get('/tax-payer/file/gstr-1/ata', verify_token_1.default, (0, query_validator_1.default)(['gstin', 'year', 'month']), gst_controller_1.default.gstr1ATA);
+gstRouter.get('/tax-payer/file/gstr-1/b2b', verify_token_1.default, gst_controller_1.default.gstr1B2B);
+gstRouter.get('/tax-payer/file/gstr-1/b2ba', verify_token_1.default, gst_controller_1.default.gstr1B2BA);
+gstRouter.get('/tax-payer/file/gstr-1/b2cl', verify_token_1.default, gst_controller_1.default.gstr1B2CL);
+gstRouter.get('/tax-payer/file/gstr-1/b2cla', verify_token_1.default, gst_controller_1.default.gstr1B2CLA);
+gstRouter.get('/tax-payer/file/gstr-1/b2cs', verify_token_1.default, gst_controller_1.default.gstr1B2CS);
+gstRouter.get('/tax-payer/file/gstr-1/b2csa', verify_token_1.default, gst_controller_1.default.gstr1B2CSA);
+gstRouter.get('/tax-payer/file/gstr-1/cdnr', verify_token_1.default, gst_controller_1.default.gstr1CDNR);
+gstRouter.get('/tax-payer/file/gstr-1/cdnra', verify_token_1.default, gst_controller_1.default.gstr1CDNRA);
+gstRouter.get('/tax-payer/file/gstr-1/cdnur', verify_token_1.default, gst_controller_1.default.gstr1CDNUR);
+gstRouter.get('/tax-payer/file/gstr-1/cdnura', verify_token_1.default, gst_controller_1.default.gstr1CDNURA);
+gstRouter.get('/tax-payer/file/gstr-1/doc-issued', verify_token_1.default, gst_controller_1.default.gstr1DocumentIssued);
+gstRouter.get('/tax-payer/file/gstr-1/exp', verify_token_1.default, gst_controller_1.default.gstr1EXP);
+gstRouter.get('/tax-payer/file/gstr-1/expa', verify_token_1.default, gst_controller_1.default.gstr1EXPA);
+gstRouter.get('/tax-payer/file/gstr-1/summary', verify_token_1.default, gst_controller_1.default.gstr1Summary);
+gstRouter.get('/tax-payer/file/gstr-1/nil-supplies', verify_token_1.default, gst_controller_1.default.gstr1NILSupplies);
+gstRouter.post('/tax-payer/file/gstr-1/save-gstr/:gstin/:year/:month', verify_token_1.default, body_validator_1.default, gst_controller_1.default.saveGstr1);
+gstRouter.post('/tax-payer/file/gstr-1/reset', verify_token_1.default, body_validator_1.default, gst_controller_1.default.resetGstr1);
+gstRouter.post('/tax-payer/file/gstr-1/file', verify_token_1.default, body_validator_1.default, gst_controller_1.default.fileGSTR1);
 exports.default = gstRouter;
 //# sourceMappingURL=gst.routes.js.map
