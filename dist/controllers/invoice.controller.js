@@ -221,26 +221,27 @@ var InvoiceController = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        _a.trys.push([0, 3, , 4]);
+                        _a.trys.push([0, 4, , 5]);
                         invoiceId = req.params.id;
                         userId = req.user.id;
                         return [4 /*yield*/, index_1.prisma.invoice.findFirst({ where: { id: invoiceId, userId: userId } })];
                     case 1:
                         invoice = _a.sent();
                         if (!invoice) {
-                            res.status(200).json({ success: false, message: 'Invoice not found' });
-                            return [2 /*return*/];
+                            return [2 /*return*/, res.status(200).json({ success: false, message: 'Invoice not found' })];
                         }
-                        return [4 /*yield*/, index_1.prisma.invoice.delete({ where: { id: invoiceId } })];
+                        return [4 /*yield*/, index_1.prisma.invoiceItem.deleteMany({ where: { invoiceId: invoiceId } })];
                     case 2:
-                        deletedInvoice = _a.sent();
-                        res.status(200).json({ success: true, deletedInvoice: deletedInvoice });
-                        return [3 /*break*/, 4];
+                        _a.sent();
+                        return [4 /*yield*/, index_1.prisma.invoice.delete({ where: { id: invoiceId } })];
                     case 3:
+                        deletedInvoice = _a.sent();
+                        return [2 /*return*/, res.status(200).json({ success: true, deletedInvoice: deletedInvoice })];
+                    case 4:
                         error_5 = _a.sent();
-                        res.status(500).json({ success: false, message: 'Internal server error' });
-                        return [3 /*break*/, 4];
-                    case 4: return [2 /*return*/];
+                        console.log(error_5);
+                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Internal server error' })];
+                    case 5: return [2 /*return*/];
                 }
             });
         });
@@ -274,12 +275,10 @@ var InvoiceController = /** @class */ (function () {
                             })];
                     case 1:
                         party = _b.sent();
-                        res.status(201).json({ success: true, party: party });
-                        return [3 /*break*/, 3];
+                        return [2 /*return*/, res.status(201).json({ success: true, party: party })];
                     case 2:
                         error_6 = _b.sent();
-                        res.status(500).json({ success: false, message: 'Internal server error' });
-                        return [3 /*break*/, 3];
+                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Internal server error' })];
                     case 3: return [2 /*return*/];
                 }
             });
@@ -298,19 +297,16 @@ var InvoiceController = /** @class */ (function () {
                     case 1:
                         party = _a.sent();
                         if (!party) {
-                            res.status(200).json({ success: false, message: 'Party not found' });
-                            return [2 /*return*/];
+                            return [2 /*return*/, res.status(200).json({ success: false, message: 'Party not found' })];
                         }
                         return [4 /*yield*/, index_1.prisma.party.delete({ where: { id: partyId } })];
                     case 2:
                         deletedParty = _a.sent();
-                        res.status(200).json({ success: true, deletedParty: deletedParty });
-                        return [3 /*break*/, 4];
+                        return [2 /*return*/, res.status(200).json({ success: true, deletedParty: deletedParty })];
                     case 3:
                         error_7 = _a.sent();
-                        res.status(500).json({ success: false, message: 'Internal server error' });
                         console.log(error_7);
-                        return [3 /*break*/, 4];
+                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Internal server error' })];
                     case 4: return [2 /*return*/];
                 }
             });
@@ -347,13 +343,11 @@ var InvoiceController = /** @class */ (function () {
                             })];
                     case 1:
                         item = _b.sent();
-                        res.status(201).json({ success: true, item: item });
-                        return [3 /*break*/, 3];
+                        return [2 /*return*/, res.status(201).json({ success: true, item: item })];
                     case 2:
                         error_8 = _b.sent();
                         console.log(error_8);
-                        res.status(500).json({ success: false, message: 'Internal server error' });
-                        return [3 /*break*/, 3];
+                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Internal server error' })];
                     case 3: return [2 /*return*/];
                 }
             });
@@ -372,18 +366,15 @@ var InvoiceController = /** @class */ (function () {
                     case 1:
                         item = _a.sent();
                         if (!item) {
-                            res.status(404).json({ success: false, message: 'Item does not exists.' });
-                            return [2 /*return*/];
+                            return [2 /*return*/, res.status(404).json({ success: false, message: 'Item does not exists.' })];
                         }
                         return [4 /*yield*/, index_1.prisma.item.delete({ where: { id: itemId } })];
                     case 2:
                         deletedItem = _a.sent();
-                        res.status(200).json({ success: true, deletedItem: deletedItem });
-                        return [3 /*break*/, 4];
+                        return [2 /*return*/, res.status(200).json({ success: true, deletedItem: deletedItem })];
                     case 3:
                         error_9 = _a.sent();
-                        res.status(500).json({ success: false, message: 'Internal server error' });
-                        return [3 /*break*/, 4];
+                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Internal server error' })];
                     case 4: return [2 /*return*/];
                 }
             });
@@ -408,12 +399,10 @@ var InvoiceController = /** @class */ (function () {
                             })];
                     case 1:
                         parties = _d.sent();
-                        res.status(200).json({ success: true, parties: parties });
-                        return [3 /*break*/, 3];
+                        return [2 /*return*/, res.status(200).json({ success: true, parties: parties })];
                     case 2:
                         error_10 = _d.sent();
-                        res.status(500).json({ success: false, message: 'Internal server error' });
-                        return [3 /*break*/, 3];
+                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Internal server error' })];
                     case 3: return [2 /*return*/];
                 }
             });
@@ -432,15 +421,12 @@ var InvoiceController = /** @class */ (function () {
                     case 1:
                         party = _a.sent();
                         if (!party) {
-                            res.status(404).json({ success: false, message: 'Party not found' });
-                            return [2 /*return*/];
+                            return [2 /*return*/, res.status(404).json({ success: false, message: 'Party not found' })];
                         }
-                        res.status(200).json({ success: true, party: party });
-                        return [3 /*break*/, 3];
+                        return [2 /*return*/, res.status(200).json({ success: true, party: party })];
                     case 2:
                         error_11 = _a.sent();
-                        res.status(500).json({ success: false, message: 'Internal server error' });
-                        return [3 /*break*/, 3];
+                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Internal server error' })];
                     case 3: return [2 /*return*/];
                 }
             });
@@ -465,12 +451,10 @@ var InvoiceController = /** @class */ (function () {
                             })];
                     case 1:
                         items = _d.sent();
-                        res.status(200).json({ success: true, items: items });
-                        return [3 /*break*/, 3];
+                        return [2 /*return*/, res.status(200).json({ success: true, items: items })];
                     case 2:
                         error_12 = _d.sent();
-                        res.status(500).json({ success: false, message: 'Internal server error' });
-                        return [3 /*break*/, 3];
+                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Internal server error' })];
                     case 3: return [2 /*return*/];
                 }
             });
@@ -489,15 +473,12 @@ var InvoiceController = /** @class */ (function () {
                     case 1:
                         item = _a.sent();
                         if (!item) {
-                            res.status(404).json({ success: false, message: 'Item not found' });
-                            return [2 /*return*/];
+                            return [2 /*return*/, res.status(404).json({ success: false, message: 'Item not found' })];
                         }
-                        res.status(200).json({ success: true, item: item });
-                        return [3 /*break*/, 3];
+                        return [2 /*return*/, res.status(200).json({ success: true, item: item })];
                     case 2:
                         error_13 = _a.sent();
-                        res.status(500).json({ success: false, message: 'Internal server error' });
-                        return [3 /*break*/, 3];
+                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Internal server error' })];
                     case 3: return [2 /*return*/];
                 }
             });

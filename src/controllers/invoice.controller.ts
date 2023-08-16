@@ -149,7 +149,7 @@ class InvoiceController {
         }
     }
 
-    static async delete(req: Request, res: Response): Promise<void> {
+    static async delete(req: Request, res: Response) {
         try {
             const invoiceId = req.params.id;
 
@@ -158,20 +158,22 @@ class InvoiceController {
             const invoice = await prisma.invoice.findFirst({ where: { id: invoiceId, userId } });
 
             if(!invoice) {
-                res.status(200).json({ success: false, message: 'Invoice not found' });
-                return;
+                return res.status(200).json({ success: false, message: 'Invoice not found' });
             }
+
+            await prisma.invoiceItem.deleteMany({ where: { invoiceId } });
 
             // Delete the invoice
             const deletedInvoice: Invoice | null = await prisma.invoice.delete({ where: { id: invoiceId } });
 
-            res.status(200).json({ success: true, deletedInvoice });
+            return res.status(200).json({ success: true, deletedInvoice });
         } catch (error) {
-            res.status(500).json({ success: false, message: 'Internal server error' });
+            console.log(error);
+            return res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
 
-    static async createParty(req: Request, res: Response): Promise<void> {
+    static async createParty(req: Request, res: Response) {
         try {
             const { id: userId } = req.user!;
 
@@ -197,13 +199,13 @@ class InvoiceController {
                 },
             });
 
-            res.status(201).json({ success: true, party });
+            return res.status(201).json({ success: true, party });
         } catch (error) {
-            res.status(500).json({ success: false, message: 'Internal server error' });
+            return res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
 
-    static async deleteParty(req: Request, res: Response): Promise<void> {
+    static async deleteParty(req: Request, res: Response) {
         try {
             const partyId = req.params.id;
 
@@ -212,21 +214,20 @@ class InvoiceController {
             const party = await prisma.party.findFirst({ where: { id: partyId, userId } });
 
             if(!party) {
-                res.status(200).json({ success: false, message: 'Party not found' });
-                return;
+                return res.status(200).json({ success: false, message: 'Party not found' });
             }
 
             // Delete the party
             const deletedParty: Party | null = await prisma.party.delete({ where: { id: partyId } });
 
-            res.status(200).json({ success: true, deletedParty });
+            return res.status(200).json({ success: true, deletedParty });
         } catch (error) {
-            res.status(500).json({ success: false, message: 'Internal server error' });
-            console.log(error)
+            console.log(error);
+            return res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
 
-    static async createItem(req: Request, res: Response): Promise<void> {
+    static async createItem(req: Request, res: Response) {
         try {
             const { id: userId } = req.user!;
 
@@ -254,14 +255,14 @@ class InvoiceController {
                 },
             });
 
-            res.status(201).json({ success: true, item });
+            return res.status(201).json({ success: true, item });
         } catch (error) {
             console.log(error);
-            res.status(500).json({ success: false, message: 'Internal server error' });
+            return res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
 
-    static async deleteItem(req: Request, res: Response): Promise<void> {
+    static async deleteItem(req: Request, res: Response) {
         try {
             const itemId = req.params.id;
 
@@ -270,20 +271,19 @@ class InvoiceController {
             const item = await prisma.item.findFirst({ where: { id: itemId, userId } });
 
             if(!item) {
-                res.status(404).json({ success: false, message: 'Item does not exists.' });
-                return;
+                return res.status(404).json({ success: false, message: 'Item does not exists.' });
             }
 
             // Delete the invoice
             const deletedItem: Item | null = await prisma.item.delete({ where: { id: itemId } });
 
-            res.status(200).json({ success: true, deletedItem });
+            return res.status(200).json({ success: true, deletedItem });
         } catch (error) {
-            res.status(500).json({ success: false, message: 'Internal server error' });
+            return res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
 
-    static async getAllParties(req: Request, res: Response): Promise<void> {
+    static async getAllParties(req: Request, res: Response) {
         try {
             const { id: userId } = req.user!;
 
@@ -302,13 +302,13 @@ class InvoiceController {
                 take: parsedLimit,
             });
 
-            res.status(200).json({ success: true, parties });
+            return res.status(200).json({ success: true, parties });
         } catch (error) {
-            res.status(500).json({ success: false, message: 'Internal server error' });
+            return res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
 
-    static async getPartyById(req: Request, res: Response): Promise<void> {
+    static async getPartyById(req: Request, res: Response) {
         try {
             const { id: userId } = req.user!;
 
@@ -318,17 +318,16 @@ class InvoiceController {
             const party: Party | null = await prisma.party.findFirst({ where: { id: partyId, userId } });
 
             if (!party) {
-                res.status(404).json({ success: false, message: 'Party not found' });
-                return;
+                return res.status(404).json({ success: false, message: 'Party not found' });
             }
 
-            res.status(200).json({ success: true, party });
+            return res.status(200).json({ success: true, party });
         } catch (error) {
-            res.status(500).json({ success: false, message: 'Internal server error' });
+            return res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
 
-    static async getAllItems(req: Request, res: Response): Promise<void> {
+    static async getAllItems(req: Request, res: Response) {
         try {
             const { id: userId } = req.user!;
 
@@ -347,13 +346,13 @@ class InvoiceController {
                 take: parsedLimit,
             });
 
-            res.status(200).json({ success: true, items });
+            return res.status(200).json({ success: true, items });
         } catch (error) {
-            res.status(500).json({ success: false, message: 'Internal server error' });
+            return res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
 
-    static async getItemById(req: Request, res: Response): Promise<void> {
+    static async getItemById(req: Request, res: Response) {
         try {
             const { id: userId } = req.user!;
 
@@ -363,13 +362,12 @@ class InvoiceController {
             const item: Item | null = await prisma.item.findFirst({ where: { id: itemId, userId } });
 
             if (!item) {
-                res.status(404).json({ success: false, message: 'Item not found' });
-                return;
+                return res.status(404).json({ success: false, message: 'Item not found' });
             }
 
-            res.status(200).json({ success: true, item });
+            return res.status(200).json({ success: true, item });
         } catch (error) {
-            res.status(500).json({ success: false, message: 'Internal server error' });
+            return res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
 
