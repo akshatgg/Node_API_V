@@ -73,4 +73,20 @@ gstRouter.post('/tax-payer/file/gstr-1/reset', verifyToken, bodyValidator, GSTCo
 gstRouter.post('/tax-payer/file/gstr-1/file', verifyToken, bodyValidator, GSTController.fileGSTR1);
 
 
+// ***************************GSTR -2A Start*******************
+gstRouter.get('/tax-payer/file/gstr-2a/b2b',verifyToken,GSTController.gstr2aB2B)
+
+gstRouter.get('/tax-payer/file/gstr-2a/b2ba',verifyToken,GSTController.gstr2aB2BA)
+
+gstRouter.get('/tax-payer/file/gstr-2a/cdn',verifyToken,GSTController.gstr2aCDN)
+
+gstRouter.get('/tax-payer/file/gstr-2a/cdna',verifyToken,GSTController.gstr2aCDNA)
+
+gstRouter.get('/tax-payer/file/gstr-2a/isd',verifyToken,GSTController.gstr2aISD)
+
+gstRouter.get('/tax-payer/file/gstr-2a/',verifyToken,GSTController.gstr2A)
+
+// ***************************GSTR -2B Start*******************
+gstRouter.get('/tax-payer/file/gstr-2b',verifyToken,GSTController.gstr2B)
+
 export default gstRouter;

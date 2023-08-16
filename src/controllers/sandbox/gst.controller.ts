@@ -17,9 +17,9 @@ const GSTR4_SCHEMA = z.object({
 const GSTR1_SCHEMA = z.object({
     gstin: z.string({ required_error: 'GSTIN Number is required' }).regex(GSTIN_RGX, "Invalid GSTIN Number"),
     fp: z.string(),
-    gt:z.number(),
-    cur_gt:z.number()
-   ,
+    gt: z.number(),
+    cur_gt: z.number()
+    ,
 });
 
 
@@ -706,7 +706,7 @@ export default class GSTController {
             if (!year || typeof year !== 'string' || !month || typeof month !== 'string') {
                 return res.status(400).send({ success: false, message: 'Year and Month are required' });
             }
-           
+
 
             const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/gstrs/gstr-1/b2cs/${year}/${month}`;
 
@@ -746,7 +746,7 @@ export default class GSTController {
             if (!year || typeof year !== 'string' || !month || typeof month !== 'string') {
                 return res.status(400).send({ success: false, message: 'Year and Month are required' });
             }
-           
+
 
             const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/gstrs/gstr-1/b2csa/${year}/${month}`;
 
@@ -786,7 +786,7 @@ export default class GSTController {
             if (!year || typeof year !== 'string' || !month || typeof month !== 'string') {
                 return res.status(400).send({ success: false, message: 'Year and Month are required' });
             }
-            if ( !action_required || !from) {
+            if (!action_required || !from) {
                 return res.status(400).send({ success: false, message: 'action_required AND from are required' })
             }
 
@@ -828,7 +828,7 @@ export default class GSTController {
             if (!year || typeof year !== 'string' || !month || typeof month !== 'string') {
                 return res.status(400).send({ success: false, message: 'Year and Month are required' });
             }
-            if ( !action_required || !from) {
+            if (!action_required || !from) {
                 return res.status(400).send({ success: false, message: 'action_required AND from are required' })
             }
 
@@ -870,7 +870,7 @@ export default class GSTController {
             if (!year || typeof year !== 'string' || !month || typeof month !== 'string') {
                 return res.status(400).send({ success: false, message: 'Year and Month are required' });
             }
-           
+
 
             const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/gstrs/gstr-1/cdnur/${year}/${month}`;
 
@@ -910,7 +910,7 @@ export default class GSTController {
             if (!year || typeof year !== 'string' || !month || typeof month !== 'string') {
                 return res.status(400).send({ success: false, message: 'Year and Month are required' });
             }
-           
+
 
             const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/gstrs/gstr-1/cdnura/${year}/${month}`;
 
@@ -950,7 +950,7 @@ export default class GSTController {
             if (!year || typeof year !== 'string' || !month || typeof month !== 'string') {
                 return res.status(400).send({ success: false, message: 'Year and Month are required' });
             }
-           
+
 
             const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/gstrs/gstr-1/doc-issue/${year}/${month}`;
 
@@ -990,7 +990,7 @@ export default class GSTController {
             if (!year || typeof year !== 'string' || !month || typeof month !== 'string') {
                 return res.status(400).send({ success: false, message: 'Year and Month are required' });
             }
-           
+
 
             const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/gstrs/gstr-1/exp/${year}/${month}`;
 
@@ -1030,7 +1030,7 @@ export default class GSTController {
             if (!year || typeof year !== 'string' || !month || typeof month !== 'string') {
                 return res.status(400).send({ success: false, message: 'Year and Month are required' });
             }
-           
+
 
             const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/gstrs/gstr-1/expa/${year}/${month}`;
 
@@ -1070,7 +1070,7 @@ export default class GSTController {
             if (!year || typeof year !== 'string' || !month || typeof month !== 'string') {
                 return res.status(400).send({ success: false, message: 'Year and Month are required' });
             }
-           
+
 
             const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/gstrs/gstr-1/${year}/${month}`;
 
@@ -1110,7 +1110,7 @@ export default class GSTController {
             if (!year || typeof year !== 'string' || !month || typeof month !== 'string') {
                 return res.status(400).send({ success: false, message: 'Year and Month are required' });
             }
-           
+
 
             const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/gstrs/gstr-1/hsn/${year}/${month}`;
 
@@ -1150,7 +1150,7 @@ export default class GSTController {
             if (!year || typeof year !== 'string' || !month || typeof month !== 'string') {
                 return res.status(400).send({ success: false, message: 'Year and Month are required' });
             }
-           
+
 
             const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/gstrs/gstr-1/nil/${year}/${month}`;
 
@@ -1185,8 +1185,8 @@ export default class GSTController {
             const data = GSTR1_SCHEMA.parse(req.body);
 
             const { gstin, year, month } = req.params;
-            
-             if (!gstin || typeof gstin !== 'string' || !validateGSTIN(gstin)) {
+
+            if (!gstin || typeof gstin !== 'string' || !validateGSTIN(gstin)) {
                 return res.status(400).send({ success: false, message: 'Invalid GSTIN Number' });
             }
 
@@ -1254,7 +1254,7 @@ export default class GSTController {
         try {
             const body = req.body;
 
-            const { gstin, year, month ,pan,otp } = req.params;
+            const { gstin, year, month, pan, otp } = req.params;
 
             if (!validateGSTIN(gstin)) {
                 return res.status(400).send({ success: false, message: 'Invalid GSTIN Number' });
@@ -1294,6 +1294,298 @@ export default class GSTController {
         }
     }
 
+    // **********Return GSTR-2A******************
+
+    static async gstr2aB2B(req: Request, res: Response) {
+        try {
+            const { gstin, year, month, ctin } = req.query;
+
+            if (!gstin || typeof gstin !== 'string' || !validateGSTIN(gstin)) {
+                return res.status(400).send({ success: false, message: 'Invalid GSTIN Number' });
+            }
+
+            if (!year || typeof year !== 'string' || !month || typeof month !== 'string') {
+                return res.status(400).send({ success: false, message: 'Year and Month are required' });
+            }
+            if (!ctin) {
+                return res.status(400).send({ success: false, message: 'ctin  are required' })
+            }
+
+            const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/gstrs/gstr-2a/b2b/${year}/${month}`;
+
+            const token = await Sandbox.generateAccessToken();
+
+            const headers = {
+                'Authorization': token,
+                'accept': 'application/json',
+                'x-api-key': process.env.SANDBOX_KEY,
+                'x-api-version': process.env.SANDBOX_API_VERSION
+            };
+
+            const { status, data: { data } } = await axios.get(endpoint, {
+                headers,
+
+            });
+
+            if (status !== 200) {
+                return res.status(500).send({ success: false, message: "Could not find GSTR -2 B2B" });
+            }
+
+            return res.status(200).send({ success: true, data, message: `GSTR-2 B2B found successfully!` });
+        } catch (e) {
+            console.log(e);
+            return res.status(500).json({ success: false, message: 'Something went wrong' });
+        }
+    }
+
+
+    static async gstr2aB2BA(req: Request, res: Response) {
+        try {
+            const { gstin, year, month, ctin } = req.query;
+
+            if (!gstin || typeof gstin !== 'string' || !validateGSTIN(gstin)) {
+                return res.status(400).send({ success: false, message: 'Invalid GSTIN Number' });
+            }
+
+            if (!year || typeof year !== 'string' || !month || typeof month !== 'string') {
+                return res.status(400).send({ success: false, message: 'Year and Month are required' });
+            }
+            if (!ctin) {
+                return res.status(400).send({ success: false, message: 'ctin  are required' })
+            }
+
+            const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/gstrs/gstr-2a/b2ba/${year}/${month}`;
+
+            const token = await Sandbox.generateAccessToken();
+
+            const headers = {
+                'Authorization': token,
+                'accept': 'application/json',
+                'x-api-key': process.env.SANDBOX_KEY,
+                'x-api-version': process.env.SANDBOX_API_VERSION
+            };
+
+            const { status, data: { data } } = await axios.get(endpoint, {
+                headers,
+
+            });
+
+            if (status !== 200) {
+                return res.status(500).send({ success: false, message: "Could not find GSTR -2 B2BA" });
+            }
+
+            return res.status(200).send({ success: true, data, message: `GSTR-2 B2BA found successfully!` });
+        } catch (e) {
+            console.log(e);
+            return res.status(500).json({ success: false, message: 'Something went wrong' });
+        }
+    }
+
+
+    static async gstr2aCDN(req: Request, res: Response) {
+        try {
+            const { gstin, year, month, ctin } = req.query;
+
+            if (!gstin || typeof gstin !== 'string' || !validateGSTIN(gstin)) {
+                return res.status(400).send({ success: false, message: 'Invalid GSTIN Number' });
+            }
+
+            if (!year || typeof year !== 'string' || !month || typeof month !== 'string') {
+                return res.status(400).send({ success: false, message: 'Year and Month are required' });
+            }
+            if (!ctin) {
+                return res.status(400).send({ success: false, message: 'ctin  are required' })
+            }
+
+            const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/gstrs/gstr-2a/cdn/${year}/${month}`;
+
+            const token = await Sandbox.generateAccessToken();
+
+            const headers = {
+                'Authorization': token,
+                'accept': 'application/json',
+                'x-api-key': process.env.SANDBOX_KEY,
+                'x-api-version': process.env.SANDBOX_API_VERSION
+            };
+
+            const { status, data: { data } } = await axios.get(endpoint, {
+                headers,
+
+            });
+
+            if (status !== 200) {
+                return res.status(500).send({ success: false, message: "Could not find GSTR -2 CDN" });
+            }
+
+            return res.status(200).send({ success: true, data, message: `GSTR-2 CDN found successfully!` });
+        } catch (e) {
+            console.log(e);
+            return res.status(500).json({ success: false, message: 'Something went wrong' });
+        }
+    }
+
+    static async gstr2aCDNA(req: Request, res: Response) {
+        try {
+            const { gstin, year, month, ctin } = req.query;
+
+            if (!gstin || typeof gstin !== 'string' || !validateGSTIN(gstin)) {
+                return res.status(400).send({ success: false, message: 'Invalid GSTIN Number' });
+            }
+
+            if (!year || typeof year !== 'string' || !month || typeof month !== 'string') {
+                return res.status(400).send({ success: false, message: 'Year and Month are required' });
+            }
+            if (!ctin) {
+                return res.status(400).send({ success: false, message: 'ctin  are required' })
+            }
+
+            const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/gstrs/gstr-2a/cdna/${year}/${month}`;
+
+            const token = await Sandbox.generateAccessToken();
+
+            const headers = {
+                'Authorization': token,
+                'accept': 'application/json',
+                'x-api-key': process.env.SANDBOX_KEY,
+                'x-api-version': process.env.SANDBOX_API_VERSION
+            };
+
+            const { status, data: { data } } = await axios.get(endpoint, {
+                headers,
+
+            });
+
+            if (status !== 200) {
+                return res.status(500).send({ success: false, message: "Could not find GSTR -2 CDNA" });
+            }
+
+            return res.status(200).send({ success: true, data, message: `GSTR-2 CDNA found successfully!` });
+        } catch (e) {
+            console.log(e);
+            return res.status(500).json({ success: false, message: 'Something went wrong' });
+        }
+    }
+
+    static async gstr2aISD(req: Request, res: Response) {
+        try {
+            const { gstin, year, month } = req.query;
+
+            if (!gstin || typeof gstin !== 'string' || !validateGSTIN(gstin)) {
+                return res.status(400).send({ success: false, message: 'Invalid GSTIN Number' });
+            }
+
+            if (!year || typeof year !== 'string' || !month || typeof month !== 'string') {
+                return res.status(400).send({ success: false, message: 'Year and Month are required' });
+            }
+
+
+            const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/gstrs/gstr-2a/isd/${year}/${month}`;
+
+            const token = await Sandbox.generateAccessToken();
+
+            const headers = {
+                'Authorization': token,
+                'accept': 'application/json',
+                'x-api-key': process.env.SANDBOX_KEY,
+                'x-api-version': process.env.SANDBOX_API_VERSION
+            };
+
+            const { status, data: { data } } = await axios.get(endpoint, {
+                headers,
+
+            });
+
+            if (status !== 200) {
+                return res.status(500).send({ success: false, message: "Could not find GSTR -2 ISD" });
+            }
+
+            return res.status(200).send({ success: true, data, message: `GSTR-2 ISD found successfully!` });
+        } catch (e) {
+            console.log(e);
+            return res.status(500).json({ success: false, message: 'Something went wrong' });
+        }
+    }
+
+    static async gstr2A(req: Request, res: Response) {
+        try {
+            const { gstin, year, month } = req.query;
+
+            if (!gstin || typeof gstin !== 'string' || !validateGSTIN(gstin)) {
+                return res.status(400).send({ success: false, message: 'Invalid GSTIN Number' });
+            }
+
+            if (!year || typeof year !== 'string' || !month || typeof month !== 'string') {
+                return res.status(400).send({ success: false, message: 'Year and Month are required' });
+            }
+
+
+            const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/gstrs/gstr-2a/${year}/${month}`;
+
+            const token = await Sandbox.generateAccessToken();
+
+            const headers = {
+                'Authorization': token,
+                'accept': 'application/json',
+                'x-api-key': process.env.SANDBOX_KEY,
+                'x-api-version': process.env.SANDBOX_API_VERSION
+            };
+
+            const { status, data: { data } } = await axios.get(endpoint, {
+                headers,
+
+            });
+
+            if (status !== 200) {
+                return res.status(500).send({ success: false, message: "Could not find GSTR -2 " });
+            }
+
+            return res.status(200).send({ success: true, data, message: `GSTR-2  found successfully!` });
+        } catch (e) {
+            console.log(e);
+            return res.status(500).json({ success: false, message: 'Something went wrong' });
+        }
+    }
+
+// ************************* GSTR -2B *********************************
+
+static async gstr2B(req: Request, res: Response) {
+    try {
+        const { gstin, year, month } = req.query;
+
+        if (!gstin || typeof gstin !== 'string' || !validateGSTIN(gstin)) {
+            return res.status(400).send({ success: false, message: 'Invalid GSTIN Number' });
+        }
+
+        if (!year || typeof year !== 'string' || !month || typeof month !== 'string') {
+            return res.status(400).send({ success: false, message: 'Year and Month are required' });
+        }
+
+        const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/gstrs/gstr-2b/${year}/${month}`;
+
+        const token = await Sandbox.generateAccessToken();
+
+        const headers = {
+            'Authorization': token,
+            'accept': 'application/json',
+            'x-api-key': process.env.SANDBOX_KEY,
+            'x-api-version': process.env.SANDBOX_API_VERSION
+        };
+
+        const { status, data: { data } } = await axios.get(endpoint, {
+            headers,
+
+        });
+
+        if (status !== 200) {
+            return res.status(500).send({ success: false, message: "Could not find GSTR -2B " });
+        }
+
+        return res.status(200).send({ success: true, data, message: `GSTR-2B  found successfully!` });
+    } catch (e) {
+        console.log(e);
+        return res.status(500).json({ success: false, message: 'Something went wrong' });
+    }
+}
 
 
 
@@ -1303,6 +1595,20 @@ export default class GSTController {
 
 
 
-    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
