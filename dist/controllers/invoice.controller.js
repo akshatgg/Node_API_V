@@ -54,15 +54,16 @@ var InvoiceController = /** @class */ (function () {
                     case 1:
                         party = _c.sent();
                         if (!party) {
-                            res.status(401).json({ sucess: false, message: 'Party not found' });
-                            return [2 /*return*/];
+                            return [2 /*return*/, res.status(401).json({ sucess: false, message: 'Party not found' })];
                         }
                         _c.label = 2;
                     case 2: return [4 /*yield*/, index_1.prisma.invoice.create({
                             data: {
                                 invoiceNumber: invoiceNumber,
                                 type: type,
-                                partyId: partyId,
+                                party: {
+                                    connect: { id: partyId } // Connect an existing party by ID
+                                },
                                 phone: phone,
                                 partyName: partyName,
                                 totalAmount: totalAmount,
@@ -77,21 +78,26 @@ var InvoiceController = /** @class */ (function () {
                                 modeOfPayment: modeOfPayment,
                                 credit: credit,
                                 items: {
-                                    create: items,
+                                    create: items.map(function (_a) {
+                                        var id = _a.id, quantity = _a.quantity;
+                                        return ({
+                                            item: { connect: { id: id } },
+                                            quantity: quantity
+                                        });
+                                    }),
                                 },
-                                userId: userId,
+                                user: {
+                                    connect: { id: userId } // Connect the user by ID
+                                },
                             },
                         })];
                     case 3:
                         invoice = _c.sent();
-                        console.log(invoice);
-                        res.status(201).json(invoice);
-                        return [3 /*break*/, 5];
+                        return [2 /*return*/, res.status(201).json(invoice)];
                     case 4:
                         error_1 = _c.sent();
-                        console.error(error_1);
-                        res.status(500).json({ sucess: false, message: 'Internal server error' });
-                        return [3 /*break*/, 5];
+                        console.log(error_1);
+                        return [2 /*return*/, res.status(500).json({ sucess: false, message: 'Internal server error' })];
                     case 5: return [2 /*return*/];
                 }
             });
