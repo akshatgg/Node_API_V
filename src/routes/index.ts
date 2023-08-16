@@ -31,6 +31,9 @@ import accountancyRouter from "./accountancys.routes"
 import visitorRouter from "./visitorCounter.routes"
 import registerStartupRouter from "./registerStartup,routes";
 import contactUsRouter from "./contactUs.routes";
+
+import insourancerouter from "./insurance.routes";
+
 const router = Router();
 
 router.use('/user', userRouter);
@@ -90,6 +93,8 @@ router.use('/visitorCount',visitorRouter)
 router.use('/Startup',registerStartupRouter)
 
 router.use('/contactUs',contactUsRouter)
+
+router.use('/insourance',insourancerouter)
 
 router.get('/', (req, res) => {
     return res.send({ message: 'Up and running' });

@@ -190,6 +190,31 @@ var InsuranceController = /** @class */ (function () {
             });
         });
     };
+    InsuranceController.deleteInsourance = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var id, deleted, error_1;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        id = req.params.id;
+                        return [4 /*yield*/, __1.prisma.insurance.delete({
+                                where: { id: (id) },
+                            })];
+                    case 1:
+                        deleted = _a.sent();
+                        res.status(200).json({ success: true, deleted: deleted, message: "Insourance  delete sucessfully" });
+                        return [3 /*break*/, 3];
+                    case 2:
+                        error_1 = _a.sent();
+                        console.log(error_1);
+                        res.status(500).json({ success: false, message: 'Internal server error' });
+                        return [3 /*break*/, 3];
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    };
     return InsuranceController;
 }());
 exports.default = InsuranceController;

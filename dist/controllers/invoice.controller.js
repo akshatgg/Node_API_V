@@ -49,7 +49,6 @@ var InvoiceController = /** @class */ (function () {
                         _c.trys.push([0, 4, , 5]);
                         userId = req.user.id;
                         _a = req.body, invoiceNumber = _a.invoiceNumber, type = _a.type, partyId = _a.partyId, phone = _a.phone, partyName = _a.partyName, totalAmount = _a.totalAmount, totalGst = _a.totalGst, stateOfSupply = _a.stateOfSupply, cgst = _a.cgst, sgst = _a.sgst, igst = _a.igst, utgst = _a.utgst, details = _a.details, extraDetails = _a.extraDetails, items = _a.items, modeOfPayment = _a.modeOfPayment, _b = _a.credit, credit = _b === void 0 ? false : _b;
-                        console.log(req.body);
                         if (!partyId) return [3 /*break*/, 2];
                         return [4 /*yield*/, index_1.prisma.party.findUnique({ where: { id: partyId } })];
                     case 1:

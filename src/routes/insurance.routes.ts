@@ -3,31 +3,22 @@ import InsuranceController from "../controllers/insurance.controller";
 import verifyToken from "../middlewares/verify-token";
 import bodyValidator from "../middlewares/body-validator";
 
-const router = Router();
+const insourancerouter = Router();
 
-router.post(
+insourancerouter.post(
   "/apply",
   verifyToken,
   bodyValidator,
   InsuranceController.applyForInsurance
 );
 
-router.get(
-  "/:id",
-  verifyToken,
-  InsuranceController.getInsuranceById
-);
+insourancerouter.get("/getOne/:id",verifyToken, InsuranceController.getInsuranceById);
 
-router.get(
-  "/",
-  verifyToken,
-  InsuranceController.getInsuranceApplications
-);
+insourancerouter.get( "/getAll",verifyToken,InsuranceController.getInsuranceApplications);
 
-router.get(
-  "/user/:id",
-  verifyToken,
-  InsuranceController.getInsuranceApplicationsByUser
-);
+insourancerouter.get( "/user/:id",verifyToken,InsuranceController.getInsuranceApplicationsByUser);
 
-export default router;
+insourancerouter.delete( "/delete/:id",verifyToken,InsuranceController.deleteInsourance);
+
+
+export default insourancerouter;

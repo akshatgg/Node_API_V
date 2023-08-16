@@ -10,7 +10,7 @@ class InvoiceController {
 
             // Create the invoice
             const { invoiceNumber, type, partyId, phone, partyName, totalAmount, totalGst, stateOfSupply, cgst, sgst, igst, utgst, details, extraDetails, items, modeOfPayment, credit = false } = req.body;
-                      console.log(req.body)
+                    //   console.log(req.body)
            
 
             if(partyId) {

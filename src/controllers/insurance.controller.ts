@@ -52,7 +52,7 @@ export default class InsuranceController {
 
             const { id } = req.params;
 
-            const insurance = await prisma.insurance.findUnique({ where: { id } });
+             const insurance = await prisma.insurance.findUnique({ where: { id } });
 
             if(insurance && (insurance.userId != userId || !req.isAdmin)) {
                 return res.status(403).json({ success: false, message: 'Unauthorized Access' });
@@ -134,5 +134,26 @@ export default class InsuranceController {
             return res.status(500).json({ success: false, message: 'Something went wrong' });
         }
     }
+
+    static async deleteInsourance(req: Request, res: Response): Promise<void> {
+        try {
+           
+            const { id } = req.params;
+            const deleted = await prisma.insurance.delete({
+                where: { id: (id) },
+
+            });
+            res.status(200).json({ success: true, deleted, message: "Insourance  delete sucessfully" });
+        } catch (error) {
+            console.log(error)
+            res.status(500).json({ success: false, message: 'Internal server error' });
+        }
+
+
+
+
+    }
+
+
 
 }
