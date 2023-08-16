@@ -66,12 +66,10 @@ var VisitorCounterController = /** @class */ (function () {
                     case 5: return [4 /*yield*/, index_1.prisma.visitor.findFirst()];
                     case 6:
                         updatedVisitor = _a.sent();
-                        res.status(200).json({ count: updatedVisitor.count });
-                        return [3 /*break*/, 8];
+                        return [2 /*return*/, res.status(200).json({ count: updatedVisitor.count })];
                     case 7:
                         error_1 = _a.sent();
-                        res.status(500).json({ error: "Error incrementing visitor count" });
-                        return [3 /*break*/, 8];
+                        return [2 /*return*/, res.status(500).json({ error: "Error incrementing visitor count" })];
                     case 8: return [2 /*return*/];
                 }
             });
@@ -98,8 +96,7 @@ var VisitorCounterController = /** @class */ (function () {
                     case 2:
                         error_2 = _b.sent();
                         console.log(error_2);
-                        res.status(500).json({ error: "Error fetching visitors" });
-                        return [3 /*break*/, 3];
+                        return [2 /*return*/, res.status(500).json({ error: "Error fetching visitors" })];
                     case 3: return [2 /*return*/];
                 }
             });

@@ -42,5 +42,14 @@ gstRouter.get('/tax-payer/file/gstr-1/nil-supplies', verify_token_1.default, gst
 gstRouter.post('/tax-payer/file/gstr-1/save-gstr/:gstin/:year/:month', verify_token_1.default, body_validator_1.default, gst_controller_1.default.saveGstr1);
 gstRouter.post('/tax-payer/file/gstr-1/reset', verify_token_1.default, body_validator_1.default, gst_controller_1.default.resetGstr1);
 gstRouter.post('/tax-payer/file/gstr-1/file', verify_token_1.default, body_validator_1.default, gst_controller_1.default.fileGSTR1);
+// ***************************GSTR -2A Start*******************
+gstRouter.get('/tax-payer/file/gstr-2a/b2b', verify_token_1.default, gst_controller_1.default.gstr2aB2B);
+gstRouter.get('/tax-payer/file/gstr-2a/b2ba', verify_token_1.default, gst_controller_1.default.gstr2aB2BA);
+gstRouter.get('/tax-payer/file/gstr-2a/cdn', verify_token_1.default, gst_controller_1.default.gstr2aCDN);
+gstRouter.get('/tax-payer/file/gstr-2a/cdna', verify_token_1.default, gst_controller_1.default.gstr2aCDNA);
+gstRouter.get('/tax-payer/file/gstr-2a/isd', verify_token_1.default, gst_controller_1.default.gstr2aISD);
+gstRouter.get('/tax-payer/file/gstr-2a/', verify_token_1.default, gst_controller_1.default.gstr2A);
+// ***************************GSTR -2B Start*******************
+gstRouter.get('/tax-payer/file/gstr-2b', verify_token_1.default, gst_controller_1.default.gstr2B);
 exports.default = gstRouter;
 //# sourceMappingURL=gst.routes.js.map
