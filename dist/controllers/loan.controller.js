@@ -209,14 +209,14 @@ var LoanController = /** @class */ (function () {
                             })];
                     case 2:
                         applications = _e.sent();
-                        return [2 /*return*/, {
+                        return [2 /*return*/, res.status(200).json({
                                 success: true,
                                 data: {
                                     totalApplications: count,
                                     applications: applications,
                                     page: page,
                                 },
-                            }];
+                            })];
                     case 3:
                         e_2 = _e.sent();
                         console.log(e_2);

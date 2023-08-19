@@ -139,14 +139,14 @@ export default class LoanController {
                 take: parsedLimit,
             });
 
-            return {
+            return res.status(200).json({
                 success: true,
                 data: {
                     totalApplications: count,
                     applications,
                     page,
                 },
-            };
+            });
         } catch (e) {
             console.log(e);
             return res.status(500).send({ success: false, message: 'Something went wrong.' });
