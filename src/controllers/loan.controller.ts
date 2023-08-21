@@ -59,7 +59,7 @@ export default class LoanController {
 
             const { loanId, documents, amount, description } = data;
 
-            const { applicantName, applicantAge, applicantGender, nationality, salaried, bankDetails: bankDetailsData, permanentAddress, address, } = data.applicantDetails;
+            const { applicantName, applicantAge, applicantGender, nationality, salaried, bankDetails: bankDetailsData, permanentAddress, address, phone,email} = data.applicantDetails;
 
             const bankDetails = await prisma.bankDetails.create({
                 data: {
@@ -76,6 +76,8 @@ export default class LoanController {
                     applicantAge,
                     applicantGender,
                     address,
+                    phone,
+                    email,
                     permanentAddress,
                     nationality,
                     salaried,
@@ -234,18 +236,12 @@ export default class LoanController {
 
             // Get all loan applications of the user with pagination
             const loans: Loan[] = await prisma.loan.findMany({
+                
                 skip: offset,
                 take: parsedLimit,
             });
 
-            return {
-                success: true,
-                data: {
-                    totalApplications: count,
-                    loans,
-                    page,
-                },
-            };
+            return res.status(200).json({ success: true, loans,page ,totalApplications: count });
         } catch (e) {
             console.log(e);
             return res.status(500).send({ success: false, message: 'Something went wrong.' });

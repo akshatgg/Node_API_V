@@ -511,6 +511,7 @@ model Insurance {
   type          String
   name          String
   mobile        String
+  email         String
   address       String
   dob           DateTime
   maritalStatus String

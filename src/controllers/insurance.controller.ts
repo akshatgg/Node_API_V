@@ -7,6 +7,7 @@ import { prisma } from "..";
 const InsuranceSchema = z.object({
     name: z.string(),
     address: z.string(),
+    email:z.string(),
     mobile: z.string().regex(PHONE_NUMBER_RGX, 'Enter valid 10 digit mobile number'),
     maritalStatus: z.string(),
     gender: z.nativeEnum(UserGender),
@@ -21,7 +22,7 @@ export default class InsuranceController {
         try {
             const { id: userId } = req.user!;
 
-            const { name, address, mobile, dob, gender, maritalStatus, type } = InsuranceSchema.parse(req.body);
+            const { name, address, mobile, dob, gender, maritalStatus, type ,email} = InsuranceSchema.parse(req.body);
 
             const application = await prisma.insurance.create({
                 data: {
@@ -32,6 +33,7 @@ export default class InsuranceController {
                     gender,
                     maritalStatus,
                     type,
+                    email,
                     userId,
                 }
             });

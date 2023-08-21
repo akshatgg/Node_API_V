@@ -11,7 +11,7 @@ loanRouter.get('/applications', verifyToken, LoanController.getAppliedLoans);
 loanRouter.get('/applications/:id', verifyToken, LoanController.getAppliedLoanById);
 
 loanRouter.post('/loans', verifyToken, adminCheck, bodyValidator, LoanController.createLoan);
-loanRouter.get('/loans', verifyToken, adminCheck, LoanController.getAllLoans);
+loanRouter.get('/loans/getAll', verifyToken, adminCheck, LoanController.getAllLoans);
 loanRouter.get('/loans/:id', verifyToken, adminCheck,  LoanController.getLoanById);
 
 export default loanRouter;
