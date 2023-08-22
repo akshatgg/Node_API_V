@@ -1,36 +1,59 @@
 import { Request, Response } from 'express';
-import { prisma } from '../index';
 import { Career } from '@prisma/client'
+import { join } from "path";
+import { cwd } from "process";
+import { prisma } from "..";
+
+
+
+const currentDir = cwd();
 
 
 export default class CareerController {
     //create career
-    static async createCareer(req: Request, res: Response): Promise<void> {
+    static async createCareer(req: Request, res: Response){
         try {
-            const cv: string = req.file?.path as string
-            const { name, address, pin, email, mobile, skills, gender, careerId } = req.body
-            if (!cv) {
-                res.status(400).send({ success: false, message: "cv is missing" });
-                return
-            }
-            if (!name || !address || !pin || !email || !mobile || !skills || !gender || !careerId) {
-                res.status(400).send({ success: false, message: "plz provide all require body fields" });
-                return
+            const { id: userId } = req.user!;
+            const file = req.file as Express.Multer.File; // Assuming a single CV file
+
+            if (!file) {
+                return res.status(400).json({ success: false, message: 'No CV file to upload.' });
             }
 
-            //  const { id: careerId } = req.user!
-            const bill: Career = await prisma.career.create({
+            const {
+                name,
+                address,
+                pin,
+                email,
+                mobile,
+                skills,
+                gender,
+            } = req.body;
+
+            if (!name || !address || !pin || !email || !mobile || !skills || !gender) {
+                return res.status(400).json({ success: false, message: 'Missing required fields.' });
+            }
+
+            const cvFileName = file.filename;
+
+            const career = await prisma.career.create({
                 data: {
-                    name, address, pin, email, mobile, skills, gender, cv, careerId
-                }
+                    userId, // Set the userId field directly
+                    cv: cvFileName, // Assuming 'cv' field corresponds to the 'fileName'
+                    name,
+                    address,
+                    pin,
+                    email,
+                    mobile,
+                    skills,
+                    gender,
+                },
             });
 
-            res.status(201).json(bill);
-            return
-
-        } catch (error) {
-            console.log(error);
-            res.status(500).json({ sucess: false, message: 'Internal server error' });
+            return res.status(200).json({ success: true, message: 'Career created', career });
+        } catch (e) {
+            console.log(e);
+            return res.status(500).json({ success: false, message: 'Something went wrong' });
         }
     }
     //getAll career
@@ -84,6 +107,39 @@ export default class CareerController {
         } catch (error) {
             console.error(error);
             res.status(500).json({ success: false, message: 'Internal server error' });
+        }
+    }
+
+    static async getCVByCareerId(req: Request, res: Response) {
+        try {
+            const { id } = req.params;
+
+            if (!id) {
+                return res.status(400).json({ success: false, message: 'Career ID is required' });
+            }
+
+            const { id: userId } = req.user!;
+
+            const career = await prisma.career.findFirst({
+                where: {
+                    id:parseInt(id),
+                    userId,
+                },
+                select: {
+                    cv: true,
+                },
+            });
+
+            if (!career || !career.cv) {
+                return res.status(404).json({ success: false, message: 'CV not found for the provided career ID' });
+            }
+
+            const cvFileName = career.cv;
+
+            return res.sendFile(join(currentDir, 'uploads', cvFileName));
+        } catch (e) {
+            console.log(e);
+            return res.status(500).json({ success: false, message: 'Something went wrong' });
         }
     }
 }

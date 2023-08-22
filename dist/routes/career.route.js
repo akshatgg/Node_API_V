@@ -16,5 +16,6 @@ careerRouter.get('/findAll', verify_token_1.default, career_controller_1.default
 careerRouter.get('/findOne/:id', verify_token_1.default, career_controller_1.default.findOneCareer);
 // delete career
 careerRouter.delete('/delete/:id', verify_token_1.default, career_controller_1.default.deleteCareer);
+careerRouter.get('/getCv/:id', verify_token_1.default, career_controller_1.default.getCVByCareerId);
 exports.default = careerRouter;
 //# sourceMappingURL=career.route.js.map

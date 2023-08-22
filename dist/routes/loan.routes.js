@@ -13,7 +13,7 @@ loanRouter.post('/applications', verify_token_1.default, body_validator_1.defaul
 loanRouter.get('/applications', verify_token_1.default, loan_controller_1.default.getAppliedLoans);
 loanRouter.get('/applications/:id', verify_token_1.default, loan_controller_1.default.getAppliedLoanById);
 loanRouter.post('/loans', verify_token_1.default, admin_check_1.default, body_validator_1.default, loan_controller_1.default.createLoan);
-loanRouter.get('/loans', verify_token_1.default, admin_check_1.default, loan_controller_1.default.getAllLoans);
+loanRouter.get('/loans/getAll', verify_token_1.default, admin_check_1.default, loan_controller_1.default.getAllLoans);
 loanRouter.get('/loans/:id', verify_token_1.default, admin_check_1.default, loan_controller_1.default.getLoanById);
 exports.default = loanRouter;
 //# sourceMappingURL=loan.routes.js.map

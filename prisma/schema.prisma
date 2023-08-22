@@ -59,6 +59,7 @@ model User {
   businessSetting BusinessSetting[]
   registerStartup RegisterStartup[]
   contactUs      ContactUs[]
+   career          Career[]
 }
 
 model Otp {
@@ -325,7 +326,7 @@ model Account {
 
 model Career {
   id       Int        @id @default(autoincrement())
-  careerId String
+  
   name     String
   address  String
   pin      String
@@ -334,6 +335,8 @@ model Career {
   skills   String
   gender   UserGender
   cv       String
+   userId    Int
+  user      User       @relation(fields: [userId], references: [id])
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @default(now())
 }

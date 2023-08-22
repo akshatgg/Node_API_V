@@ -11,4 +11,6 @@ careerRouter.get('/findAll', verifyToken, CareerController.findAllCareer);
 careerRouter.get('/findOne/:id', verifyToken, CareerController.findOneCareer);
 // delete career
 careerRouter.delete('/delete/:id', verifyToken, CareerController.deleteCareer);
+
+careerRouter.get('/getCv/:id', verifyToken, CareerController.getCVByCareerId);
 export default careerRouter

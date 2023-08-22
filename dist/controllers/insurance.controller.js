@@ -43,6 +43,7 @@ var __1 = require("..");
 var InsuranceSchema = zod_1.z.object({
     name: zod_1.z.string(),
     address: zod_1.z.string(),
+    email: zod_1.z.string(),
     mobile: zod_1.z.string().regex(util_1.PHONE_NUMBER_RGX, 'Enter valid 10 digit mobile number'),
     maritalStatus: zod_1.z.string(),
     gender: zod_1.z.nativeEnum(client_1.UserGender),
@@ -54,13 +55,13 @@ var InsuranceController = /** @class */ (function () {
     }
     InsuranceController.applyForInsurance = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var userId, _a, name, address, mobile, dob, gender, maritalStatus, type, application, e_1;
+            var userId, _a, name, address, mobile, dob, gender, maritalStatus, type, email, application, e_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 2, , 3]);
                         userId = req.user.id;
-                        _a = InsuranceSchema.parse(req.body), name = _a.name, address = _a.address, mobile = _a.mobile, dob = _a.dob, gender = _a.gender, maritalStatus = _a.maritalStatus, type = _a.type;
+                        _a = InsuranceSchema.parse(req.body), name = _a.name, address = _a.address, mobile = _a.mobile, dob = _a.dob, gender = _a.gender, maritalStatus = _a.maritalStatus, type = _a.type, email = _a.email;
                         return [4 /*yield*/, __1.prisma.insurance.create({
                                 data: {
                                     name: name,
@@ -70,6 +71,7 @@ var InsuranceController = /** @class */ (function () {
                                     gender: gender,
                                     maritalStatus: maritalStatus,
                                     type: type,
+                                    email: email,
                                     userId: userId,
                                 }
                             })];

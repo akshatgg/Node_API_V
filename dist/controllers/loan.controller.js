@@ -121,7 +121,7 @@ var LoanController = /** @class */ (function () {
     }
     LoanController.applyForLoan = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var userId, data, loanId, documents, amount, description, _a, applicantName, applicantAge, applicantGender, nationality, salaried, bankDetailsData, permanentAddress, address, bankDetails, application, e_1;
+            var userId, data, loanId, documents, amount, description, _a, applicantName, applicantAge, applicantGender, nationality, salaried, bankDetailsData, permanentAddress, address, phone, email, bankDetails, application, e_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -129,7 +129,7 @@ var LoanController = /** @class */ (function () {
                         userId = req.user.id;
                         data = LoanApplicationSchema.parse(req.body);
                         loanId = data.loanId, documents = data.documents, amount = data.amount, description = data.description;
-                        _a = data.applicantDetails, applicantName = _a.applicantName, applicantAge = _a.applicantAge, applicantGender = _a.applicantGender, nationality = _a.nationality, salaried = _a.salaried, bankDetailsData = _a.bankDetails, permanentAddress = _a.permanentAddress, address = _a.address;
+                        _a = data.applicantDetails, applicantName = _a.applicantName, applicantAge = _a.applicantAge, applicantGender = _a.applicantGender, nationality = _a.nationality, salaried = _a.salaried, bankDetailsData = _a.bankDetails, permanentAddress = _a.permanentAddress, address = _a.address, phone = _a.phone, email = _a.email;
                         return [4 /*yield*/, __1.prisma.bankDetails.create({
                                 data: __assign(__assign({}, bankDetailsData), { userId: userId }),
                             })];
@@ -143,6 +143,8 @@ var LoanController = /** @class */ (function () {
                                     applicantAge: applicantAge,
                                     applicantGender: applicantGender,
                                     address: address,
+                                    phone: phone,
+                                    email: email,
                                     permanentAddress: permanentAddress,
                                     nationality: nationality,
                                     salaried: salaried,
@@ -326,14 +328,7 @@ var LoanController = /** @class */ (function () {
                             })];
                     case 2:
                         loans = _d.sent();
-                        return [2 /*return*/, {
-                                success: true,
-                                data: {
-                                    totalApplications: count,
-                                    loans: loans,
-                                    page: page,
-                                },
-                            }];
+                        return [2 /*return*/, res.status(200).json({ success: true, loans: loans, page: page, totalApplications: count })];
                     case 3:
                         e_5 = _d.sent();
                         console.log(e_5);

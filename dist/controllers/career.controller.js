@@ -36,31 +36,35 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var index_1 = require("../index");
+var path_1 = require("path");
+var process_1 = require("process");
+var __1 = require("..");
+var currentDir = (0, process_1.cwd)();
 var CareerController = /** @class */ (function () {
     function CareerController() {
     }
     //create career
     CareerController.createCareer = function (req, res) {
-        var _a;
         return __awaiter(this, void 0, void 0, function () {
-            var cv, _b, name, address, pin, email, mobile, skills, gender, careerId, bill, error_1;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
+            var userId, file, _a, name, address, pin, email, mobile, skills, gender, cvFileName, career, e_1;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
-                        _c.trys.push([0, 2, , 3]);
-                        cv = (_a = req.file) === null || _a === void 0 ? void 0 : _a.path;
-                        _b = req.body, name = _b.name, address = _b.address, pin = _b.pin, email = _b.email, mobile = _b.mobile, skills = _b.skills, gender = _b.gender, careerId = _b.careerId;
-                        if (!cv) {
-                            res.status(400).send({ success: false, message: "cv is missing" });
-                            return [2 /*return*/];
+                        _b.trys.push([0, 2, , 3]);
+                        userId = req.user.id;
+                        file = req.file;
+                        if (!file) {
+                            return [2 /*return*/, res.status(400).json({ success: false, message: 'No CV file to upload.' })];
                         }
-                        if (!name || !address || !pin || !email || !mobile || !skills || !gender || !careerId) {
-                            res.status(400).send({ success: false, message: "plz provide all require body fields" });
-                            return [2 /*return*/];
+                        _a = req.body, name = _a.name, address = _a.address, pin = _a.pin, email = _a.email, mobile = _a.mobile, skills = _a.skills, gender = _a.gender;
+                        if (!name || !address || !pin || !email || !mobile || !skills || !gender) {
+                            return [2 /*return*/, res.status(400).json({ success: false, message: 'Missing required fields.' })];
                         }
-                        return [4 /*yield*/, index_1.prisma.career.create({
+                        cvFileName = file.filename;
+                        return [4 /*yield*/, __1.prisma.career.create({
                                 data: {
+                                    userId: userId,
+                                    cv: cvFileName,
                                     name: name,
                                     address: address,
                                     pin: pin,
@@ -68,19 +72,15 @@ var CareerController = /** @class */ (function () {
                                     mobile: mobile,
                                     skills: skills,
                                     gender: gender,
-                                    cv: cv,
-                                    careerId: careerId
-                                }
+                                },
                             })];
                     case 1:
-                        bill = _c.sent();
-                        res.status(201).json(bill);
-                        return [2 /*return*/];
+                        career = _b.sent();
+                        return [2 /*return*/, res.status(200).json({ success: true, message: 'Career created', career: career })];
                     case 2:
-                        error_1 = _c.sent();
-                        console.log(error_1);
-                        res.status(500).json({ sucess: false, message: 'Internal server error' });
-                        return [3 /*break*/, 3];
+                        e_1 = _b.sent();
+                        console.log(e_1);
+                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 3: return [2 /*return*/];
                 }
             });
@@ -89,19 +89,19 @@ var CareerController = /** @class */ (function () {
     //getAll career
     CareerController.findAllCareer = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var allCareer, error_2;
+            var allCareer, error_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, index_1.prisma.career.findMany({})];
+                        return [4 /*yield*/, __1.prisma.career.findMany({})];
                     case 1:
                         allCareer = _a.sent();
                         res.status(200).json({ success: true, allCareer: allCareer });
                         return [3 /*break*/, 3];
                     case 2:
-                        error_2 = _a.sent();
-                        res.status(500).json({ success: false, message: 'Internal server error', errors: error_2 });
+                        error_1 = _a.sent();
+                        res.status(500).json({ success: false, message: 'Internal server error', errors: error_1 });
                         return [3 /*break*/, 3];
                     case 3: return [2 /*return*/];
                 }
@@ -111,13 +111,13 @@ var CareerController = /** @class */ (function () {
     //find one career
     CareerController.findOneCareer = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var id, Career, error_3;
+            var id, Career, error_2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
                         id = parseInt(req.params.id);
-                        return [4 /*yield*/, index_1.prisma.career.findUnique({
+                        return [4 /*yield*/, __1.prisma.career.findUnique({
                                 where: {
                                     id: id,
                                 },
@@ -131,8 +131,8 @@ var CareerController = /** @class */ (function () {
                         res.status(200).json(Career);
                         return [3 /*break*/, 3];
                     case 2:
-                        error_3 = _a.sent();
-                        console.error(error_3);
+                        error_2 = _a.sent();
+                        console.error(error_2);
                         res.status(500).json({ success: false, message: 'Internal server error' });
                         return [3 /*break*/, 3];
                     case 3: return [2 /*return*/];
@@ -143,13 +143,13 @@ var CareerController = /** @class */ (function () {
     //delete career by id
     CareerController.deleteCareer = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var id, deletedCareer, error_4;
+            var id, deletedCareer, error_3;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
                         id = parseInt(req.params.id);
-                        return [4 /*yield*/, index_1.prisma.career.delete({ where: { id: id } })];
+                        return [4 /*yield*/, __1.prisma.career.delete({ where: { id: id } })];
                     case 1:
                         deletedCareer = _a.sent();
                         if (!deletedCareer) {
@@ -159,10 +159,47 @@ var CareerController = /** @class */ (function () {
                         res.status(200).json({ success: true, deletedCareer: deletedCareer });
                         return [3 /*break*/, 3];
                     case 2:
-                        error_4 = _a.sent();
-                        console.error(error_4);
+                        error_3 = _a.sent();
+                        console.error(error_3);
                         res.status(500).json({ success: false, message: 'Internal server error' });
                         return [3 /*break*/, 3];
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    CareerController.getCVByCareerId = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var id, userId, career, cvFileName, e_2;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        id = req.params.id;
+                        if (!id) {
+                            return [2 /*return*/, res.status(400).json({ success: false, message: 'Career ID is required' })];
+                        }
+                        userId = req.user.id;
+                        return [4 /*yield*/, __1.prisma.career.findFirst({
+                                where: {
+                                    id: parseInt(id),
+                                    userId: userId,
+                                },
+                                select: {
+                                    cv: true,
+                                },
+                            })];
+                    case 1:
+                        career = _a.sent();
+                        if (!career || !career.cv) {
+                            return [2 /*return*/, res.status(404).json({ success: false, message: 'CV not found for the provided career ID' })];
+                        }
+                        cvFileName = career.cv;
+                        return [2 /*return*/, res.sendFile((0, path_1.join)(currentDir, 'uploads', cvFileName))];
+                    case 2:
+                        e_2 = _a.sent();
+                        console.log(e_2);
+                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 3: return [2 /*return*/];
                 }
             });
