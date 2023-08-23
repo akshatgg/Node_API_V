@@ -8,6 +8,7 @@ import { prisma } from "..";
 const LoanApplicationSchema = z.object({
     loanId: z.string({ required_error: "Loan Id is required" }),
     amount: z.number({ required_error: "Loan Amount is required" }),
+    loanType: z.nativeEnum(LoanType),
     description: z.string(),
     documents: z.array(z.string()),
     applicantDetails: z.object({
@@ -57,7 +58,7 @@ export default class LoanController {
 
             const data = LoanApplicationSchema.parse(req.body);
 
-            const { loanId, documents, amount, description } = data;
+            const { loanId, documents, amount, description ,loanType} = data;
 
             const { applicantName, applicantAge, applicantGender, nationality, salaried, bankDetails: bankDetailsData, permanentAddress, address, phone,email} = data.applicantDetails;
 
@@ -66,6 +67,7 @@ export default class LoanController {
                     ...bankDetailsData,
                     userId,
                 },
+                
             });
 
             const application = await prisma.loanApplication.create({
@@ -76,6 +78,7 @@ export default class LoanController {
                     applicantAge,
                     applicantGender,
                     address,
+                    loanType,
                     phone,
                     email,
                     permanentAddress,

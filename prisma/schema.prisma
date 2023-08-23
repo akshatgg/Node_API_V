@@ -428,6 +428,7 @@ enum LoanType {
   home
   business
   car
+  property
 }
 
 model Loan {
@@ -467,6 +468,7 @@ model LoanApplication {
   loanStatus       LoanStatus         @default(pending)
   applicantName    String
   applicantAge     Int
+  loanType         LoanType
   applicantGender  UserGender
   nationality      Nationality
   description      String

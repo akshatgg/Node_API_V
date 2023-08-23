@@ -77,6 +77,7 @@ var __1 = require("..");
 var LoanApplicationSchema = zod_1.default.object({
     loanId: zod_1.default.string({ required_error: "Loan Id is required" }),
     amount: zod_1.default.number({ required_error: "Loan Amount is required" }),
+    loanType: zod_1.default.nativeEnum(client_1.LoanType),
     description: zod_1.default.string(),
     documents: zod_1.default.array(zod_1.default.string()),
     applicantDetails: zod_1.default.object({
@@ -121,14 +122,14 @@ var LoanController = /** @class */ (function () {
     }
     LoanController.applyForLoan = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var userId, data, loanId, documents, amount, description, _a, applicantName, applicantAge, applicantGender, nationality, salaried, bankDetailsData, permanentAddress, address, phone, email, bankDetails, application, e_1;
+            var userId, data, loanId, documents, amount, description, loanType, _a, applicantName, applicantAge, applicantGender, nationality, salaried, bankDetailsData, permanentAddress, address, phone, email, bankDetails, application, e_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 3, , 4]);
                         userId = req.user.id;
                         data = LoanApplicationSchema.parse(req.body);
-                        loanId = data.loanId, documents = data.documents, amount = data.amount, description = data.description;
+                        loanId = data.loanId, documents = data.documents, amount = data.amount, description = data.description, loanType = data.loanType;
                         _a = data.applicantDetails, applicantName = _a.applicantName, applicantAge = _a.applicantAge, applicantGender = _a.applicantGender, nationality = _a.nationality, salaried = _a.salaried, bankDetailsData = _a.bankDetails, permanentAddress = _a.permanentAddress, address = _a.address, phone = _a.phone, email = _a.email;
                         return [4 /*yield*/, __1.prisma.bankDetails.create({
                                 data: __assign(__assign({}, bankDetailsData), { userId: userId }),
@@ -143,6 +144,7 @@ var LoanController = /** @class */ (function () {
                                     applicantAge: applicantAge,
                                     applicantGender: applicantGender,
                                     address: address,
+                                    loanType: loanType,
                                     phone: phone,
                                     email: email,
                                     permanentAddress: permanentAddress,
