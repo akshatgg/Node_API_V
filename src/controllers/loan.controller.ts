@@ -11,6 +11,7 @@ const LoanApplicationSchema = z.object({
     loanType: z.nativeEnum(LoanType),
     description: z.string(),
     documents: z.array(z.string()),
+    agentId: z.string().optional(),
     applicantDetails: z.object({
         applicantName: z.string().min(3),
         applicantAge: z.number().min(18, "Applicant must be atleast 18 years old to apply for loan"),
@@ -74,6 +75,7 @@ export default class LoanController {
                 data: {
                     loanId,
                     userId,
+                    agentId,
                     applicantName,
                     applicantAge,
                     applicantGender,
@@ -272,6 +274,77 @@ export default class LoanController {
                 success: true,
                 data: {
                     loan
+                }
+            });
+        } catch (e) {
+            console.log(e);
+            return res.status(500).send({ success: false, message: 'Something went wrong.' });
+        }
+    }
+
+    static async getAllLoanApplications(req: Request, res: Response) {
+        try {
+            const { status, order }: { status?: LoanStatus, order?: string } = req.query;
+
+            // Pagination parameters
+            const { page = 1, limit = 10 } = req.query;
+            const parsedPage = parseInt(page.toString(), 10);
+            const parsedLimit = parseInt(limit.toString(), 10);
+
+            // Calculate the offset based on the page and limit
+            const offset = (parsedPage - 1) * parsedLimit;
+
+            const count = await prisma.loanApplication.count({
+                orderBy: {
+                    createdAt: order === 'asc' ? 'asc' : 'desc',
+                }
+            });
+
+            // Get all loan applications of the user with pagination
+            const applications: LoanApplication[] = await prisma.loanApplication.findMany({
+                where: {
+                    loanStatus: status
+                },
+                skip: offset,
+                take: parsedLimit,
+            });
+
+            return res.status(200).json({
+                success: true,
+                data: {
+                    totalApplications: count,
+                    applications,
+                    page,
+                },
+            });
+        } catch (e) {
+            console.log(e);
+            return res.status(500).send({ success: false, message: 'Something went wrong.' });
+        }
+    }
+
+    static async getLoanApplicationById(req: Request, res: Response) {
+        try {
+            const { id } = req.params;
+
+            const application = await prisma.loanApplication.findFirst({
+                where: {
+                    id,
+                },
+                include: {
+                    bankDetails: true,
+                    documents: true,
+                }
+            });
+
+            if (!application) {
+                return res.status(404).json({ success: false, message: "Loan Application not found" });
+            }
+
+            return res.status(200).json({
+                success: true,
+                data: {
+                    application
                 }
             });
         } catch (e) {

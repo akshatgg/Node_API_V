@@ -59,8 +59,8 @@ model User {
   businessSetting BusinessSetting[]
   registerStartup RegisterStartup[]
   contactUs       ContactUs[]
-
- 
+  agentId         Agent?
+  clientAccounts  Client[]
 }
 
 model Otp {
@@ -326,8 +326,8 @@ model Account {
 }
 
 model Career {
-  id Int @id @default(autoincrement())
-
+  id        Int        @id @default(autoincrement())
+  careerId  String
   name      String
   address   String
   pin       String
@@ -481,6 +481,8 @@ model LoanApplication {
   permanentAddress String
   userId           Int
   user             User               @relation(fields: [userId], references: [id])
+  agentId          String?
+  agent            Agent?              @relation(fields: [agentId], references: [id])
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @default(now())
 }
@@ -524,6 +526,26 @@ model Insurance {
   user          User       @relation(fields: [userId], references: [id])
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @default(now())
+}
+
+model Client {
+  id        String   @id @default(uuid())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  agentId   String
+  agent     Agent    @relation(fields: [agentId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model Agent {
+  id        String            @id @default(uuid())
+  clients   Client[]
+  userId    Int               @unique
+  user      User              @relation(fields: [userId], references: [id])
+  loans     LoanApplication[]
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @default(now())
 }
 
 //accountancy for ladger creation
@@ -693,6 +715,7 @@ enum StartupCategory {
   returns
   audits
 }
+
 
 model RegisterStartup {
   id         Int             @id @default(autoincrement())

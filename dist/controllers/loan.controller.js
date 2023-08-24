@@ -80,6 +80,7 @@ var LoanApplicationSchema = zod_1.default.object({
     loanType: zod_1.default.nativeEnum(client_1.LoanType),
     description: zod_1.default.string(),
     documents: zod_1.default.array(zod_1.default.string()),
+    agentId: zod_1.default.string().optional(),
     applicantDetails: zod_1.default.object({
         applicantName: zod_1.default.string().min(3),
         applicantAge: zod_1.default.number().min(18, "Applicant must be atleast 18 years old to apply for loan"),
@@ -140,6 +141,7 @@ var LoanController = /** @class */ (function () {
                                 data: {
                                     loanId: loanId,
                                     userId: userId,
+                                    agentId: agentId,
                                     applicantName: applicantName,
                                     applicantAge: applicantAge,
                                     applicantGender: applicantGender,
@@ -370,6 +372,88 @@ var LoanController = /** @class */ (function () {
                     case 2:
                         e_6 = _a.sent();
                         console.log(e_6);
+                        return [2 /*return*/, res.status(500).send({ success: false, message: 'Something went wrong.' })];
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    LoanController.getAllLoanApplications = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, status, order, _b, _c, page, _d, limit, parsedPage, parsedLimit, offset, count, applications, e_7;
+            return __generator(this, function (_e) {
+                switch (_e.label) {
+                    case 0:
+                        _e.trys.push([0, 3, , 4]);
+                        _a = req.query, status = _a.status, order = _a.order;
+                        _b = req.query, _c = _b.page, page = _c === void 0 ? 1 : _c, _d = _b.limit, limit = _d === void 0 ? 10 : _d;
+                        parsedPage = parseInt(page.toString(), 10);
+                        parsedLimit = parseInt(limit.toString(), 10);
+                        offset = (parsedPage - 1) * parsedLimit;
+                        return [4 /*yield*/, __1.prisma.loanApplication.count({
+                                orderBy: {
+                                    createdAt: order === 'asc' ? 'asc' : 'desc',
+                                }
+                            })];
+                    case 1:
+                        count = _e.sent();
+                        return [4 /*yield*/, __1.prisma.loanApplication.findMany({
+                                where: {
+                                    loanStatus: status
+                                },
+                                skip: offset,
+                                take: parsedLimit,
+                            })];
+                    case 2:
+                        applications = _e.sent();
+                        return [2 /*return*/, res.status(200).json({
+                                success: true,
+                                data: {
+                                    totalApplications: count,
+                                    applications: applications,
+                                    page: page,
+                                },
+                            })];
+                    case 3:
+                        e_7 = _e.sent();
+                        console.log(e_7);
+                        return [2 /*return*/, res.status(500).send({ success: false, message: 'Something went wrong.' })];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    LoanController.getLoanApplicationById = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var id, application, e_8;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        id = req.params.id;
+                        return [4 /*yield*/, __1.prisma.loanApplication.findFirst({
+                                where: {
+                                    id: id,
+                                },
+                                include: {
+                                    bankDetails: true,
+                                    documents: true,
+                                }
+                            })];
+                    case 1:
+                        application = _a.sent();
+                        if (!application) {
+                            return [2 /*return*/, res.status(404).json({ success: false, message: "Loan Application not found" })];
+                        }
+                        return [2 /*return*/, res.status(200).json({
+                                success: true,
+                                data: {
+                                    application: application
+                                }
+                            })];
+                    case 2:
+                        e_8 = _a.sent();
+                        console.log(e_8);
                         return [2 /*return*/, res.status(500).send({ success: false, message: 'Something went wrong.' })];
                     case 3: return [2 /*return*/];
                 }

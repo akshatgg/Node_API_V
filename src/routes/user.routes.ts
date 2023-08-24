@@ -5,7 +5,9 @@ import adminCheck from "../middlewares/admin-check";
 
 const userRouter = Router();
 
-userRouter.get('/profile/:id', UserController.getUserById);
+userRouter.get('/profile', verifyToken, UserController.getOwnProfile);
+
+userRouter.get('/profile/:id', verifyToken, UserController.getUserById);
 
 userRouter.get('/get-all-users', verifyToken, adminCheck, UserController.getAllUsers);
 

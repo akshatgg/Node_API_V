@@ -8,7 +8,8 @@ var user_controller_1 = __importDefault(require("../controllers/user.controller"
 var verify_token_1 = __importDefault(require("../middlewares/verify-token"));
 var admin_check_1 = __importDefault(require("../middlewares/admin-check"));
 var userRouter = (0, express_1.Router)();
-userRouter.get('/profile/:id', user_controller_1.default.getUserById);
+userRouter.get('/profile', verify_token_1.default, user_controller_1.default.getOwnProfile);
+userRouter.get('/profile/:id', verify_token_1.default, user_controller_1.default.getUserById);
 userRouter.get('/get-all-users', verify_token_1.default, admin_check_1.default, user_controller_1.default.getAllUsers);
 userRouter.post('/sign-up', user_controller_1.default.signUp);
 userRouter.post('/login', user_controller_1.default.login);

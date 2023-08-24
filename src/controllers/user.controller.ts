@@ -438,4 +438,41 @@ export default class UserController {
             return res.status(500).send({ success: false, message: 'Something went wrong' });
         }
     }
+
+    static async getOwnProfile(req: Request, res: Response) {
+        try {
+            const { id } = req.user!;
+
+            const user = await prisma.user.findFirst({
+                select: {
+                    id: true,
+                    createdAt: true,
+                    email: true,
+                    firstName: true,
+                    lastName: true,
+                    fatherName: true,
+                    aadhaar: true,
+                    address: true,
+                    phone: true,
+                    pan: true,
+                    userType: true,
+                    pin:true
+                },
+                where: {
+                    id: {
+                        equals: id
+                    }
+                }
+            });
+
+            if (!user) {
+                return res.status(404).send({ success: false, message: 'User not found' });
+            }
+
+            return res.status(200).send({ success: true, data: { user } });
+        } catch (e) {
+            console.error(e);
+            return res.status(500).send({ success: false, message: 'Something went wrong' });
+        }
+    }
 }

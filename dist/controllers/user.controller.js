@@ -544,6 +544,50 @@ var UserController = /** @class */ (function () {
             });
         });
     };
+    UserController.getOwnProfile = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var id, user, e_10;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        id = req.user.id;
+                        return [4 /*yield*/, __1.prisma.user.findFirst({
+                                select: {
+                                    id: true,
+                                    createdAt: true,
+                                    email: true,
+                                    firstName: true,
+                                    lastName: true,
+                                    fatherName: true,
+                                    aadhaar: true,
+                                    address: true,
+                                    phone: true,
+                                    pan: true,
+                                    userType: true,
+                                    pin: true
+                                },
+                                where: {
+                                    id: {
+                                        equals: id
+                                    }
+                                }
+                            })];
+                    case 1:
+                        user = _a.sent();
+                        if (!user) {
+                            return [2 /*return*/, res.status(404).send({ success: false, message: 'User not found' })];
+                        }
+                        return [2 /*return*/, res.status(200).send({ success: true, data: { user: user } })];
+                    case 2:
+                        e_10 = _a.sent();
+                        console.error(e_10);
+                        return [2 /*return*/, res.status(500).send({ success: false, message: 'Something went wrong' })];
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    };
     UserController.SALT_ROUNDS = 10;
     UserController.USERS_PER_PAGE = 10;
     return UserController;
