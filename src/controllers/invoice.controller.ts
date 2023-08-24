@@ -75,6 +75,9 @@ class InvoiceController {
                 where: { userId },
                 skip: offset,
                 take: parsedLimit,
+                include:{
+                    items:true
+                }
             });
 
             res.status(200).json({ success: true, invoices });
@@ -88,7 +91,11 @@ class InvoiceController {
             const invoiceId = req.params.id;
 
             // Get the invoice by ID
-            const invoice: Invoice | null = await prisma.invoice.findUnique({ where: { id: invoiceId } });
+            const invoice: Invoice | null = await prisma.invoice.findUnique({ where: { id: invoiceId } ,
+                include:{
+                    items:true
+                }
+            });
 
             if (!invoice) {
                 res.status(404).json({ sucess: false, message: 'Invoice not found' });

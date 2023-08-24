@@ -46,12 +46,11 @@ var CareerController = /** @class */ (function () {
     //create career
     CareerController.createCareer = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var userId, file, _a, name, address, pin, email, mobile, skills, gender, cvFileName, career, e_1;
+            var file, _a, name, address, pin, email, mobile, skills, gender, cvFileName, career, e_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 2, , 3]);
-                        userId = req.user.id;
                         file = req.file;
                         if (!file) {
                             return [2 /*return*/, res.status(400).json({ success: false, message: 'No CV file to upload.' })];
@@ -63,7 +62,6 @@ var CareerController = /** @class */ (function () {
                         cvFileName = file.filename;
                         return [4 /*yield*/, __1.prisma.career.create({
                                 data: {
-                                    userId: userId,
                                     cv: cvFileName,
                                     name: name,
                                     address: address,
@@ -170,7 +168,7 @@ var CareerController = /** @class */ (function () {
     };
     CareerController.getCVByCareerId = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var id, userId, career, cvFileName, e_2;
+            var id, career, cvFileName, e_2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -179,11 +177,9 @@ var CareerController = /** @class */ (function () {
                         if (!id) {
                             return [2 /*return*/, res.status(400).json({ success: false, message: 'Career ID is required' })];
                         }
-                        userId = req.user.id;
                         return [4 /*yield*/, __1.prisma.career.findFirst({
                                 where: {
                                     id: parseInt(id),
-                                    userId: userId,
                                 },
                                 select: {
                                     cv: true,

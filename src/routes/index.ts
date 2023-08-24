@@ -33,6 +33,7 @@ import registerStartupRouter from "./registerStartup,routes";
 import contactUsRouter from "./contactUs.routes";
 
 import insourancerouter from "./insurance.routes";
+import { registerAbout } from "./about.routes";
 
 const router = Router();
 
@@ -95,6 +96,8 @@ router.use('/Startup',registerStartupRouter)
 router.use('/contactUs',contactUsRouter)
 
 router.use('/insourance',insourancerouter)
+
+router.use('/aboutTeam',registerAbout)
 
 router.get('/', (req, res) => {
     return res.send({ message: 'Up and running' });

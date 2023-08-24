@@ -13,7 +13,7 @@ export default class CareerController {
     //create career
     static async createCareer(req: Request, res: Response){
         try {
-            const { id: userId } = req.user!;
+           
             const file = req.file as Express.Multer.File; // Assuming a single CV file
 
             if (!file) {
@@ -38,7 +38,7 @@ export default class CareerController {
 
             const career = await prisma.career.create({
                 data: {
-                    userId, // Set the userId field directly
+                   
                     cv: cvFileName, // Assuming 'cv' field corresponds to the 'fileName'
                     name,
                     address,
@@ -118,12 +118,12 @@ export default class CareerController {
                 return res.status(400).json({ success: false, message: 'Career ID is required' });
             }
 
-            const { id: userId } = req.user!;
+         
 
             const career = await prisma.career.findFirst({
                 where: {
                     id:parseInt(id),
-                    userId,
+                  
                 },
                 select: {
                     cv: true,

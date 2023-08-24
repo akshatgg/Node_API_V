@@ -4,13 +4,13 @@ import { upload } from '../config/file-upload';
 import verifyToken from '../middlewares/verify-token';
 const careerRouter = Router();
 //create career
-careerRouter.post('/create', upload.single('cv'), verifyToken, CareerController.createCareer);
+careerRouter.post('/create', upload.single('cv'),  CareerController.createCareer);
 //find all career
-careerRouter.get('/findAll', verifyToken, CareerController.findAllCareer);
+careerRouter.get('/findAll',  CareerController.findAllCareer);
 // find library by id
-careerRouter.get('/findOne/:id', verifyToken, CareerController.findOneCareer);
+careerRouter.get('/findOne/:id',  CareerController.findOneCareer);
 // delete career
-careerRouter.delete('/delete/:id', verifyToken, CareerController.deleteCareer);
+careerRouter.delete('/delete/:id',  CareerController.deleteCareer);
 
-careerRouter.get('/getCv/:id', verifyToken, CareerController.getCVByCareerId);
+careerRouter.get('/getCv/:id',  CareerController.getCVByCareerId);
 export default careerRouter

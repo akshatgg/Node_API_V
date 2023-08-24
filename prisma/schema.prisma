@@ -58,8 +58,9 @@ model User {
   Acc_Payments    Acc_Payments[]
   businessSetting BusinessSetting[]
   registerStartup RegisterStartup[]
-  contactUs      ContactUs[]
-   career          Career[]
+  contactUs       ContactUs[]
+
+ 
 }
 
 model Otp {
@@ -325,20 +326,18 @@ model Account {
 }
 
 model Career {
-  id       Int        @id @default(autoincrement())
-  
-  name     String
-  address  String
-  pin      String
-  email    String
-  mobile   String
-  skills   String
-  gender   UserGender
-  cv       String
-   userId    Int
-  user      User       @relation(fields: [userId], references: [id])
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @default(now())
+  id Int @id @default(autoincrement())
+
+  name      String
+  address   String
+  pin       String
+  email     String
+  mobile    String
+  skills    String
+  gender    UserGender
+  cv        String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @default(now())
 }
 
 enum paymentStatus {
@@ -687,26 +686,38 @@ model Visitor {
   count     Int      @default(0)
   createdAt DateTime @default(now())
 }
-enum StartupCategory{
+
+enum StartupCategory {
   registration
   companyRegistration
   returns
   audits
 }
+
 model RegisterStartup {
-  id          Int    @id @default(autoincrement())
-  title String
-  image       String
-  userId      Int
-  categories  StartupCategory
-  user        User   @relation(fields: [userId], references: [id])
+  id         Int             @id @default(autoincrement())
+  title      String
+  image      String
+  userId     Int
+  categories StartupCategory
+  user       User            @relation(fields: [userId], references: [id])
 }
-model ContactUs{
-   id          Int    @id @default(autoincrement())
-   name String
-   email String
-  message String
+
+model ContactUs {
+  id          Int    @id @default(autoincrement())
+  name        String
+  email       String
+  message     String
   phoneNumber String
   userId      Int
   user        User   @relation(fields: [userId], references: [id])
+}
+
+model About {
+  id          String @id @default(uuid())
+  name        String
+  position    String
+  image       String
+  description String
+ 
 }
