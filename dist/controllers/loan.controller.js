@@ -141,7 +141,6 @@ var LoanController = /** @class */ (function () {
                                 data: {
                                     loanId: loanId,
                                     userId: userId,
-                                    agentId: agentId,
                                     applicantName: applicantName,
                                     applicantAge: applicantAge,
                                     applicantGender: applicantGender,

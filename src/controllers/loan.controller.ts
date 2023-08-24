@@ -75,7 +75,6 @@ export default class LoanController {
                 data: {
                     loanId,
                     userId,
-                    agentId,
                     applicantName,
                     applicantAge,
                     applicantGender,

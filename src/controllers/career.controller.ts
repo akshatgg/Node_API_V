@@ -38,7 +38,6 @@ export default class CareerController {
 
             const career = await prisma.career.create({
                 data: {
-                   
                     cv: cvFileName, // Assuming 'cv' field corresponds to the 'fileName'
                     name,
                     address,
