@@ -4,6 +4,8 @@ import verifyToken from '../middlewares/verify-token';
 
 const invoiceRouter = Router();
 
+invoiceRouter.get('/summary', verifyToken, InvoiceController.summary);
+
 // Routes for invoices
 invoiceRouter.get('/invoices/:id', verifyToken, InvoiceController.getById);
 invoiceRouter.get('/invoices', verifyToken, InvoiceController.getAll);

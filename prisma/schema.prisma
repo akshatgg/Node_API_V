@@ -157,10 +157,7 @@ model Item {
   openingStock  Decimal?
   closingStock  Decimal?
   purchasePrice Decimal?
-  cgst          Decimal?
-  sgst          Decimal?
-  igst          Decimal?
-  utgst         Decimal?
+  gst           Decimal?
   taxExempted   Boolean       @default(false)
   description   String?
   hsnCode       String?

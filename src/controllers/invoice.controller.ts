@@ -4,21 +4,72 @@ import { prisma } from '../index';
 
 class InvoiceController {
 
+    static async summary(req: Request, res: Response) {
+        try {
+            const { id: userId } = req.user!; // Assuming you have user authentication
+
+            const totalSales = await prisma.invoice.aggregate({
+                where: {
+                    userId,
+                    type: { in: ['sales', 'sales_return'] },
+                },
+                _sum: {
+                    totalAmount: true,
+                },
+            });
+
+            const totalPurchases = await prisma.invoice.aggregate({
+                where: {
+                    userId,
+                    type: { in: ['purchase', 'purchase_return'] },
+                },
+                _sum: {
+                    totalAmount: true,
+                },
+            });
+
+            const numberOfParties = await prisma.party.count({
+                where: {
+                    userId,
+                },
+            });
+
+            const numberOfItems = await prisma.item.count({
+                where: {
+                    userId,
+                },
+            });
+
+            return res.status(200).json({
+                success: true,
+                summary: {
+                    total_sales: totalSales._sum.totalAmount ?? 0,
+                    total_purchases: totalPurchases._sum.totalAmount ?? 0,
+                    number_of_parties: numberOfParties,
+                    number_of_items: numberOfItems,
+                },
+            });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ success: false, message: 'Internal server error' });
+        }
+    }
+
     static async create(req: Request, res: Response) {
         try {
             const { id: userId } = req.user!;
-    
+
             // Create the invoice
             const { invoiceNumber, type, partyId, phone, partyName, totalAmount, totalGst, stateOfSupply, cgst, sgst, igst, utgst, details, extraDetails, items, modeOfPayment, credit = false } = req.body;
-    
-            if(partyId) {
+
+            if (partyId) {
                 const party = await prisma.party.findUnique({ where: { id: partyId } });
-    
-                if(!party) {
+
+                if (!party) {
                     return res.status(401).json({ sucess: false, message: 'Party not found' });
                 }
             }
-    
+
             const invoice: Invoice = await prisma.invoice.create({
                 data: {
                     invoiceNumber,
@@ -40,9 +91,10 @@ class InvoiceController {
                     modeOfPayment,
                     credit,
                     items: {
-                        create: items.map(({ id, quantity } : { id: string, quantity: number }) => ({
+                        create: items.map(({ id, quantity, discount, }: { id: string, quantity: number, discount: number }) => ({
                             item: { connect: { id } },
-                            quantity
+                            quantity,
+                            discount,
                         })),
                     },
                     user: {
@@ -50,13 +102,13 @@ class InvoiceController {
                     },
                 },
             });
-    
+
             return res.status(201).json(invoice);
         } catch (error) {
             console.log(error);
             return res.status(500).json({ sucess: false, message: 'Internal server error' });
         }
-    }    
+    }
 
     static async getAll(req: Request, res: Response): Promise<void> {
         try {
@@ -75,8 +127,8 @@ class InvoiceController {
                 where: { userId },
                 skip: offset,
                 take: parsedLimit,
-                include:{
-                    items:true
+                include: {
+                    items: true
                 }
             });
 
@@ -91,9 +143,10 @@ class InvoiceController {
             const invoiceId = req.params.id;
 
             // Get the invoice by ID
-            const invoice: Invoice | null = await prisma.invoice.findUnique({ where: { id: invoiceId } ,
-                include:{
-                    items:true
+            const invoice: Invoice | null = await prisma.invoice.findUnique({
+                where: { id: invoiceId },
+                include: {
+                    items: true
                 }
             });
 
@@ -117,7 +170,7 @@ class InvoiceController {
 
             const invoice = await prisma.invoice.findFirst({ where: { id: invoiceId, userId } });
 
-            if(!invoice) {
+            if (!invoice) {
                 res.status(200).json({ success: false, message: 'Invoice not found' });
                 return;
             }
@@ -164,7 +217,7 @@ class InvoiceController {
 
             const invoice = await prisma.invoice.findFirst({ where: { id: invoiceId, userId } });
 
-            if(!invoice) {
+            if (!invoice) {
                 return res.status(200).json({ success: false, message: 'Invoice not found' });
             }
 
@@ -220,7 +273,7 @@ class InvoiceController {
 
             const party = await prisma.party.findFirst({ where: { id: partyId, userId } });
 
-            if(!party) {
+            if (!party) {
                 return res.status(200).json({ success: false, message: 'Party not found' });
             }
 
@@ -239,7 +292,7 @@ class InvoiceController {
             const { id: userId } = req.user!;
 
             // Create the item
-            const { itemName, unit, price, openingStock, closingStock, purchasePrice, cgst, sgst, igst, utgst, taxExempted, description, hsnCode, categoryId, supplierId } = req.body;
+            const { itemName, unit, price, openingStock, closingStock, purchasePrice, gst, taxExempted, description, hsnCode, categoryId, supplierId } = req.body;
 
             const item: Item = await prisma.item.create({
                 data: {
@@ -249,10 +302,7 @@ class InvoiceController {
                     openingStock,
                     closingStock,
                     purchasePrice,
-                    cgst,
-                    sgst,
-                    igst,
-                    utgst,
+                    gst,
                     userId,
                     taxExempted,
                     description,
@@ -277,7 +327,7 @@ class InvoiceController {
 
             const item = await prisma.item.findFirst({ where: { id: itemId, userId } });
 
-            if(!item) {
+            if (!item) {
                 return res.status(404).json({ success: false, message: 'Item does not exists.' });
             }
 
