@@ -12,7 +12,7 @@ export default class BusinessProfileController {
             const profile = await prisma.businessProfile.findFirst({ where: { id } });
 
             if (!profile) {
-                return res.status(404).send({ success: false, message: 'Business Profile does not exists.' });
+                return await BusinessProfileController.update(req, res);
             }
 
             return res.status(200).send({ success: true, data: { profile } });
@@ -64,9 +64,7 @@ export default class BusinessProfileController {
 
     static async update(req: Request, res: Response) {
         try {
-            const token = TokenService.getTokenFromAuthHeader(req.headers.authorization);
-
-            const { id } = TokenService.decodeToken(token!);
+            const { id } = req.user!;
 
             const data = req.body;
 
@@ -91,21 +89,24 @@ export default class BusinessProfileController {
                 },
             });
 
+            let profile;
+
             if (!found) {
-                await prisma.businessProfile.create({ data: { ...data, userId: id } });
+                profile = await prisma.businessProfile.create({ data: { ...data, userId: id } });
             } else {
-                await prisma.businessProfile.update({
+                const { id: _id, ...rest } = data;
+                profile = await prisma.businessProfile.update({
                     where: {
                         id: found.id,
                     },
                     data: {
-                        ...data,
+                        ...rest,
                         userId: id,
                     }
                 });
             }
 
-            return res.status(200).send({ success: true, message: "Profile Updated" });
+            return res.status(200).send({ success: true, message: "Profile Updated", profile });
         } catch (e) {
             console.log(e);
             return res.status(500).send({ success: false, message: 'Something went wrong' });
