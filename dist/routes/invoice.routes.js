@@ -7,6 +7,7 @@ var express_1 = require("express");
 var invoice_controller_1 = __importDefault(require("../controllers/invoice.controller"));
 var verify_token_1 = __importDefault(require("../middlewares/verify-token"));
 var invoiceRouter = (0, express_1.Router)();
+invoiceRouter.get('/summary', verify_token_1.default, invoice_controller_1.default.summary);
 // Routes for invoices
 invoiceRouter.get('/invoices/:id', verify_token_1.default, invoice_controller_1.default.getById);
 invoiceRouter.get('/invoices', verify_token_1.default, invoice_controller_1.default.getAll);
