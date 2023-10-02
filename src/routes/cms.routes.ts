@@ -9,6 +9,12 @@ cmsRouter.get('/homescreen', CMSController.getHomeScreen);
 
 cmsRouter.get('/total-users', CMSController.getUserCount);
 
+cmsRouter.get('/stats', verifyToken, adminCheck, CMSController.getStats);
+
+cmsRouter.get('/mailing-list', verifyToken, adminCheck, CMSController.getMailingList);
+
+cmsRouter.get('/phone-list', verifyToken, adminCheck, CMSController.getPhoneList);
+
 cmsRouter.post('/main-heading', verifyToken, adminCheck, CMSController.updateMainHeading);
 
 cmsRouter.post('/sub-heading', verifyToken, adminCheck, CMSController.updateSubHeading);

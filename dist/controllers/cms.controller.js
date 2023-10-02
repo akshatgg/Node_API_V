@@ -194,6 +194,117 @@ var CMSController = /** @class */ (function () {
             });
         });
     };
+    CMSController.getStats = function (_req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var totalUsers, totalEmails, totalPhoneNumbers, e_6;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 4, , 5]);
+                        return [4 /*yield*/, __1.prisma.user.count()];
+                    case 1:
+                        totalUsers = _a.sent();
+                        return [4 /*yield*/, __1.prisma.user.count({ where: { email: { not: undefined } } })];
+                    case 2:
+                        totalEmails = _a.sent();
+                        return [4 /*yield*/, __1.prisma.user.count({ where: { phone: { not: null } } })];
+                    case 3:
+                        totalPhoneNumbers = _a.sent();
+                        return [2 /*return*/, res.status(200).json({
+                                success: true,
+                                data: {
+                                    totalUsers: totalUsers,
+                                    totalEmails: totalEmails,
+                                    totalPhoneNumbers: totalPhoneNumbers,
+                                },
+                            })];
+                    case 4:
+                        e_6 = _a.sent();
+                        console.log(e_6);
+                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong.' })];
+                    case 5: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    CMSController.getMailingList = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, _b, page, _c, limit, parsedPage, parsedLimit, offset, mailingList, e_7;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
+                    case 0:
+                        _d.trys.push([0, 2, , 3]);
+                        _a = req.query, _b = _a.page, page = _b === void 0 ? 1 : _b, _c = _a.limit, limit = _c === void 0 ? 10 : _c;
+                        parsedPage = parseInt(page.toString(), 10);
+                        parsedLimit = parseInt(limit.toString(), 10);
+                        offset = (parsedPage - 1) * parsedLimit;
+                        return [4 /*yield*/, __1.prisma.user.findMany({
+                                where: {
+                                    email: {
+                                        not: undefined
+                                    }
+                                },
+                                select: {
+                                    id: true,
+                                    firstName: true,
+                                    lastName: true,
+                                    userType: true,
+                                    email: true,
+                                },
+                                skip: offset,
+                                take: parsedLimit,
+                            })];
+                    case 1:
+                        mailingList = _d.sent();
+                        return [2 /*return*/, res.status(200).json({ success: true, mailingList: mailingList })];
+                    case 2:
+                        e_7 = _d.sent();
+                        console.log(e_7);
+                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong.' })];
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    CMSController.getPhoneList = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, _b, page, _c, limit, parsedPage, parsedLimit, offset, phoneList, e_8;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
+                    case 0:
+                        _d.trys.push([0, 2, , 3]);
+                        _a = req.query, _b = _a.page, page = _b === void 0 ? 1 : _b, _c = _a.limit, limit = _c === void 0 ? 10 : _c;
+                        parsedPage = parseInt(page.toString(), 10);
+                        parsedLimit = parseInt(limit.toString(), 10);
+                        offset = (parsedPage - 1) * parsedLimit;
+                        return [4 /*yield*/, __1.prisma.user.findMany({
+                                where: {
+                                    phone: {
+                                        not: null
+                                    }
+                                },
+                                select: {
+                                    id: true,
+                                    firstName: true,
+                                    lastName: true,
+                                    userType: true,
+                                    phone: true,
+                                },
+                                skip: offset,
+                                take: parsedLimit,
+                            })];
+                    case 1:
+                        phoneList = _d.sent();
+                        return [2 /*return*/, res.status(200).json({ success: true, phoneList: phoneList })];
+                    case 2:
+                        e_8 = _d.sent();
+                        console.log(e_8);
+                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong.' })];
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    };
     CMSController.cardFilePath = (0, path_1.join)(__dirname, '..', 'config/cards.json');
     return CMSController;
 }());

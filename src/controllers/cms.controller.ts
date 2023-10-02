@@ -112,4 +112,92 @@ export default class CMSController {
         }
     }
 
+    static async getStats(_req: Request, res: Response) {
+        try {
+            const totalUsers = await prisma.user.count();
+            const totalEmails = await prisma.user.count({ where: { email: { not: undefined } } });
+            const totalPhoneNumbers = await prisma.user.count({ where: { phone: { not: null } } });
+
+            return res.status(200).json({ 
+                success: true, 
+                data: {
+                    totalUsers,
+                    totalEmails,
+                    totalPhoneNumbers,
+                },
+            });
+        } catch(e) {
+            console.log(e);
+            return res.status(500).json({ success: false, message: 'Something went wrong.' });
+        }
+    }
+
+    static async getMailingList(req: Request, res: Response) {
+        try {
+            // Pagination parameters
+            const { page = 1, limit = 10 } = req.query;
+            const parsedPage = parseInt(page.toString(), 10);
+            const parsedLimit = parseInt(limit.toString(), 10);
+
+            // Calculate the offset based on the page and limit
+            const offset = (parsedPage - 1) * parsedLimit;
+
+            const mailingList = await prisma.user.findMany({
+                where: {
+                    email: {
+                        not: undefined
+                    }
+                },
+                select: {
+                    id: true,
+                    firstName: true,
+                    lastName: true,
+                    userType: true,
+                    email: true,
+                },
+                skip: offset,
+                take: parsedLimit,
+            })
+
+            return res.status(200).json({ success: true, mailingList });
+        } catch(e) {
+            console.log(e);
+            return res.status(500).json({ success: false, message: 'Something went wrong.' });
+        }
+    }
+
+    static async getPhoneList(req: Request, res: Response) {
+        try {
+            // Pagination parameters
+            const { page = 1, limit = 10 } = req.query;
+            const parsedPage = parseInt(page.toString(), 10);
+            const parsedLimit = parseInt(limit.toString(), 10);
+
+            // Calculate the offset based on the page and limit
+            const offset = (parsedPage - 1) * parsedLimit;
+
+            const phoneList = await prisma.user.findMany({
+                where: {
+                    phone: {
+                        not: null
+                    }
+                },
+                select: {
+                    id: true,
+                    firstName: true,
+                    lastName: true,
+                    userType: true,
+                    phone: true,
+                },
+                skip: offset,
+                take: parsedLimit,
+            })
+
+            return res.status(200).json({ success: true, phoneList });
+        } catch(e) {
+            console.log(e);
+            return res.status(500).json({ success: false, message: 'Something went wrong.' });
+        }
+    }
+
 }
