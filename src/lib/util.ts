@@ -4,6 +4,8 @@ const EMAIL_RGX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-
 
 export const PHONE_NUMBER_RGX = /^(\+\d{1,3})?(\d{10})$/;
 
+export const DECIMAL_RGX = /^-?\d+\.\d{2}$/;
+
 export const validateEmail = (email: string): boolean => EMAIL_RGX.test(email);
 
 export const validatePhone = (phone: string): boolean => PHONE_NUMBER_RGX.test(phone);
