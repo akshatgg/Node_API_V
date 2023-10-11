@@ -23,6 +23,7 @@ export default class BlogController {
 
             return res.status(200).json({ success: true, data: post });
         } catch (error) {
+            console.log(error);
             return res.status(500).json({
                 success: false,
                 message: 'Something went wrong',

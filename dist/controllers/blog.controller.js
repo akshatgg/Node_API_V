@@ -65,6 +65,7 @@ var BlogController = /** @class */ (function () {
                         return [2 /*return*/, res.status(200).json({ success: true, data: post })];
                     case 2:
                         error_1 = _b.sent();
+                        console.log(error_1);
                         return [2 /*return*/, res.status(500).json({
                                 success: false,
                                 message: 'Something went wrong',

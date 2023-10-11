@@ -21,7 +21,9 @@ var limiter = (0, express_rate_limit_1.rateLimit)({
 });
 app.use((0, helmet_1.default)());
 app.use((0, cors_1.default)());
-app.use(express_1.default.json());
+app.use(express_1.default.json({
+    limit: '50mb',
+}));
 app.use(limiter);
 app.use(function (err, req, res, next) {
     console.error(err.stack);

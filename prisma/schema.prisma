@@ -302,7 +302,7 @@ model Post {
   id        String   @id @default(uuid())
   userId    Int
   title     String
-  content   String
+  content   String   @db.LongText
   imageUrl  String
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
@@ -478,7 +478,7 @@ model LoanApplication {
   userId           Int
   user             User               @relation(fields: [userId], references: [id])
   agentId          String?
-  agent            Agent?              @relation(fields: [agentId], references: [id])
+  agent            Agent?             @relation(fields: [agentId], references: [id])
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @default(now())
 }
@@ -712,7 +712,6 @@ enum StartupCategory {
   audits
 }
 
-
 model RegisterStartup {
   id         Int             @id @default(autoincrement())
   title      String
@@ -738,5 +737,4 @@ model About {
   position    String
   image       String
   description String
- 
 }
