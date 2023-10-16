@@ -52,12 +52,11 @@ model User {
   loans           LoanApplication[]
   documents       UploadedDocument[]
   insurances      Insurance[]
-  ledger          Ledger[]
-  journalEntry    JournalEntry[]
-  Acc_Payments    Acc_Payments[]
-  businessSetting BusinessSetting[]
   registerStartup RegisterStartup[]
   contactUs       ContactUs[]
+  journalEntries  JournalEntry[]
+  legders         Ledger[]
+  transactions    Transaction[]
   agentId         Agent?
   clientAccounts  Client[]
 }
@@ -89,6 +88,65 @@ model BusinessProfile {
   updatedAt     DateTime @default(now())
 }
 
+enum LedgerType {
+  bank
+  cash
+  purchase
+  sales
+  directExpense
+  indirectExpense
+  directIncome
+  indirectIncome
+  fixedAssets
+  currentAssets
+  loansAndLiabilities
+  accountsReceivable
+  accountsPayable
+}
+
+model Ledger {
+  id             String        @id @default(uuid())
+  ledgerName     String
+  openingBalance Decimal       @default(0.0)
+  balance Decimal              @default(0.0)
+  userId         Int
+  user           User          @relation(fields: [userId], references: [id])
+  transactions   Transaction[]
+  party          Party?        @relation(fields: [partyId], references: [id])
+  partyId        String?
+  year           Int          @default(2023)
+  month          Int          @default(0)
+  ledgerType     LedgerType
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now())
+}
+
+model JournalEntry {
+  id           String        @id @default(uuid())
+  entryDate    DateTime      @default(now())
+  description  String
+  userId       Int
+  user         User          @relation(fields: [userId], references: [id])
+  transactions Transaction[]
+}
+
+enum TransactionType {
+  credit
+  debit
+}
+
+model Transaction {
+  id              String          @id @default(uuid())
+  ledgerId        String
+  ledger          Ledger          @relation(fields: [ledgerId], references: [id])
+  journalEntryId  String
+  journalEntry    JournalEntry    @relation(fields: [journalEntryId], references: [id])
+  amount          Decimal
+  transactionType TransactionType
+  userId          Int
+  user            User            @relation(fields: [userId], references: [id])
+}
+
 enum PartyType {
   customer
   supplier
@@ -115,6 +173,7 @@ model Party {
   user              User      @relation(fields: [userId], references: [id])
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @default(now())
+  ledgers           Ledger[] 
 }
 
 model Category {
@@ -237,13 +296,17 @@ model Service {
 }
 
 enum OrderStatus {
+  initiated
   pending
   success
-  failed
+  failure
+  usercancelled
+  dropped
+  bounced
 }
 
 model Order {
-  id            String      @id @default(uuid())
+  id            Int      @id @default(autoincrement())
   services      Json
   status        OrderStatus @default(pending)
   price         Decimal
@@ -252,7 +315,6 @@ model Order {
   stateOfSupply String
   userId        Int
   user          User        @relation(references: [id], fields: [userId])
-  payments      Payment[]
 }
 
 enum PaymentStatus {
@@ -268,8 +330,7 @@ model Payment {
   status              PaymentStatus @default(created)
   userId              Int
   user                User          @relation(fields: [userId], references: [id])
-  orderId             String
-  order               Order         @relation(fields: [orderId], references: [id])
+  orderId             Int
 }
 
 model Library {
@@ -562,141 +623,6 @@ enum CurrencyType {
   USD
   EUR
   RUB
-}
-
-model Ledger {
-  id             Int              @id @default(autoincrement())
-  name           NAME             @default(cash)
-  under          Under            @default(sales)
-  openingBalance String
-  date           String?
-  amount         String
-  debitBalance   String
-  creditBalance  String
-  currency       CurrencyType     @default(INR)
-  userId         Int
-  user           User             @relation(fields: [userId], references: [id])
-  mailingDetails MailingDetails[]
-  gstDetails     GSTDetails[]
-  bankingDetails BankingDetail[]
-}
-
-model MailingDetails {
-  id               Int    @id @default(autoincrement())
-  address          String
-  contact          String
-  emailAddress     String
-  mailingDetailsId Int
-  mailingDetails   Ledger @relation(fields: [mailingDetailsId], references: [id])
-}
-
-model GSTDetails {
-  id         Int     @id @default(autoincrement())
-  gstin      String
-  state      String?
-  category   String?
-  gstId      Int
-  gstDetails Ledger  @relation(fields: [gstId], references: [id])
-}
-
-model BankingDetail {
-  id            Int    @id @default(autoincrement())
-  accountNumber String
-  ifscCode      String
-  branchDetails String
-  bankId        Int
-  BankDetails   Ledger @relation(fields: [bankId], references: [id])
-}
-
-model JournalEntry {
-  id           Int          @id @default(autoincrement())
-  date         String
-  debitAmount  String
-  creditAmount String
-  particular   String?
-  currency     CurrencyType @default(INR)
-  narration    String?
-  userId       Int
-  user         User         @relation(fields: [userId], references: [id])
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @default(now())
-
-  extraDetail    ExtraDetails[]
-  gstInformation GstInformation[]
-}
-
-model ExtraDetails {
-  id                   Int          @id @default(autoincrement())
-  costCenterAllocation String
-  projectAllocation    String
-  batchNumber          String
-  extraDetailsId       Int
-  extraDetail          JournalEntry @relation(fields: [extraDetailsId], references: [id])
-}
-
-model GstInformation {
-  id               Int          @id @default(autoincrement())
-  gstIn            String
-  taxCategories    String
-  taxAmount        String
-  gstInformationId Int
-  gstInformation   JournalEntry @relation(fields: [gstInformationId], references: [id])
-}
-
-model Acc_Payments {
-  id                Int                 @id @default(autoincrement())
-  date              String
-  partyRecipient    String
-  paymentDetails    Acc_PaymentDetail[]
-  bankOrCashLedger  String?
-  billAllocation    Bills[]
-  narration         String?
-  gstIn             String?
-  taxAmount         String?
-  taxCategories     String?
-  AdditionalDetails String?
-
-  currency CurrencyType? @default(INR)
-  userId   Int
-  user     User          @relation(fields: [userId], references: [id])
-}
-
-model Bills {
-  id         Int           @id @default(autoincrement())
-  billNumber String
-  amount     String
-  discount   String
-  billId     Int
-  bill       Acc_Payments? @relation(fields: [billId], references: [id])
-}
-
-model Acc_PaymentDetail {
-  id              Int           @id @default(autoincrement())
-  paymentMode     paymentMethod
-  paymentDetailId Int
-  paymentDetail   Acc_Payments  @relation(fields: [paymentDetailId], references: [id])
-  referenceNo     String?
-  chequeNo        String?
-}
-
-model BusinessSetting {
-  id              Int    @id @default(autoincrement())
-  phone           String
-  email           String
-  gstNo           String
-  panNo           String
-  street          String
-  state           String
-  pin             String
-  city            String
-  accountNo       String
-  ifscCode        String
-  bank_branchName String
-  acc_holderName  String
-  industryType    String
-  businessType    String
-  userId          Int
-  user            User   @relation(fields: [userId], references: [id])
 }
 
 model Visitor {

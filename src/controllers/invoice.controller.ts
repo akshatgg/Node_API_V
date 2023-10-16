@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
-import { Invoice, InvoiceItem, Item, Party } from '@prisma/client';
+import { Invoice, InvoiceItem, Item, LedgerType, Party, PartyType } from '@prisma/client';
 import { prisma } from '../index';
 
 class InvoiceController {
 
     static async summary(req: Request, res: Response) {
         try {
-            const { id: userId } = req.user!; // Assuming you have user authentication
+            const { id: userId } = req.user!;
 
             const totalSales = await prisma.invoice.aggregate({
                 where: {
@@ -237,10 +237,33 @@ class InvoiceController {
         try {
             const { id: userId } = req.user!;
 
-            // Create the party
-            const { partyName, type, gstin, pan, tan, upi, email, phone, address, bankName, bankAccountNumber, bankIfsc, bankBranch } = req.body;
+            const date = new Date();
 
-            const party: Party = await prisma.party.create({
+            const currentYear = date.getFullYear();
+            const currentMonth = date.getMonth();
+
+            // Extract data for creating the party and ledger
+            const {
+                partyName,
+                type,
+                gstin,
+                pan,
+                tan,
+                upi,
+                email,
+                phone,
+                address,
+                bankName,
+                bankAccountNumber,
+                bankIfsc,
+                bankBranch,
+                openingBalance,
+                year = currentYear,
+                month = currentMonth,
+            } = req.body;
+
+            // Create the Party and its associated Ledger
+            const party = await prisma.party.create({
                 data: {
                     partyName,
                     type,
@@ -248,7 +271,6 @@ class InvoiceController {
                     pan,
                     tan,
                     upi,
-                    userId,
                     email,
                     phone,
                     address,
@@ -256,11 +278,26 @@ class InvoiceController {
                     bankAccountNumber,
                     bankIfsc,
                     bankBranch,
+                    userId,
+                    ledgers: {
+                        create: {
+                            ledgerName: partyName,
+                            ledgerType: type === PartyType.customer ? LedgerType.accountsReceivable : LedgerType.accountsPayable,
+                            openingBalance,
+                            year,
+                            month,
+                            userId,
+                        },
+                    },
                 },
+                include: {
+                    ledgers: true
+                }
             });
 
             return res.status(201).json({ success: true, party });
         } catch (error) {
+            console.log(error);
             return res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
@@ -372,7 +409,11 @@ class InvoiceController {
             const partyId = req.params.id;
 
             // Get the party by ID
-            const party: Party | null = await prisma.party.findFirst({ where: { id: partyId, userId } });
+            const party: Party | null = await prisma.party.findFirst({
+                where: { id: partyId, userId }, include: {
+                    ledgers: true
+                }
+            });
 
             if (!party) {
                 return res.status(404).json({ success: false, message: 'Party not found' });

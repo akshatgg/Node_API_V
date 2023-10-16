@@ -36,6 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var client_1 = require("@prisma/client");
 var index_1 = require("../index");
 var InvoiceController = /** @class */ (function () {
     function InvoiceController() {
@@ -320,13 +321,16 @@ var InvoiceController = /** @class */ (function () {
     };
     InvoiceController.createParty = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var userId, _a, partyName, type, gstin, pan, tan, upi, email, phone, address, bankName, bankAccountNumber, bankIfsc, bankBranch, party, error_7;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var userId, date, currentYear, currentMonth, _a, partyName, type, gstin, pan, tan, upi, email, phone, address, bankName, bankAccountNumber, bankIfsc, bankBranch, openingBalance, _b, year, _c, month, party, error_7;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
                     case 0:
-                        _b.trys.push([0, 2, , 3]);
+                        _d.trys.push([0, 2, , 3]);
                         userId = req.user.id;
-                        _a = req.body, partyName = _a.partyName, type = _a.type, gstin = _a.gstin, pan = _a.pan, tan = _a.tan, upi = _a.upi, email = _a.email, phone = _a.phone, address = _a.address, bankName = _a.bankName, bankAccountNumber = _a.bankAccountNumber, bankIfsc = _a.bankIfsc, bankBranch = _a.bankBranch;
+                        date = new Date();
+                        currentYear = date.getFullYear();
+                        currentMonth = date.getMonth();
+                        _a = req.body, partyName = _a.partyName, type = _a.type, gstin = _a.gstin, pan = _a.pan, tan = _a.tan, upi = _a.upi, email = _a.email, phone = _a.phone, address = _a.address, bankName = _a.bankName, bankAccountNumber = _a.bankAccountNumber, bankIfsc = _a.bankIfsc, bankBranch = _a.bankBranch, openingBalance = _a.openingBalance, _b = _a.year, year = _b === void 0 ? currentYear : _b, _c = _a.month, month = _c === void 0 ? currentMonth : _c;
                         return [4 /*yield*/, index_1.prisma.party.create({
                                 data: {
                                     partyName: partyName,
@@ -335,7 +339,6 @@ var InvoiceController = /** @class */ (function () {
                                     pan: pan,
                                     tan: tan,
                                     upi: upi,
-                                    userId: userId,
                                     email: email,
                                     phone: phone,
                                     address: address,
@@ -343,13 +346,28 @@ var InvoiceController = /** @class */ (function () {
                                     bankAccountNumber: bankAccountNumber,
                                     bankIfsc: bankIfsc,
                                     bankBranch: bankBranch,
+                                    userId: userId,
+                                    ledgers: {
+                                        create: {
+                                            ledgerName: partyName,
+                                            ledgerType: type === client_1.PartyType.customer ? client_1.LedgerType.accountsReceivable : client_1.LedgerType.accountsPayable,
+                                            openingBalance: openingBalance,
+                                            year: year,
+                                            month: month,
+                                            userId: userId,
+                                        },
+                                    },
                                 },
+                                include: {
+                                    ledgers: true
+                                }
                             })];
                     case 1:
-                        party = _b.sent();
+                        party = _d.sent();
                         return [2 /*return*/, res.status(201).json({ success: true, party: party })];
                     case 2:
-                        error_7 = _b.sent();
+                        error_7 = _d.sent();
+                        console.log(error_7);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Internal server error' })];
                     case 3: return [2 /*return*/];
                 }
@@ -486,7 +504,11 @@ var InvoiceController = /** @class */ (function () {
                         _a.trys.push([0, 2, , 3]);
                         userId = req.user.id;
                         partyId = req.params.id;
-                        return [4 /*yield*/, index_1.prisma.party.findFirst({ where: { id: partyId, userId: userId } })];
+                        return [4 /*yield*/, index_1.prisma.party.findFirst({
+                                where: { id: partyId, userId: userId }, include: {
+                                    ledgers: true
+                                }
+                            })];
                     case 1:
                         party = _a.sent();
                         if (!party) {

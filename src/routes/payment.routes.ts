@@ -10,3 +10,5 @@ paymentRouter.post('/transaction_date', verifyToken, PaymentController.transacti
 paymentRouter.post('/payout', verifyToken, PaymentController.payout);
 paymentRouter.post('/refund', verifyToken, PaymentController.refund);
 paymentRouter.post('/response', verifyToken, PaymentController.response);
+
+export default paymentRouter;

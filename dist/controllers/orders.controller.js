@@ -35,40 +35,66 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var index_1 = require("../index");
+var client_1 = require("@prisma/client");
+var runtime_1 = require("@prisma/client/runtime");
+var payment_service_1 = __importDefault(require("./payment/payment.service"));
+var calculateGST = function (price, gstPercentage) {
+    var gstMultiplier = gstPercentage.div(new runtime_1.Decimal(100));
+    var gstAmount = price.mul(gstMultiplier);
+    var totalPrice = price.add(gstAmount);
+    return totalPrice;
+};
 var OrdersController = /** @class */ (function () {
     function OrdersController() {
     }
     OrdersController.createOrder = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, services, status, price, gst, orderTotal, stateOfSupply, payments, userId, order, error_1;
+            var _a, services, stateOfSupply, userId, serviceRecords, totalPrice, totalGst, orderTotal, order, error_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        _b.trys.push([0, 2, , 3]);
-                        _a = req.body, services = _a.services, status = _a.status, price = _a.price, gst = _a.gst, orderTotal = _a.orderTotal, stateOfSupply = _a.stateOfSupply, payments = _a.payments;
+                        _b.trys.push([0, 3, , 4]);
+                        _a = req.body, services = _a.services, stateOfSupply = _a.stateOfSupply;
                         userId = req.user.id;
+                        return [4 /*yield*/, index_1.prisma.service.findMany({
+                                where: {
+                                    id: {
+                                        in: services
+                                    }
+                                }
+                            })];
+                    case 1:
+                        serviceRecords = _b.sent();
+                        if (serviceRecords.some(function (x) { return !x; })) {
+                            return [2 /*return*/, res.status(404).json({ success: false, message: "Invalid service ID" })];
+                        }
+                        totalPrice = serviceRecords.reduce(function (totalPrice, service) { return totalPrice.add(service.price); }, new runtime_1.Decimal(0.0));
+                        totalGst = serviceRecords.reduce(function (totalGst, service) { return totalGst.add(service.gst); }, new runtime_1.Decimal(0.0));
+                        orderTotal = calculateGST(totalPrice, totalGst);
                         return [4 /*yield*/, index_1.prisma.order.create({
                                 data: {
                                     services: services,
-                                    status: status,
-                                    price: price,
+                                    status: client_1.OrderStatus.initiated,
+                                    price: totalPrice,
                                     userId: userId,
-                                    gst: gst,
+                                    gst: totalGst,
                                     orderTotal: orderTotal,
                                     stateOfSupply: stateOfSupply,
-                                    payments: { create: payments },
                                 },
                             })];
-                    case 1:
+                    case 2:
                         order = _b.sent();
                         return [2 /*return*/, res.json({ success: true, message: 'Order created successfully', data: order })];
-                    case 2:
+                    case 3:
                         error_1 = _b.sent();
                         console.log(error_1);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Failed to create order' })];
-                    case 3: return [2 /*return*/];
+                    case 4: return [2 /*return*/];
                 }
             });
         });
@@ -104,7 +130,7 @@ var OrdersController = /** @class */ (function () {
                     case 1:
                         _a.trys.push([1, 3, , 4]);
                         userId = req.user.id;
-                        return [4 /*yield*/, index_1.prisma.order.findFirst({ where: { id: id, userId: userId } })];
+                        return [4 /*yield*/, index_1.prisma.order.findFirst({ where: { id: parseInt(id), userId: userId } })];
                     case 2:
                         order = _a.sent();
                         if (order) {
@@ -124,41 +150,42 @@ var OrdersController = /** @class */ (function () {
     };
     OrdersController.updateOrder = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var id, _a, services, status, price, gst, orderTotal, stateOfSupply, payments, userId, order, updatedOrder, error_4;
+            var id, _a, userId, email, phone, order, status, updatedOrder, error_4;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         id = req.params.id;
-                        _a = req.body, services = _a.services, status = _a.status, price = _a.price, gst = _a.gst, orderTotal = _a.orderTotal, stateOfSupply = _a.stateOfSupply, payments = _a.payments;
                         _b.label = 1;
                     case 1:
-                        _b.trys.push([1, 4, , 5]);
-                        userId = req.user.id;
-                        return [4 /*yield*/, index_1.prisma.order.findFirst({ where: { id: id, userId: userId } })];
+                        _b.trys.push([1, 5, , 6]);
+                        _a = req.user, userId = _a.id, email = _a.email, phone = _a.phone;
+                        return [4 /*yield*/, index_1.prisma.order.findFirst({ where: { id: parseInt(id), userId: userId } })];
                     case 2:
                         order = _b.sent();
                         if (!order) {
                             return [2 /*return*/, res.status(404).send({ success: false, message: 'Order does not exists.' })];
                         }
-                        return [4 /*yield*/, index_1.prisma.order.update({
-                                where: { id: id },
-                                data: {
-                                    services: services,
-                                    status: status,
-                                    price: price,
-                                    gst: gst,
-                                    orderTotal: orderTotal,
-                                    stateOfSupply: stateOfSupply,
-                                    payments: { set: payments },
-                                },
+                        return [4 /*yield*/, payment_service_1.default.transaction({
+                                email: email,
+                                phone: phone,
+                                txnid: String(order.id),
+                                amount: order.orderTotal.toString(),
                             })];
                     case 3:
+                        status = (_b.sent()).data.status;
+                        return [4 /*yield*/, index_1.prisma.order.update({
+                                where: { id: parseInt(id) },
+                                data: {
+                                    status: status
+                                },
+                            })];
+                    case 4:
                         updatedOrder = _b.sent();
                         return [2 /*return*/, res.json({ success: true, message: 'Order updated successfully', data: updatedOrder })];
-                    case 4:
+                    case 5:
                         error_4 = _b.sent();
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Failed to update order' })];
-                    case 5: return [2 /*return*/];
+                    case 6: return [2 /*return*/];
                 }
             });
         });
@@ -174,13 +201,13 @@ var OrdersController = /** @class */ (function () {
                     case 1:
                         _a.trys.push([1, 4, , 5]);
                         userId = req.user.id;
-                        return [4 /*yield*/, index_1.prisma.order.findFirst({ where: { id: id, userId: userId } })];
+                        return [4 /*yield*/, index_1.prisma.order.findFirst({ where: { id: parseInt(id), userId: userId } })];
                     case 2:
                         order = _a.sent();
                         if (!order) {
                             return [2 /*return*/, res.status(404).send({ success: false, message: 'Order does not exists.' })];
                         }
-                        return [4 /*yield*/, index_1.prisma.order.delete({ where: { id: id } })];
+                        return [4 /*yield*/, index_1.prisma.order.delete({ where: { id: parseInt(id) } })];
                     case 3:
                         _a.sent();
                         return [2 /*return*/, res.json({ success: true, message: 'Order deleted successfully' })];

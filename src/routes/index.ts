@@ -2,7 +2,6 @@ import { Request, Response, Router } from "express";
 
 import userRouter from "./user.routes";
 import businessProfileRouter from "./businessProfile.routes";
-import businessSettingRouter from "./businessSetting.routes";
 import invoiceRouter from "./invoice.routes";
 
 import pincodeRouter from "./pincode.routes";
@@ -10,6 +9,7 @@ import cmsRouter from "./cms.routes";
 import postOfficeRouter from "./postOffice.routes";
 import servicesRouter from "./services.routes";
 import paymentsRouter from "./payments.routes";
+import paymentRouter from "./payment.routes";
 import ordersRouter from "./orders.routes";
 
 import libraryRouter from "./library.routes"
@@ -18,8 +18,6 @@ import panRouter from "./pan.routes";
 import gstRouter from "./gst.routes";
 
 import careerRouter from "./career.route"
-import billRecieveRouter from "./billrecieve.routes";
-import billPayableRouter from "./billpayable.routes";
 import mcaRouter from "./mca.routes";
 import calculatorRouter from "./calculators.routes";
 import tanRouter from "./tan.routes";
@@ -27,13 +25,13 @@ import bankRouter from "./bank.routes";
 import aadhaarRouter from "./aadhaar.routes";
 import loanRouter from "./loan.routes";
 import documentRouter from "./document.routes";
-import accountancyRouter from "./accountancys.routes"
 import visitorRouter from "./visitorCounter.routes"
 import registerStartupRouter from "./registerStartup,routes";
 import contactUsRouter from "./contactUs.routes";
 
 import insourancerouter from "./insurance.routes";
 import { registerAbout } from "./about.routes";
+import accountancyRouter from "./accountancy.routes";
 
 const router = Router();
 
@@ -53,17 +51,19 @@ router.use('/pan', panRouter);
 
 router.use('/gst', gstRouter);
 
+router.use('/accountancy', accountancyRouter);
+
 router.use('/services', servicesRouter);
 
 router.use('/payments', paymentsRouter);
+
+router.use('/payment', paymentRouter);
 
 router.use('/orders', ordersRouter);
 
 router.use('/library', libraryRouter);
 
 router.use('/blog', blogRouter);
-
-router.use('/businessSetting',businessSettingRouter)
 
 router.use('/mca', mcaRouter);
 
@@ -82,12 +82,6 @@ router.use('/loan', loanRouter);
 router.use('/documents', documentRouter);
 
 router.use('/insurance', documentRouter);
-
-router.use('/billrecieve', billRecieveRouter);
-
-router.use('/billpayable', billPayableRouter);
-
-router.use('/account', accountancyRouter)
 
 router.use('/visitorCount',visitorRouter)
 

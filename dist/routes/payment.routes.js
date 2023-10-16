@@ -13,4 +13,5 @@ paymentRouter.post('/transaction_date', verify_token_1.default, payment_controll
 paymentRouter.post('/payout', verify_token_1.default, payment_controller_1.default.payout);
 paymentRouter.post('/refund', verify_token_1.default, payment_controller_1.default.refund);
 paymentRouter.post('/response', verify_token_1.default, payment_controller_1.default.response);
+exports.default = paymentRouter;
 //# sourceMappingURL=payment.routes.js.map
