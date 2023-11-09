@@ -171,7 +171,6 @@ class InvoiceController {
                 res.status(200).json({ success: false, message: 'Item not found' });
                 return;
             }
-
                     // Update the item
                     const updatedItem: Item | null = await prisma.item.update({
                         where: { id: itemId },
