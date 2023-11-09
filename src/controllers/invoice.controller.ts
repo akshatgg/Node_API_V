@@ -161,6 +161,31 @@ class InvoiceController {
         }
     }
 
+    static async updateItem(req: Request, res: Response): Promise<void> {
+        try {
+            const itemId = req.params.id;
+            const { itemName } = req.body;
+            const { id: userId } = req.user!;
+            const item = await prisma.invoice.findFirst({ where: { id: itemId, userId } });
+            if (!item) {
+                res.status(200).json({ success: false, message: 'Item not found' });
+                return;
+            }
+
+                    // Update the item
+                    const updatedItem: Item | null = await prisma.item.update({
+                        where: { id: itemId },
+                        data: {
+                            itemName
+                        }
+                    });
+        
+                    res.status(200).json({ sucess: true, updatedItem });
+                } catch (error) {
+                    res.status(500).json({ sucess: false, message: 'Internal server error' });
+                }
+    }
+
     static async update(req: Request, res: Response): Promise<void> {
         try {
             const invoiceId = req.params.id;

@@ -23,6 +23,7 @@ invoiceRouter.delete('/parties/:id', verifyToken, InvoiceController.deleteParty)
 invoiceRouter.get('/items', verifyToken, InvoiceController.getAllItems);
 invoiceRouter.get('/items/:id', verifyToken, InvoiceController.getItemById);
 invoiceRouter.post('/items', verifyToken, InvoiceController.createItem);
+invoiceRouter.put('/items/:id', verifyToken, InvoiceController.updateItem);
 invoiceRouter.delete('/items/:id', verifyToken, InvoiceController.deleteItem);
 
 export default invoiceRouter;
