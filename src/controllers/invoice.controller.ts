@@ -162,11 +162,12 @@ class InvoiceController {
     }
 
     static async updateItem(req: Request, res: Response): Promise<void> {
+        console.log("updateItem");
         try {
             const itemId = req.params.id;
             const { itemName } = req.body;
             const { id: userId } = req.user!;
-            const item = await prisma.invoice.findFirst({ where: { id: itemId, userId } });
+            const item = await prisma.item.findFirst({ where: { id: itemId, userId } });
             if (!item) {
                 res.status(200).json({ success: false, message: 'Item not found' });
                 return;
