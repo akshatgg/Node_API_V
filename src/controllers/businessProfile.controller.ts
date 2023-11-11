@@ -75,7 +75,7 @@ export default class BusinessProfileController {
             if (!data.businessName) {
                 return res.status(400).send({ success: false, message: 'Business Name cannot be empty' });
             }
-
+            
             const user = await prisma.user.findFirst({ where: { id } });
 
             if (!user) {
@@ -92,6 +92,7 @@ export default class BusinessProfileController {
             let profile;
 
             if (!found) {
+                data['id'] = undefined;
                 profile = await prisma.businessProfile.create({ data: { ...data, userId: id } });
             } else {
                 const { id: _id, ...rest } = data;
