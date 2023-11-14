@@ -96,6 +96,7 @@ export default class BusinessProfileController {
                 profile = await prisma.businessProfile.create({ data: { ...data, userId: id } });
             } else {
                 const { id: _id, ...rest } = data;
+                console.log(rest);
                 profile = await prisma.businessProfile.update({
                     where: {
                         id: found.id,

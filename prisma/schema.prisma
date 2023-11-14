@@ -71,26 +71,26 @@ model Otp {
 }
 
 model BusinessProfile {
-  id            Int      @id @default(autoincrement())
-  businessName  String
-  pan           String?
-  tan           String?
-  gstin         String?
-  address       String?
-  bankName      String?
-  bankAccountNo String?
-  bankIfsc      String?
-  bankBranch    String?
-  state         String?
-  isPanVerified           Boolean?
+  id                      Int      @id @default(autoincrement())
+  businessName            String
+  pan                     String?
+  tan                     String?
+  gstin                   String?
+  address                 String?
+  bankName                String?
+  bankAccountNo           String?
+  bankIfsc                String?
+  bankBranch              String?
+  state                   String?
+  userId                  Int      @unique
+  user                    User     @relation(fields: [userId], references: [id])
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @default(now())
+  isAddressVerified       Boolean?
   isBusinessNameVerified  Boolean?
   isGstinVerified         Boolean?
-  isAddressVerified       Boolean?
+  isPanVerified           Boolean?
   isStateVerified         Boolean?
-  userId        Int      @unique
-  user          User     @relation(fields: [userId], references: [id])
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @default(now())
 }
 
 enum LedgerType {
