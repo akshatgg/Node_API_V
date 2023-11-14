@@ -82,6 +82,11 @@ model BusinessProfile {
   bankIfsc      String?
   bankBranch    String?
   state         String?
+  isPanVerified           Boolean?
+  isBusinessNameVerified  Boolean?
+  isGstinVerified         Boolean?
+  isAddressVerified       Boolean?
+  isStateVerified         Boolean?
   userId        Int      @unique
   user          User     @relation(fields: [userId], references: [id])
   createdAt     DateTime @default(now())
