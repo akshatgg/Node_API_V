@@ -267,7 +267,7 @@ class InvoiceController {
                 data: {
                     partyName,
                     type,
-                    gstin,
+                    gstin, 
                     pan,
                     tan,
                     upi,
@@ -411,16 +411,28 @@ class InvoiceController {
             const { id: userId } = req.user!;
 
             // Pagination parameters
-            const { page = 1, limit = 10, search } = req.query;
+            const { page = 1, limit = 10, search  } = req.query;
 
             const parsedPage = parseInt(page.toString(), 10);
             const parsedLimit = parseInt(limit.toString(), 10);
-
+            // const regEx = new RegExp('^[0-9a-zA-Z]+$');
+            // const searchString = search != undefined ? search.toString(): "";
+            // console.log(typeof search,search?.length,regEx.test(searchString));
             // Calculate the offset based on the page and limit
             const offset = (parsedPage - 1) * parsedLimit;
-            const where = search != undefined ? {userId, partyName : {
-                search: "*"+search+"*"
-            }} : {userId}
+            let where;
+            if(search == undefined)
+              where = { userId }
+            else {
+                const regEx = new RegExp('^[0-9a-zA-Z]+$');
+                const searchString = search.toString();
+                if(searchString.length > 3 && regEx.test(searchString)){
+                where = {userId, partyName : {
+                            search: "*"+search+"*"
+                        }};
+                }else
+                    return res.status(200).json({ success: true, parties : [] });
+            }
             
             // Get all parties of the user with pagination
             const parties: Party[] = await prisma.party.findMany({
