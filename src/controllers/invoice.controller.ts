@@ -411,22 +411,27 @@ class InvoiceController {
             const { id: userId } = req.user!;
 
             // Pagination parameters
-            const { page = 1, limit = 10 } = req.query;
+            const { page = 1, limit = 10, search } = req.query;
+
             const parsedPage = parseInt(page.toString(), 10);
             const parsedLimit = parseInt(limit.toString(), 10);
 
             // Calculate the offset based on the page and limit
             const offset = (parsedPage - 1) * parsedLimit;
-
+            const where = search != undefined ? {userId, partyName : {
+                search: "*"+search+"*"
+            }} : {userId}
+            
             // Get all parties of the user with pagination
             const parties: Party[] = await prisma.party.findMany({
-                where: { userId },
+                where,
                 skip: offset,
                 take: parsedLimit,
             });
 
             return res.status(200).json({ success: true, parties });
         } catch (error) {
+            console.log(error);
             return res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
