@@ -476,16 +476,29 @@ class InvoiceController {
             const { id: userId } = req.user!;
 
             // Pagination parameters
-            const { page = 1, limit = 10 } = req.query;
+            const { page = 1, limit = 10, search } = req.query;
             const parsedPage = parseInt(page.toString(), 10);
             const parsedLimit = parseInt(limit.toString(), 10);
 
             // Calculate the offset based on the page and limit
             const offset = (parsedPage - 1) * parsedLimit;
+            let where;
+            if(search == undefined)
+              where = { userId }
+            else {
+                const regEx = new RegExp('^[0-9a-zA-Z]+$');
+                const searchString = search.toString();
+                if(searchString.length > 3 && regEx.test(searchString)){
+                where = {userId, itemName : {
+                            search: "*"+search+"*"
+                        }};
+                }else
+                    return res.status(200).json({ success: true, parties : [] });
+            }
 
             // Get all parties of the user with pagination
             const items: Item[] = await prisma.item.findMany({
-                where: { userId },
+                where,
                 skip: offset,
                 take: parsedLimit,
             });
