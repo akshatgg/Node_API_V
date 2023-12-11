@@ -45,6 +45,24 @@ var bcrypt_1 = __importDefault(require("bcrypt"));
 var email_service_1 = __importDefault(require("../services/email.service"));
 var token_service_1 = __importDefault(require("../services/token.service"));
 var client_1 = require("@prisma/client");
+var zod_1 = require("zod");
+var UserSchema = zod_1.z.object({
+    firstName: zod_1.z.string({ required_error: "First name is required" }).min(1, "First name must be atleast 1 character long"),
+    lastName: zod_1.z.string().optional(),
+    gender: zod_1.z.nativeEnum(client_1.UserGender),
+    email: zod_1.z.string().toLowerCase().email(),
+    password: zod_1.z.string().min(6, 'Password must be atleast 6 characters long'),
+    phone: zod_1.z.string().regex(util_1.PHONE_NUMBER_RGX, 'Enter a valid 10 digit phone number'),
+    fatherName: zod_1.z.string().optional(),
+    pin: zod_1.z.string().optional(),
+    address: zod_1.z.string().optional(),
+    aadhaar: zod_1.z.string().optional(),
+    pan: zod_1.z.string().optional(),
+});
+var LoginSchema = zod_1.z.object({
+    email: zod_1.z.string().toLowerCase().email(),
+    password: zod_1.z.string({ required_error: 'Please enter your password' }),
+});
 var UserController = /** @class */ (function () {
     function UserController() {
     }
@@ -96,27 +114,12 @@ var UserController = /** @class */ (function () {
     };
     UserController.signUp = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, firstName, lastName, gender, email, password, phone, found, hash, user, otp_key, e_1;
+            var _a, firstName, lastName, gender, fatherName, aadhaar, pan, pin, email, password, phone, found, hash, user, otp_key, e_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 5, , 6]);
-                        _a = req.body, firstName = _a.firstName, lastName = _a.lastName, gender = _a.gender, email = _a.email, password = _a.password, phone = _a.phone;
-                        if (!firstName.length) {
-                            return [2 /*return*/, res.status(400).send({ success: false, message: "First name cannot be empty" })];
-                        }
-                        if (!email || !(0, util_1.validateEmail)(email)) {
-                            return [2 /*return*/, res.status(400).send({ success: false, message: "Please enter a valid email address" })];
-                        }
-                        if (phone && !(0, util_1.validatePhone)(phone)) {
-                            return [2 /*return*/, res.status(400).send({ success: false, message: "Please enter a valid phone number" })];
-                        }
-                        if (!password && password.length >= 8) {
-                            return [2 /*return*/, res.status(400).send({ success: false, message: "Password cannot be empty and must be atleas 8 characters long" })];
-                        }
-                        if (!(gender in client_1.UserGender)) {
-                            return [2 /*return*/, res.status(400).send({ success: false, message: "Please select a valid gender" })];
-                        }
+                        _a = UserSchema.parse(req.body), firstName = _a.firstName, lastName = _a.lastName, gender = _a.gender, fatherName = _a.fatherName, aadhaar = _a.aadhaar, pan = _a.pan, pin = _a.pin, email = _a.email, password = _a.password, phone = _a.phone;
                         return [4 /*yield*/, __1.prisma.user.findFirst({
                                 where: {
                                     OR: [
@@ -141,6 +144,10 @@ var UserController = /** @class */ (function () {
                                     gender: gender,
                                     password: hash,
                                     phone: phone,
+                                    fatherName: fatherName,
+                                    aadhaar: aadhaar,
+                                    pan: pan,
+                                    pin: pin,
                                     verified: false,
                                 }
                             })];
@@ -167,6 +174,9 @@ var UserController = /** @class */ (function () {
                     case 5:
                         e_1 = _b.sent();
                         console.error(e_1);
+                        if (e_1 instanceof zod_1.ZodError) {
+                            return [2 /*return*/, res.status(400).send({ success: false, message: e_1.message })];
+                        }
                         return [2 /*return*/, res.status(500).send({ success: false, message: 'Something went wrong' })];
                     case 6: return [2 /*return*/];
                 }
@@ -180,7 +190,7 @@ var UserController = /** @class */ (function () {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 4, , 5]);
-                        _a = req.body, email = _a.email, password = _a.password;
+                        _a = LoginSchema.parse(req.body), email = _a.email, password = _a.password;
                         return [4 /*yield*/, __1.prisma.user.findUnique({
                                 where: { email: email }
                             })];
@@ -207,6 +217,9 @@ var UserController = /** @class */ (function () {
                     case 4:
                         e_2 = _b.sent();
                         console.error(e_2);
+                        if (e_2 instanceof zod_1.ZodError) {
+                            return [2 /*return*/, res.status(400).send({ success: false, message: e_2.message })];
+                        }
                         return [2 /*return*/, res.status(500).send({ success: false, message: 'Something went wrong' })];
                     case 5: return [2 /*return*/];
                 }
@@ -221,6 +234,9 @@ var UserController = /** @class */ (function () {
                     case 0:
                         _a.trys.push([0, 3, , 4]);
                         email = req.body.email;
+                        if (!email && !(0, util_1.validateEmail)(email)) {
+                            return [2 /*return*/, res.status(400).send({ success: false, message: 'Email is required' })];
+                        }
                         return [4 /*yield*/, __1.prisma.user.findUnique({
                                 where: { email: email }
                             })];
@@ -272,6 +288,7 @@ var UserController = /** @class */ (function () {
                                     pan: true,
                                     email: true,
                                     phone: true,
+                                    pin: true,
                                     userType: true,
                                     verified: true,
                                     createdAt: true,
@@ -348,76 +365,61 @@ var UserController = /** @class */ (function () {
     };
     UserController.changePassword = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var token, id, _a, newPassword, otp, otp_key, user, otpInstance, now, validTill, hash, e_6;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var id, newPassword, user, hash, e_6;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        _b.trys.push([0, 5, , 6]);
-                        token = token_service_1.default.getTokenFromAuthHeader(req.headers.authorization);
-                        id = token_service_1.default.decodeToken(token).id;
-                        _a = req.body, newPassword = _a.newPassword, otp = _a.otp, otp_key = _a.otp_key;
+                        _a.trys.push([0, 4, , 5]);
+                        id = req.user.id;
+                        newPassword = req.body.newPassword;
                         if (!newPassword && newPassword.length >= 8) {
                             return [2 /*return*/, res.status(400).send({ success: false, message: "Please provide a new password of atleast 8 characters" })];
-                        }
-                        if (!otp || !otp_key) {
-                            return [2 /*return*/, res.status(400).send({ success: false, message: "Not OTP Provided" })];
                         }
                         return [4 /*yield*/, __1.prisma.user.findUnique({
                                 where: { id: id }
                             })];
                     case 1:
-                        user = _b.sent();
+                        user = _a.sent();
                         if (!user) {
                             return [2 /*return*/, res.status(401).send({ success: false, message: 'User does not exists' })];
                         }
-                        return [4 /*yield*/, __1.prisma.otp.findFirst({ where: { id: parseInt(otp_key), user: user, otp: otp } })];
-                    case 2:
-                        otpInstance = _b.sent();
-                        if (!otpInstance) {
-                            return [2 /*return*/, res.status(401).send({ success: false, message: 'Invalid OTP' })];
-                        }
-                        now = new Date();
-                        validTill = (0, util_1.addMinutesToTime)(otpInstance.createdAt, 15);
-                        if ((otpInstance === null || otpInstance === void 0 ? void 0 : otpInstance.used) || now > validTill) {
-                            return [2 /*return*/, res.status(401).send({ success: false, message: 'This OTP has already been used or expired' })];
-                        }
                         return [4 /*yield*/, UserController.hashPassword(newPassword)];
-                    case 3:
-                        hash = _b.sent();
+                    case 2:
+                        hash = _a.sent();
                         return [4 /*yield*/, __1.prisma.user.update({
                                 where: { id: id },
                                 data: {
                                     password: hash
                                 }
                             })];
-                    case 4:
-                        _b.sent();
+                    case 3:
+                        _a.sent();
                         return [2 /*return*/, res.status(200).send({ success: true, message: 'Password changed' })];
-                    case 5:
-                        e_6 = _b.sent();
+                    case 4:
+                        e_6 = _a.sent();
                         console.log(e_6);
                         return [2 /*return*/, res.status(500).send({ success: false, message: 'Something went wrong' })];
-                    case 6: return [2 /*return*/];
+                    case 5: return [2 /*return*/];
                 }
             });
         });
     };
     UserController.updateProfile = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var token, id, _a, firstName, lastName, pin, gender, address, aadhaar, pan, phone, user, e_7;
+            var id, _a, firstName, lastName, fatherName, pin, gender, address, aadhaar, pan, phone, user, e_7;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 3, , 4]);
-                        token = token_service_1.default.getTokenFromAuthHeader(req.headers.authorization);
-                        id = token_service_1.default.decodeToken(token).id;
-                        _a = req.body, firstName = _a.firstName, lastName = _a.lastName, pin = _a.pin, gender = _a.gender, address = _a.address, aadhaar = _a.aadhaar, pan = _a.pan, phone = _a.phone;
+                        id = req.user.id;
+                        _a = req.body, firstName = _a.firstName, lastName = _a.lastName, fatherName = _a.fatherName, pin = _a.pin, gender = _a.gender, address = _a.address, aadhaar = _a.aadhaar, pan = _a.pan, phone = _a.phone;
                         if (!firstName.length) {
                             return [2 /*return*/, res.status(400).send({ success: false, message: "First name cannot be empty" })];
                         }
                         if (phone && !(0, util_1.validatePhone)(phone)) {
                             return [2 /*return*/, res.status(400).send({ success: false, message: "Please enter a valid phone number" })];
                         }
+                        console.log(req.body);
                         return [4 /*yield*/, __1.prisma.user.findFirst({ where: { id: id } })];
                     case 1:
                         user = _b.sent();
@@ -432,6 +434,7 @@ var UserController = /** @class */ (function () {
                                     firstName: firstName,
                                     lastName: lastName,
                                     gender: gender !== null && gender !== void 0 ? gender : user.gender,
+                                    fatherName: fatherName,
                                     pin: pin !== null && pin !== void 0 ? pin : user.pin,
                                     pan: pan !== null && pan !== void 0 ? pan : user.pan,
                                     aadhaar: aadhaar !== null && aadhaar !== void 0 ? aadhaar : user.aadhaar,
@@ -471,6 +474,7 @@ var UserController = /** @class */ (function () {
                                     phone: true,
                                     pan: true,
                                     userType: true,
+                                    pin: true
                                 },
                                 where: {
                                     id: {
@@ -495,16 +499,11 @@ var UserController = /** @class */ (function () {
     };
     UserController.getAllUsers = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var token, user, _a, pageNumber, _b, order, page, users, e_9;
+            var _a, pageNumber, _b, order, page, users, e_9;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
                         _c.trys.push([0, 2, , 3]);
-                        token = token_service_1.default.getTokenFromAuthHeader(req.headers.authorization);
-                        user = token_service_1.default.decodeToken(token);
-                        if (user.userType !== client_1.UserType.admin) {
-                            return [2 /*return*/, res.status(403).send({ success: false, message: 'Unauthorized access' })];
-                        }
                         _a = req.query, pageNumber = _a.page, _b = _a.order, order = _b === void 0 ? 'desc' : _b;
                         page = parseInt(pageNumber || '0');
                         return [4 /*yield*/, __1.prisma.user.findMany({
@@ -519,6 +518,7 @@ var UserController = /** @class */ (function () {
                                     pan: true,
                                     createdAt: true,
                                     userType: true,
+                                    pin: true
                                 },
                                 orderBy: {
                                     createdAt: order === 'asc' ? 'asc' : 'desc',
@@ -538,6 +538,50 @@ var UserController = /** @class */ (function () {
                     case 2:
                         e_9 = _c.sent();
                         console.error(e_9);
+                        return [2 /*return*/, res.status(500).send({ success: false, message: 'Something went wrong' })];
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    UserController.getOwnProfile = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var id, user, e_10;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        id = req.user.id;
+                        return [4 /*yield*/, __1.prisma.user.findFirst({
+                                select: {
+                                    id: true,
+                                    createdAt: true,
+                                    email: true,
+                                    firstName: true,
+                                    lastName: true,
+                                    fatherName: true,
+                                    aadhaar: true,
+                                    address: true,
+                                    phone: true,
+                                    pan: true,
+                                    userType: true,
+                                    pin: true
+                                },
+                                where: {
+                                    id: {
+                                        equals: id
+                                    }
+                                }
+                            })];
+                    case 1:
+                        user = _a.sent();
+                        if (!user) {
+                            return [2 /*return*/, res.status(404).send({ success: false, message: 'User not found' })];
+                        }
+                        return [2 /*return*/, res.status(200).send({ success: true, data: { user: user } })];
+                    case 2:
+                        e_10 = _a.sent();
+                        console.error(e_10);
                         return [2 /*return*/, res.status(500).send({ success: false, message: 'Something went wrong' })];
                     case 3: return [2 /*return*/];
                 }
