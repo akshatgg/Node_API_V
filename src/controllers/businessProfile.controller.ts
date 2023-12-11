@@ -7,13 +7,14 @@ export default class BusinessProfileController {
 
     static async getProfile(req: Request, res: Response) {
         try {
-            const { id } = req.user!;
+           
+            const  id  = req.user?.id;
 
-            const profile = await prisma.businessProfile.findFirst({ where: { id } });
+            const profile = await prisma.businessProfile.findFirst({ where: {userId: id } });
 
-            if (!profile) {
-                return await BusinessProfileController.update(req, res);
-            }
+            // if (!profile) {
+            //     return await BusinessProfileController.update(req, res);
+            // }
 
             return res.status(200).send({ success: true, data: { profile } });
         } catch (e) {
@@ -84,8 +85,7 @@ export default class BusinessProfileController {
 
             const found = await prisma.businessProfile.findFirst({
                 where: {
-                    id,
-                    user
+                    userId:id
                 },
             });
 
