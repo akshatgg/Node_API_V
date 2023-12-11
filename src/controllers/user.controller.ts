@@ -142,22 +142,28 @@ export default class UserController {
                 return res.status(401).send({ success: false, message: 'Invalid credentials' });
             }
 
-            const otp_key = await UserController.sendOtp(email, user.id);
-
-            return res.status(200).send({
-                success: true,
-                message:
-                    `An OTP has been sent to your email "${email}".` +
-                    `Verify your account by using that OTP`,
-                otp_key,
-            });
-        } catch (e) {
-            console.error(e);
-            if(e instanceof ZodError) {
-                return res.status(400).send({ success: false, message: e.message });
+            
+    
+                
+    
+               
+    
+  
+                const token = TokenService.generateToken(user);
+    
+                return res.status(200).send({
+                    success: true,
+                    message: 'OTP Verified',
+                    data: {
+                        user,
+                        token
+                    }
+                });
+            } catch (e) {
+                console.error(e);
+                return res.status(500).send({ success: false, message: 'Something went wrong' });
             }
-            return res.status(500).send({ success: false, message: 'Something went wrong' });
-        }
+         
     }
 
     static async forgotPassword(req: Request, res: Response) {
