@@ -185,11 +185,11 @@ var UserController = /** @class */ (function () {
     };
     UserController.login = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, email, password, user, authorized, otp_key, e_2;
+            var _a, email, password, user, authorized, token, e_2;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        _b.trys.push([0, 4, , 5]);
+                        _b.trys.push([0, 3, , 4]);
                         _a = LoginSchema.parse(req.body), email = _a.email, password = _a.password;
                         return [4 /*yield*/, __1.prisma.user.findUnique({
                                 where: { email: email }
@@ -205,23 +205,20 @@ var UserController = /** @class */ (function () {
                         if (!authorized) {
                             return [2 /*return*/, res.status(401).send({ success: false, message: 'Invalid credentials' })];
                         }
-                        return [4 /*yield*/, UserController.sendOtp(email, user.id)];
-                    case 3:
-                        otp_key = _b.sent();
+                        token = token_service_1.default.generateToken(user);
                         return [2 /*return*/, res.status(200).send({
                                 success: true,
-                                message: "An OTP has been sent to your email \"".concat(email, "\".") +
-                                    "Verify your account by using that OTP",
-                                otp_key: otp_key,
+                                message: 'OTP Verified',
+                                data: {
+                                    user: user,
+                                    token: token
+                                }
                             })];
-                    case 4:
+                    case 3:
                         e_2 = _b.sent();
                         console.error(e_2);
-                        if (e_2 instanceof zod_1.ZodError) {
-                            return [2 /*return*/, res.status(400).send({ success: false, message: e_2.message })];
-                        }
                         return [2 /*return*/, res.status(500).send({ success: false, message: 'Something went wrong' })];
-                    case 5: return [2 /*return*/];
+                    case 4: return [2 /*return*/];
                 }
             });
         });
