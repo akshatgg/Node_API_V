@@ -23,6 +23,7 @@ invoiceRouter.delete('/parties/:id', verify_token_1.default, invoice_controller_
 invoiceRouter.get('/items', verify_token_1.default, invoice_controller_1.default.getAllItems);
 invoiceRouter.get('/items/:id', verify_token_1.default, invoice_controller_1.default.getItemById);
 invoiceRouter.post('/items', verify_token_1.default, invoice_controller_1.default.createItem);
+invoiceRouter.put('/items/:id', verify_token_1.default, invoice_controller_1.default.updateItem);
 invoiceRouter.delete('/items/:id', verify_token_1.default, invoice_controller_1.default.deleteItem);
 exports.default = invoiceRouter;
 //# sourceMappingURL=invoice.routes.js.map
