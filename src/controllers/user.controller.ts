@@ -1,10 +1,30 @@
 import { Request, Response } from "express";
 import { prisma } from "..";
-import { addMinutesToTime, generateOTP, validateEmail, validatePhone } from "../lib/util";
+import { PHONE_NUMBER_RGX, addMinutesToTime, generateOTP, validateEmail, validatePhone } from "../lib/util";
 import bcrypt from 'bcrypt';
 import EmailService from "../services/email.service";
 import TokenService from "../services/token.service";
-import { UserGender, UserType } from "@prisma/client";
+import { UserGender } from "@prisma/client";
+import { ZodError, z } from "zod";
+
+const UserSchema = z.object({
+    firstName: z.string({ required_error: "First name is required" }).min(1, "First name must be atleast 1 character long"), 
+    lastName: z.string().optional(), 
+    gender: z.nativeEnum(UserGender), 
+    email: z.string().toLowerCase().email(), 
+    password: z.string().min(6, 'Password must be atleast 6 characters long'), 
+    phone: z.string().regex(PHONE_NUMBER_RGX, 'Enter a valid 10 digit phone number'),
+    fatherName: z.string().optional(), 
+    pin: z.string().optional(), 
+    address: z.string().optional(), 
+    aadhaar: z.string().optional(), 
+    pan: z.string().optional(), 
+});
+
+const LoginSchema = z.object({
+    email: z.string().toLowerCase().email(), 
+    password: z.string({ required_error: 'Please enter your password' }), 
+});
 
 export default class UserController {
     static SALT_ROUNDS = 10;
@@ -44,27 +64,7 @@ export default class UserController {
 
     static async signUp(req: Request, res: Response) {
         try {
-            const { firstName, lastName, gender, email, password, phone } = req.body;
-
-            if (!firstName.length) {
-                return res.status(400).send({ success: false, message: "First name cannot be empty" });
-            }
-
-            if (!email || !validateEmail(email)) {
-                return res.status(400).send({ success: false, message: "Please enter a valid email address" });
-            }
-
-            if (phone && !validatePhone(phone)) {
-                return res.status(400).send({ success: false, message: "Please enter a valid phone number" });
-            }
-
-            if (!password && password.length >= 8) {
-                return res.status(400).send({ success: false, message: "Password cannot be empty and must be atleas 8 characters long" });
-            }
-
-            if(!(gender in UserGender)) {
-                return res.status(400).send({ success: false, message: "Please select a valid gender" });
-            }
+            const { firstName, lastName, gender, fatherName, aadhaar, pan, pin, email, password, phone } = UserSchema.parse(req.body);
 
             const found = await prisma.user.findFirst({
                 where: {
@@ -89,6 +89,10 @@ export default class UserController {
                     gender,
                     password: hash,
                     phone,
+                    fatherName, 
+                    aadhaar, 
+                    pan, 
+                    pin,
                     verified: false,
                 }
             });
@@ -113,13 +117,16 @@ export default class UserController {
             });
         } catch (e) {
             console.error(e);
+            if(e instanceof ZodError) {
+                return res.status(400).send({ success: false, message: e.message });
+            }
             return res.status(500).send({ success: false, message: 'Something went wrong' });
         }
     }
 
     static async login(req: Request, res: Response) {
         try {
-            const { email, password } = req.body;
+            const { email, password } = LoginSchema.parse(req.body);
 
             const user = await prisma.user.findUnique({
                 where: { email }
@@ -135,24 +142,37 @@ export default class UserController {
                 return res.status(401).send({ success: false, message: 'Invalid credentials' });
             }
 
-            const otp_key = await UserController.sendOtp(email, user.id);
-
-            return res.status(200).send({
-                success: true,
-                message:
-                    `An OTP has been sent to your email "${email}".` +
-                    `Verify your account by using that OTP`,
-                otp_key,
-            });
-        } catch (e) {
-            console.error(e);
-            return res.status(500).send({ success: false, message: 'Something went wrong' });
-        }
+            
+    
+                
+    
+               
+    
+  
+                const token = TokenService.generateToken(user);
+    
+                return res.status(200).send({
+                    success: true,
+                    message: 'OTP Verified',
+                    data: {
+                        user,
+                        token
+                    }
+                });
+            } catch (e) {
+                console.error(e);
+                return res.status(500).send({ success: false, message: 'Something went wrong' });
+            }
+         
     }
 
     static async forgotPassword(req: Request, res: Response) {
         try {
             const { email } = req.body;
+
+            if(!email && !validateEmail(email)) {
+                return res.status(400).send({ success: false, message: 'Email is required' });
+            }
 
             const user = await prisma.user.findUnique({
                 where: { email }
@@ -201,6 +221,7 @@ export default class UserController {
                     pan: true,
                     email: true,
                     phone: true,
+                    pin:true,
                     userType: true,
                     verified: true,
                     createdAt: true,
@@ -270,18 +291,12 @@ export default class UserController {
 
     static async changePassword(req: Request, res: Response) {
         try {
-            const token = TokenService.getTokenFromAuthHeader(req.headers.authorization);
+            const { id } = req.user!;
 
-            const { id } = TokenService.decodeToken(token!);
-
-            const { newPassword, otp, otp_key } = req.body;
+            const { newPassword } = req.body;
 
             if(!newPassword && newPassword.length >= 8) {
                 return res.status(400).send({ success: false, message: "Please provide a new password of atleast 8 characters" });
-            }
-
-            if(!otp || !otp_key) {
-                return res.status(400).send({ success: false, message: "Not OTP Provided" });
             }
 
             const user = await prisma.user.findUnique({
@@ -290,20 +305,6 @@ export default class UserController {
 
             if (!user) {
                 return res.status(401).send({ success: false, message: 'User does not exists' });
-            }
-
-            const otpInstance = await prisma.otp.findFirst({ where: { id: parseInt(otp_key), user, otp } });
-
-            if (!otpInstance) {
-                return res.status(401).send({ success: false, message: 'Invalid OTP' });
-            }
-
-            const now = new Date();
-
-            const validTill = addMinutesToTime(otpInstance.createdAt, 15);
-
-            if (otpInstance?.used || now > validTill) {
-                return res.status(401).send({ success: false, message: 'This OTP has already been used or expired' });
             }
 
             const hash = await UserController.hashPassword(newPassword);
@@ -324,11 +325,9 @@ export default class UserController {
 
     static async updateProfile(req: Request, res: Response) {
         try {
-            const token = TokenService.getTokenFromAuthHeader(req.headers.authorization);
+            const { id } = req.user!;
 
-            const { id } = TokenService.decodeToken(token!);
-
-            const { firstName, lastName, pin, gender, address, aadhaar, pan, phone } = req.body;
+            const { firstName, lastName, fatherName, pin, gender, address, aadhaar, pan, phone } = req.body;
 
             if (!firstName.length) {
                 return res.status(400).send({ success: false, message: "First name cannot be empty" });
@@ -337,6 +336,8 @@ export default class UserController {
             if (phone && !validatePhone(phone)) {
                 return res.status(400).send({ success: false, message: "Please enter a valid phone number" });
             }
+
+            console.log(req.body)
 
             const user = await prisma.user.findFirst({ where: { id } });
 
@@ -352,6 +353,7 @@ export default class UserController {
                     firstName,
                     lastName,
                     gender: gender ?? user.gender,
+                    fatherName,
                     pin: pin ?? user.pin,
                     pan: pan ?? user.pan,
                     aadhaar: aadhaar ?? user.aadhaar,
@@ -383,6 +385,7 @@ export default class UserController {
                     phone: true,
                     pan: true,
                     userType: true,
+                    pin:true
                 },
                 where: {
                     id: {
@@ -404,14 +407,6 @@ export default class UserController {
 
     static async getAllUsers(req: Request, res: Response) {
         try {
-            const token = TokenService.getTokenFromAuthHeader(req.headers.authorization);
-            
-            const user = TokenService.decodeToken(token!);
-
-            if(user.userType !== UserType.admin) {
-                return res.status(403).send({ success: false, message: 'Unauthorized access' });
-            }
-
             const { page: pageNumber, order = 'desc' } = req.query;
 
             const page = parseInt((pageNumber as string) || '0');
@@ -428,6 +423,7 @@ export default class UserController {
                     pan: true,
                     createdAt: true,
                     userType: true,
+                    pin:true
                 },
                 orderBy: {
                     createdAt: order === 'asc' ? 'asc' : 'desc',
@@ -443,6 +439,43 @@ export default class UserController {
                     users,
                 },
             });
+        } catch (e) {
+            console.error(e);
+            return res.status(500).send({ success: false, message: 'Something went wrong' });
+        }
+    }
+
+    static async getOwnProfile(req: Request, res: Response) {
+        try {
+            const { id } = req.user!;
+
+            const user = await prisma.user.findFirst({
+                select: {
+                    id: true,
+                    createdAt: true,
+                    email: true,
+                    firstName: true,
+                    lastName: true,
+                    fatherName: true,
+                    aadhaar: true,
+                    address: true,
+                    phone: true,
+                    pan: true,
+                    userType: true,
+                    pin:true
+                },
+                where: {
+                    id: {
+                        equals: id
+                    }
+                }
+            });
+
+            if (!user) {
+                return res.status(404).send({ success: false, message: 'User not found' });
+            }
+
+            return res.status(200).send({ success: true, data: { user } });
         } catch (e) {
             console.error(e);
             return res.status(500).send({ success: false, message: 'Something went wrong' });
