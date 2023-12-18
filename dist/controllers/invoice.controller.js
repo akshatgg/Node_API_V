@@ -142,6 +142,7 @@ var InvoiceController = /** @class */ (function () {
                                 modeOfPayment: modeOfPayment,
                                 credit: credit,
                                 items: {
+                                    //@ts-ignore
                                     create: items.map(function (_a) {
                                         var id = _a.id, quantity = _a.quantity, discount = _a.discount;
                                         return ({

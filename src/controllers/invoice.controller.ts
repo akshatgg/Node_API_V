@@ -91,12 +91,16 @@ class InvoiceController {
                     modeOfPayment,
                     credit,
                     items: {
-                        create: items.map(({ id, quantity, discount, }: { id: string, quantity: number, discount: number }) => ({
-                            item: { connect: { id } },
-                            quantity,
-                            discount,
+                        create: items.map(({ itemId, quantity, discount }: { itemId: string; quantity: number; discount: number }) => ({
+                          item: {
+                            connect: {
+                                id: itemId,
+                            },
+                          },
+                          quantity,
+                          discount,
                         })),
-                    },
+                      },
                     user: {
                         connect: { id: userId } // Connect the user by ID
                     },
