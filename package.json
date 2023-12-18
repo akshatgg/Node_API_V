@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/itax-easy/node-api#readme",
   "dependencies": {
-    "@prisma/client": "^4.16.1",
+    "@prisma/client": "^4.16.2",
     "@types/bcrypt": "^5.0.0",
     "@types/nodemailer": "^6.4.8",
     "bcrypt": "^5.1.0",
