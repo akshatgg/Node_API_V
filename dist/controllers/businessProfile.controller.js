@@ -63,25 +63,26 @@ var BusinessProfileController = /** @class */ (function () {
     function BusinessProfileController() {
     }
     BusinessProfileController.getProfile = function (req, res) {
+        var _a;
         return __awaiter(this, void 0, void 0, function () {
             var id, profile, e_1;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
-                        _a.trys.push([0, 4, , 5]);
-                        id = req.user.id;
-                        return [4 /*yield*/, __1.prisma.businessProfile.findFirst({ where: { id: id } })];
+                        _b.trys.push([0, 2, , 3]);
+                        id = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+                        return [4 /*yield*/, __1.prisma.businessProfile.findFirst({ where: { userId: id } })];
                     case 1:
-                        profile = _a.sent();
-                        if (!!profile) return [3 /*break*/, 3];
-                        return [4 /*yield*/, BusinessProfileController.update(req, res)];
-                    case 2: return [2 /*return*/, _a.sent()];
-                    case 3: return [2 /*return*/, res.status(200).send({ success: true, data: { profile: profile } })];
-                    case 4:
-                        e_1 = _a.sent();
+                        profile = _b.sent();
+                        // if (!profile) {
+                        //     return await BusinessProfileController.update(req, res);
+                        // }
+                        return [2 /*return*/, res.status(200).send({ success: true, data: { profile: profile } })];
+                    case 2:
+                        e_1 = _b.sent();
                         console.log(e_1);
                         return [2 /*return*/, res.status(500).send({ success: false, message: 'Something went wrong' })];
-                    case 5: return [2 /*return*/];
+                    case 3: return [2 /*return*/];
                 }
             });
         });
@@ -160,20 +161,21 @@ var BusinessProfileController = /** @class */ (function () {
                         }
                         return [4 /*yield*/, __1.prisma.businessProfile.findFirst({
                                 where: {
-                                    id: id,
-                                    user: user
+                                    userId: id
                                 },
                             })];
                     case 2:
                         found = _a.sent();
                         profile = void 0;
                         if (!!found) return [3 /*break*/, 4];
+                        data['id'] = undefined;
                         return [4 /*yield*/, __1.prisma.businessProfile.create({ data: __assign(__assign({}, data), { userId: id }) })];
                     case 3:
                         profile = _a.sent();
                         return [3 /*break*/, 6];
                     case 4:
                         _id = data.id, rest = __rest(data, ["id"]);
+                        console.log(rest);
                         return [4 /*yield*/, __1.prisma.businessProfile.update({
                                 where: {
                                     id: found.id,

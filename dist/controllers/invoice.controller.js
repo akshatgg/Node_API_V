@@ -142,6 +142,7 @@ var InvoiceController = /** @class */ (function () {
                                 modeOfPayment: modeOfPayment,
                                 credit: credit,
                                 items: {
+                                    //@ts-ignore
                                     create: items.map(function (_a) {
                                         var id = _a.id, quantity = _a.quantity, discount = _a.discount;
                                         return ({
@@ -430,6 +431,8 @@ var InvoiceController = /** @class */ (function () {
                             })];
                     case 1:
                         item = _b.sent();
+                        console.log("ItemCreated");
+                        console.log(item);
                         return [2 /*return*/, res.status(201).json({ success: true, item: item })];
                     case 2:
                         error_9 = _b.sent();
@@ -440,9 +443,47 @@ var InvoiceController = /** @class */ (function () {
             });
         });
     };
+    InvoiceController.updateItem = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var itemId, itemName, userId, item, updatedItem, error_10;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 3, , 4]);
+                        itemId = req.params.id;
+                        itemName = req.body.itemName;
+                        userId = req.user.id;
+                        return [4 /*yield*/, index_1.prisma.item.findFirst({ where: { id: itemId, userId: userId } })];
+                    case 1:
+                        item = _a.sent();
+                        if (!item) {
+                            res.status(200).json({ success: false, message: 'Item not found' });
+                            return [2 /*return*/];
+                        }
+                        return [4 /*yield*/, index_1.prisma.item.update({
+                                where: { id: itemId },
+                                data: {
+                                    itemName: itemName
+                                }
+                            })];
+                    case 2:
+                        updatedItem = _a.sent();
+                        console.log("updateItem");
+                        console.log(updatedItem);
+                        res.status(200).json({ sucess: true, item: updatedItem });
+                        return [3 /*break*/, 4];
+                    case 3:
+                        error_10 = _a.sent();
+                        res.status(500).json({ sucess: false, message: 'Internal server error' });
+                        return [3 /*break*/, 4];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
+    };
     InvoiceController.deleteItem = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var itemId, userId, item, deletedItem, error_10;
+            var itemId, userId, item, deletedItem, error_11;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -460,7 +501,7 @@ var InvoiceController = /** @class */ (function () {
                         deletedItem = _a.sent();
                         return [2 /*return*/, res.status(200).json({ success: true, deletedItem: deletedItem })];
                     case 3:
-                        error_10 = _a.sent();
+                        error_11 = _a.sent();
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Internal server error' })];
                     case 4: return [2 /*return*/];
                 }
@@ -469,18 +510,32 @@ var InvoiceController = /** @class */ (function () {
     };
     InvoiceController.getAllParties = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var userId, _a, _b, page, _c, limit, parsedPage, parsedLimit, offset, parties, error_11;
+            var userId, _a, _b, page, _c, limit, search, parsedPage, parsedLimit, offset, where, regEx, searchString, parties, error_12;
             return __generator(this, function (_d) {
                 switch (_d.label) {
                     case 0:
                         _d.trys.push([0, 2, , 3]);
                         userId = req.user.id;
-                        _a = req.query, _b = _a.page, page = _b === void 0 ? 1 : _b, _c = _a.limit, limit = _c === void 0 ? 10 : _c;
+                        _a = req.query, _b = _a.page, page = _b === void 0 ? 1 : _b, _c = _a.limit, limit = _c === void 0 ? 10 : _c, search = _a.search;
                         parsedPage = parseInt(page.toString(), 10);
                         parsedLimit = parseInt(limit.toString(), 10);
                         offset = (parsedPage - 1) * parsedLimit;
+                        where = void 0;
+                        if (search == undefined)
+                            where = { userId: userId };
+                        else {
+                            regEx = new RegExp('^[0-9a-zA-Z]+$');
+                            searchString = search.toString();
+                            if (searchString.length > 3 && regEx.test(searchString)) {
+                                where = { userId: userId, partyName: {
+                                        search: "*" + search + "*"
+                                    } };
+                            }
+                            else
+                                return [2 /*return*/, res.status(200).json({ success: true, parties: [] })];
+                        }
                         return [4 /*yield*/, index_1.prisma.party.findMany({
-                                where: { userId: userId },
+                                where: where,
                                 skip: offset,
                                 take: parsedLimit,
                             })];
@@ -488,7 +543,8 @@ var InvoiceController = /** @class */ (function () {
                         parties = _d.sent();
                         return [2 /*return*/, res.status(200).json({ success: true, parties: parties })];
                     case 2:
-                        error_11 = _d.sent();
+                        error_12 = _d.sent();
+                        console.log(error_12);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Internal server error' })];
                     case 3: return [2 /*return*/];
                 }
@@ -497,7 +553,7 @@ var InvoiceController = /** @class */ (function () {
     };
     InvoiceController.getPartyById = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var userId, partyId, party, error_12;
+            var userId, partyId, party, error_13;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -516,7 +572,7 @@ var InvoiceController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).json({ success: true, party: party })];
                     case 2:
-                        error_12 = _a.sent();
+                        error_13 = _a.sent();
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Internal server error' })];
                     case 3: return [2 /*return*/];
                 }
@@ -525,18 +581,32 @@ var InvoiceController = /** @class */ (function () {
     };
     InvoiceController.getAllItems = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var userId, _a, _b, page, _c, limit, parsedPage, parsedLimit, offset, items, error_13;
+            var userId, _a, _b, page, _c, limit, search, parsedPage, parsedLimit, offset, where, regEx, searchString, items, error_14;
             return __generator(this, function (_d) {
                 switch (_d.label) {
                     case 0:
                         _d.trys.push([0, 2, , 3]);
                         userId = req.user.id;
-                        _a = req.query, _b = _a.page, page = _b === void 0 ? 1 : _b, _c = _a.limit, limit = _c === void 0 ? 10 : _c;
+                        _a = req.query, _b = _a.page, page = _b === void 0 ? 1 : _b, _c = _a.limit, limit = _c === void 0 ? 10 : _c, search = _a.search;
                         parsedPage = parseInt(page.toString(), 10);
                         parsedLimit = parseInt(limit.toString(), 10);
                         offset = (parsedPage - 1) * parsedLimit;
+                        where = void 0;
+                        if (search == undefined)
+                            where = { userId: userId };
+                        else {
+                            regEx = new RegExp('^[0-9a-zA-Z]+$');
+                            searchString = search.toString();
+                            if (searchString.length > 3 && regEx.test(searchString)) {
+                                where = { userId: userId, itemName: {
+                                        search: "*" + search + "*"
+                                    } };
+                            }
+                            else
+                                return [2 /*return*/, res.status(200).json({ success: true, parties: [] })];
+                        }
                         return [4 /*yield*/, index_1.prisma.item.findMany({
-                                where: { userId: userId },
+                                where: where,
                                 skip: offset,
                                 take: parsedLimit,
                             })];
@@ -544,7 +614,7 @@ var InvoiceController = /** @class */ (function () {
                         items = _d.sent();
                         return [2 /*return*/, res.status(200).json({ success: true, items: items })];
                     case 2:
-                        error_13 = _d.sent();
+                        error_14 = _d.sent();
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Internal server error' })];
                     case 3: return [2 /*return*/];
                 }
@@ -553,7 +623,7 @@ var InvoiceController = /** @class */ (function () {
     };
     InvoiceController.getItemById = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var userId, itemId, item, error_14;
+            var userId, itemId, item, error_15;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -568,7 +638,7 @@ var InvoiceController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).json({ success: true, item: item })];
                     case 2:
-                        error_14 = _a.sent();
+                        error_15 = _a.sent();
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Internal server error' })];
                     case 3: return [2 /*return*/];
                 }
