@@ -5,6 +5,10 @@ import { Ledger } from "@prisma/client";
 export class LedgerController {
     static async createLedger(req: Request, res: Response) {
         try {
+
+            if (!req.user) {
+                return res.status(400).json({ success: false, message: "User information missing in request." });
+            }    
             const { id: userId } = req.user!;
 
             const { ledgerName, ledgerType, openingBalance } = req.body;
@@ -12,12 +16,57 @@ export class LedgerController {
             const ledger = await prisma.ledger.create({
                 data: { ledgerName, ledgerType, openingBalance, userId, },
             });
+
             return res.json(ledger);
         } catch (error) {
             console.log(error);
             return res.status(500).json({ success: false, message: "Error creating ledger" });
         }
     }
+
+    static async updateLedger(req: Request, res: Response) {
+        try {
+          const ledgerId = req.params.id;
+    
+          
+          if (!ledgerId) {
+            return res.status(400).json({ success: false, message: "Ledger ID is missing in the request." });
+          }
+    
+          const { ledgerName, ledgerType, openingBalance } = req.body;
+    
+          const updatedLedger = await prisma.ledger.update({
+            where: { id: ledgerId },
+            data: { ledgerName, ledgerType, openingBalance },
+          });
+    
+          return res.json(updatedLedger);
+        } catch (error) {
+          console.error(error);
+          return res.status(500).json({ success: false, message: "Error updating ledger" });
+        }
+      }
+
+      static async deleteLedger(req: Request, res: Response) {
+        try {
+          const ledgerId = req.params.id;
+    
+          if (!ledgerId) {
+            return res.status(400).json({ success: false, message: "Ledger ID is missing in the request." });
+          }
+
+          console.log("id :", ledgerId)
+    
+          const deletedLedger = await prisma.ledger.delete({
+            where: { id: ledgerId },
+          });
+    
+          return res.json({ success: true, deletedLedger, message: "Ledger deleted successfully" });
+        } catch (error) {
+          console.error(error);
+          return res.status(500).json({ success: false, message: "Error deleting ledger" });
+        }
+      }
 
     static async getLedgers(req: Request, res: Response) {
         try {

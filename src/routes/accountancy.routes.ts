@@ -5,16 +5,20 @@ import { LedgerController } from "../controllers/accountancy.controller";
 
 const accountancyRouter = Router();
 
-const ledgerRouter = Router();
+// const ledgerRouter = Router();
 
-ledgerRouter.post('/create', verifyToken, bodyValidator, LedgerController.createLedger);
+accountancyRouter.post('/create', verifyToken, bodyValidator, LedgerController.createLedger);
 
-ledgerRouter.get('/id/:ledgerId', verifyToken, LedgerController.getLedgerById);
+accountancyRouter.put('/update/:id', verifyToken, bodyValidator, LedgerController.updateLedger);
 
-ledgerRouter.get('/party/:partyId', verifyToken, LedgerController.getLedgerByPartyId);
+accountancyRouter.delete('/delete/:id', verifyToken, LedgerController.deleteLedger);
 
-ledgerRouter.get('/all', verifyToken, LedgerController.getLedgers);
+accountancyRouter.get('/account/:ledgerId', verifyToken, LedgerController.getLedgerById);
 
-accountancyRouter.use('/ledger', ledgerRouter);
+accountancyRouter.get('/party/:partyId', verifyToken, LedgerController.getLedgerByPartyId);
+
+accountancyRouter.get('/all', verifyToken, LedgerController.getLedgers);
+
+// accountancyRouter.use('/ledger', ledgerRouter);
 
 export default accountancyRouter;
