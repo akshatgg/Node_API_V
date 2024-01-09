@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Invoice, InvoiceItem, Item, LedgerType, Party, PartyType } from '@prisma/client';
+import { Prisma, Invoice, InvoiceItem, Item, LedgerType, Party, PartyType } from '@prisma/client';
 import { prisma } from '../index';
 
 class InvoiceController {
@@ -57,52 +57,90 @@ class InvoiceController {
 
     static async create(req: Request, res: Response) {
         try {
-            const { id: userId } = req.user!;
+            const { id: userId } = req.user!; 
 
             // Create the invoice
-            const { invoiceNumber, type, partyId, phone, partyName, totalAmount, totalGst, stateOfSupply, cgst, sgst, igst, utgst, details, extraDetails, items, modeOfPayment, credit = false } = req.body;
+            const {
+                invoiceNumber,
+                gstNumber,
+                type,
+                partyId,
+                totalAmount,
+                totalGst,
+                stateOfSupply,
+                cgst,
+                sgst,
+                igst,
+                utgst,
+                details,
+                extraDetails,
+                invoiceItems,
+                modeOfPayment,
+                credit = false,
+                status
+            } = req.body;
 
             if (partyId) {
                 const party = await prisma.party.findUnique({ where: { id: partyId } });
 
                 if (!party) {
-                    return res.status(401).json({ sucess: false, message: 'Party not found' });
+                    return res.status(401).json({ success: false, message: 'Party not found' });
                 }
             }
 
-            const invoice: Invoice = await prisma.invoice.create({
-                data: {
-                    invoiceNumber,
-                    type,
-                    party: {
-                        connect: { id: partyId } // Connect an existing party by ID
+            const gstRegex = /^\d{2}[A-Z]{5}\d{4}[A-Z]{1}\d[Z]{1}[A-Z\d]{1}$/;
+
+            if (!gstRegex.test(gstNumber)) {
+                return res.status(400).json({ error: 'Invalid GST number' });
+            }
+
+            // Check if invoiceItems is defined and is an array
+            const formattedInvoiceItems = invoiceItems
+                ? invoiceItems.map(({ itemId, quantity, discount }: { itemId: string; quantity: number; discount: number }) => ({
+                    item: {
+                        connect: {
+                            id: itemId,
+                        },
                     },
-                    phone,
-                    partyName,
-                    totalAmount,
-                    totalGst,
-                    stateOfSupply,
-                    cgst,
-                    sgst,
-                    igst,
-                    utgst,
-                    details,
-                    extraDetails,
-                    modeOfPayment,
-                    credit,
-                    items: {
-                        create: items.map(({ itemId, quantity, discount }: { itemId: string; quantity: number; discount: number }) => ({
-                          item: {
-                            connect: {
-                                id: itemId,
-                            },
-                          },
-                          quantity,
-                          discount,
-                        })),
-                      },
-                    user: {
-                        connect: { id: userId } // Connect the user by ID
+                    quantity,
+                    discount,
+                }))
+                : [];
+
+            const invoiceData: Prisma.InvoiceCreateInput = {
+                invoiceNumber,
+                gstNumber,
+                type,
+                party: {
+                    connect: { id: partyId },
+                },
+                totalAmount,
+                totalGst,
+                stateOfSupply,
+                cgst,
+                sgst,
+                igst,
+                utgst,
+                details,
+                extraDetails,
+                modeOfPayment,
+                credit,
+                status,
+                invoiceItems: {
+                    create: formattedInvoiceItems,
+                },
+                user: {
+                    connect: { id: userId },
+                },
+            };
+
+            const invoice = await prisma.invoice.create({
+                data: invoiceData,
+                include: {
+                    invoiceItems: {
+                        include: {
+                            item: true,
+                        },
                     },
                 },
             });
@@ -110,9 +148,10 @@ class InvoiceController {
             return res.status(201).json(invoice);
         } catch (error) {
             console.log(error);
-            return res.status(500).json({ sucess: false, message: 'Internal server error' });
+            return res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
+
 
     static async getAll(req: Request, res: Response): Promise<void> {
         try {
@@ -132,7 +171,7 @@ class InvoiceController {
                 skip: offset,
                 take: parsedLimit,
                 include: {
-                    items: true
+                    invoiceItems: true
                 }
             });
 
@@ -150,7 +189,7 @@ class InvoiceController {
             const invoice: Invoice | null = await prisma.invoice.findUnique({
                 where: { id: invoiceId },
                 include: {
-                    items: true
+                    invoiceItems: true
                 }
             });
 
@@ -168,7 +207,7 @@ class InvoiceController {
     static async update(req: Request, res: Response): Promise<void> {
         try {
             const invoiceId = req.params.id;
-            const { invoiceNumber, type, partyId, phone, partyName, totalAmount, totalGst, stateOfSupply, cgst, sgst, igst, utgst, details, extraDetails, items } = req.body;
+            const { invoiceNumber, gstNumber, type, partyId, totalAmount, totalGst, stateOfSupply, cgst, sgst, igst, utgst, details, extraDetails, items, status } = req.body;
 
             const { id: userId } = req.user!;
 
@@ -184,10 +223,9 @@ class InvoiceController {
                 where: { id: invoiceId },
                 data: {
                     invoiceNumber,
+                    gstNumber,
                     type,
                     partyId,
-                    phone,
-                    partyName,
                     totalAmount,
                     totalGst,
                     stateOfSupply,
@@ -197,7 +235,8 @@ class InvoiceController {
                     utgst,
                     details,
                     extraDetails,
-                    items: {
+                    status,
+                    invoiceItems: {
                         upsert: items.map((item: InvoiceItem) => ({
                             where: { id: item.id },
                             create: item,
@@ -271,7 +310,7 @@ class InvoiceController {
                 data: {
                     partyName,
                     type,
-                    gstin, 
+                    gstin,
                     pan,
                     tan,
                     upi,
@@ -374,19 +413,19 @@ class InvoiceController {
                 res.status(200).json({ success: false, message: 'Item not found' });
                 return;
             }
-                    // Update the item
-                    const updatedItem: Item | null = await prisma.item.update({
-                        where: { id: itemId },
-                        data: {
-                            itemName
-                        }
-                    });
-                    console.log("updateItem");
-                    console.log(updatedItem);
-                    res.status(200).json({ sucess: true, item: updatedItem });
-                } catch (error) {
-                    res.status(500).json({ sucess: false, message: 'Internal server error' });
+            // Update the item
+            const updatedItem: Item | null = await prisma.item.update({
+                where: { id: itemId },
+                data: {
+                    itemName
                 }
+            });
+            console.log("updateItem");
+            console.log(updatedItem);
+            res.status(200).json({ sucess: true, item: updatedItem });
+        } catch (error) {
+            res.status(500).json({ sucess: false, message: 'Internal server error' });
+        }
     }
 
     static async deleteItem(req: Request, res: Response) {
@@ -415,7 +454,7 @@ class InvoiceController {
             const { id: userId } = req.user!;
 
             // Pagination parameters
-            const { page = 1, limit = 10, search  } = req.query;
+            const { page = 1, limit = 10, search } = req.query;
 
             const parsedPage = parseInt(page.toString(), 10);
             const parsedLimit = parseInt(limit.toString(), 10);
@@ -425,19 +464,21 @@ class InvoiceController {
             // Calculate the offset based on the page and limit
             const offset = (parsedPage - 1) * parsedLimit;
             let where;
-            if(search == undefined)
-              where = { userId }
+            if (search == undefined)
+                where = { userId }
             else {
                 const regEx = new RegExp('^[0-9a-zA-Z]+$');
                 const searchString = search.toString();
-                if(searchString.length > 3 && regEx.test(searchString)){
-                where = {userId, partyName : {
-                            search: "*"+search+"*"
-                        }};
-                }else
-                    return res.status(200).json({ success: true, parties : [] });
+                if (searchString.length > 3 && regEx.test(searchString)) {
+                    where = {
+                        userId, partyName: {
+                            search: "*" + search + "*"
+                        }
+                    };
+                } else
+                    return res.status(200).json({ success: true, parties: [] });
             }
-            
+
             // Get all parties of the user with pagination
             const parties: Party[] = await prisma.party.findMany({
                 where,
@@ -487,17 +528,19 @@ class InvoiceController {
             // Calculate the offset based on the page and limit
             const offset = (parsedPage - 1) * parsedLimit;
             let where;
-            if(search == undefined)
-              where = { userId }
+            if (search == undefined)
+                where = { userId }
             else {
                 const regEx = new RegExp('^[0-9a-zA-Z]+$');
                 const searchString = search.toString();
-                if(searchString.length > 3 && regEx.test(searchString)){
-                where = {userId, itemName : {
-                            search: "*"+search+"*"
-                        }};
-                }else
-                    return res.status(200).json({ success: true, parties : [] });
+                if (searchString.length > 3 && regEx.test(searchString)) {
+                    where = {
+                        userId, itemName: {
+                            search: "*" + search + "*"
+                        }
+                    };
+                } else
+                    return res.status(200).json({ success: true, parties: [] });
             }
 
             // Get all parties of the user with pagination
