@@ -392,9 +392,6 @@ class InvoiceController {
                 },
             });
 
-            console.log("ItemCreated");
-            console.log(item);
-
             return res.status(201).json({ success: true, item });
         } catch (error) {
             console.log(error);
