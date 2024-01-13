@@ -136,19 +136,17 @@ export default class UserController {
                 return res.status(401).send({ success: false, message: 'User with this email does not exists' });
             }
 
+            if(user.verified===false){
+                return res.status(301)
+                .send({ success: false, message: 'User is Not Verified' });
+                }
+
             const authorized = await bcrypt.compare(password, user.password);
 
             if (!authorized) {
                 return res.status(401).send({ success: false, message: 'Invalid credentials' });
             }
 
-            
-    
-                
-    
-               
-    
-  
                 const token = TokenService.generateToken(user);
     
                 return res.status(200).send({
