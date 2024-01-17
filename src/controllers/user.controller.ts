@@ -112,7 +112,7 @@ export default class UserController {
                         email,
                         phone
                     },
-                    otp_key
+                     otp_key
                 }
             });
         } catch (e) {
@@ -125,7 +125,7 @@ export default class UserController {
     }
 
     static async login(req: Request, res: Response) {
-        try {
+       
             const { email, password } = LoginSchema.parse(req.body);
 
             const user = await prisma.user.findUnique({
@@ -136,11 +136,6 @@ export default class UserController {
                 return res.status(401).send({ success: false, message: 'User with this email does not exists' });
             }
 
-            if(user.verified===false){
-                return res.status(301)
-                .send({ success: false, message: 'User is Not Verified' });
-                }
-
             const authorized = await bcrypt.compare(password, user.password);
 
             if (!authorized) {
@@ -149,19 +144,14 @@ export default class UserController {
 
                 const token = TokenService.generateToken(user);
     
-                return res.status(200).send({
+                    return res.status(200).send({
                     success: true,
                     message: 'OTP Verified',
                     data: {
                         user,
                         token
                     }
-                });
-            } catch (e) {
-                console.error(e);
-                return res.status(500).send({ success: false, message: 'Something went wrong' });
-            }
-         
+                });   
     }
 
     static async forgotPassword(req: Request, res: Response) {

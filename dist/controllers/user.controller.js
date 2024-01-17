@@ -185,11 +185,10 @@ var UserController = /** @class */ (function () {
     };
     UserController.login = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, email, password, user, authorized, token, e_2;
+            var _a, email, password, user, authorized, token;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        _b.trys.push([0, 3, , 4]);
                         _a = LoginSchema.parse(req.body), email = _a.email, password = _a.password;
                         return [4 /*yield*/, __1.prisma.user.findUnique({
                                 where: { email: email }
@@ -198,6 +197,10 @@ var UserController = /** @class */ (function () {
                         user = _b.sent();
                         if (!user) {
                             return [2 /*return*/, res.status(401).send({ success: false, message: 'User with this email does not exists' })];
+                        }
+                        if (user.verified === false) {
+                            return [2 /*return*/, res.status(301)
+                                    .send({ success: false, message: 'User is Not Verified' })];
                         }
                         return [4 /*yield*/, bcrypt_1.default.compare(password, user.password)];
                     case 2:
@@ -214,18 +217,13 @@ var UserController = /** @class */ (function () {
                                     token: token
                                 }
                             })];
-                    case 3:
-                        e_2 = _b.sent();
-                        console.error(e_2);
-                        return [2 /*return*/, res.status(500).send({ success: false, message: 'Something went wrong' })];
-                    case 4: return [2 /*return*/];
                 }
             });
         });
     };
     UserController.forgotPassword = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var email, user, otp_key, e_3;
+            var email, user, otp_key, e_2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -252,8 +250,8 @@ var UserController = /** @class */ (function () {
                                 otp_key: otp_key,
                             })];
                     case 3:
-                        e_3 = _a.sent();
-                        console.error(e_3);
+                        e_2 = _a.sent();
+                        console.error(e_2);
                         return [2 /*return*/, res.status(500).send({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -262,7 +260,7 @@ var UserController = /** @class */ (function () {
     };
     UserController.verifyOtp = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, email, otp_key, otp, id, user, otpInstance, now, validTill, token, e_4;
+            var _a, email, otp_key, otp, id, user, otpInstance, now, validTill, token, e_3;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -325,8 +323,8 @@ var UserController = /** @class */ (function () {
                                 }
                             })];
                     case 6:
-                        e_4 = _b.sent();
-                        console.error(e_4);
+                        e_3 = _b.sent();
+                        console.error(e_3);
                         return [2 /*return*/, res.status(500).send({ success: false, message: 'Something went wrong' })];
                     case 7: return [2 /*return*/];
                 }
@@ -335,7 +333,7 @@ var UserController = /** @class */ (function () {
     };
     UserController.sendVerificationOtp = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var token, _a, id, email, otp_key, e_5;
+            var token, _a, id, email, otp_key, e_4;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -352,8 +350,8 @@ var UserController = /** @class */ (function () {
                                 otp_key: otp_key,
                             })];
                     case 2:
-                        e_5 = _b.sent();
-                        console.log(e_5);
+                        e_4 = _b.sent();
+                        console.log(e_4);
                         return [2 /*return*/, res.status(500).send({ success: false, message: 'Something went wrong' })];
                     case 3: return [2 /*return*/];
                 }
@@ -362,7 +360,7 @@ var UserController = /** @class */ (function () {
     };
     UserController.changePassword = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var id, newPassword, user, hash, e_6;
+            var id, newPassword, user, hash, e_5;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -393,8 +391,8 @@ var UserController = /** @class */ (function () {
                         _a.sent();
                         return [2 /*return*/, res.status(200).send({ success: true, message: 'Password changed' })];
                     case 4:
-                        e_6 = _a.sent();
-                        console.log(e_6);
+                        e_5 = _a.sent();
+                        console.log(e_5);
                         return [2 /*return*/, res.status(500).send({ success: false, message: 'Something went wrong' })];
                     case 5: return [2 /*return*/];
                 }
@@ -403,7 +401,7 @@ var UserController = /** @class */ (function () {
     };
     UserController.updateProfile = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var id, _a, firstName, lastName, fatherName, pin, gender, address, aadhaar, pan, phone, user, e_7;
+            var id, _a, firstName, lastName, fatherName, pin, gender, address, aadhaar, pan, phone, user, e_6;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -443,8 +441,8 @@ var UserController = /** @class */ (function () {
                         _b.sent();
                         return [2 /*return*/, res.status(200).send({ success: true, message: "Profile Updated" })];
                     case 3:
-                        e_7 = _b.sent();
-                        console.log(e_7);
+                        e_6 = _b.sent();
+                        console.log(e_6);
                         return [2 /*return*/, res.status(500).send({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -453,7 +451,7 @@ var UserController = /** @class */ (function () {
     };
     UserController.getUserById = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var id, user, e_8;
+            var id, user, e_7;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -486,8 +484,8 @@ var UserController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, data: { user: user } })];
                     case 2:
-                        e_8 = _a.sent();
-                        console.error(e_8);
+                        e_7 = _a.sent();
+                        console.error(e_7);
                         return [2 /*return*/, res.status(500).send({ success: false, message: 'Something went wrong' })];
                     case 3: return [2 /*return*/];
                 }
@@ -496,7 +494,7 @@ var UserController = /** @class */ (function () {
     };
     UserController.getAllUsers = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, pageNumber, _b, order, page, users, e_9;
+            var _a, pageNumber, _b, order, page, users, e_8;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -533,8 +531,8 @@ var UserController = /** @class */ (function () {
                                 },
                             })];
                     case 2:
-                        e_9 = _c.sent();
-                        console.error(e_9);
+                        e_8 = _c.sent();
+                        console.error(e_8);
                         return [2 /*return*/, res.status(500).send({ success: false, message: 'Something went wrong' })];
                     case 3: return [2 /*return*/];
                 }
@@ -543,7 +541,7 @@ var UserController = /** @class */ (function () {
     };
     UserController.getOwnProfile = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var id, user, e_10;
+            var id, user, e_9;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -577,8 +575,8 @@ var UserController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, data: { user: user } })];
                     case 2:
-                        e_10 = _a.sent();
-                        console.error(e_10);
+                        e_9 = _a.sent();
+                        console.error(e_9);
                         return [2 /*return*/, res.status(500).send({ success: false, message: 'Something went wrong' })];
                     case 3: return [2 /*return*/];
                 }
