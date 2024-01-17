@@ -59,6 +59,9 @@ var LedgerController = /** @class */ (function () {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 2, , 3]);
+                        if (!req.user) {
+                            return [2 /*return*/, res.status(400).json({ success: false, message: "User information missing in request." })];
+                        }
                         userId = req.user.id;
                         _a = req.body, ledgerName = _a.ledgerName, ledgerType = _a.ledgerType, openingBalance = _a.openingBalance;
                         return [4 /*yield*/, __1.prisma.ledger.create({
@@ -76,9 +79,64 @@ var LedgerController = /** @class */ (function () {
             });
         });
     };
+    LedgerController.updateLedger = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var ledgerId, _a, ledgerName, ledgerType, openingBalance, updatedLedger, error_2;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _b.trys.push([0, 2, , 3]);
+                        ledgerId = req.params.id;
+                        if (!ledgerId) {
+                            return [2 /*return*/, res.status(400).json({ success: false, message: "Ledger ID is missing in the request." })];
+                        }
+                        _a = req.body, ledgerName = _a.ledgerName, ledgerType = _a.ledgerType, openingBalance = _a.openingBalance;
+                        return [4 /*yield*/, __1.prisma.ledger.update({
+                                where: { id: ledgerId },
+                                data: { ledgerName: ledgerName, ledgerType: ledgerType, openingBalance: openingBalance },
+                            })];
+                    case 1:
+                        updatedLedger = _b.sent();
+                        return [2 /*return*/, res.json(updatedLedger)];
+                    case 2:
+                        error_2 = _b.sent();
+                        console.error(error_2);
+                        return [2 /*return*/, res.status(500).json({ success: false, message: "Error updating ledger" })];
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    LedgerController.deleteLedger = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var ledgerId, deletedLedger, error_3;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        ledgerId = req.params.id;
+                        if (!ledgerId) {
+                            return [2 /*return*/, res.status(400).json({ success: false, message: "Ledger ID is missing in the request." })];
+                        }
+                        console.log("id :", ledgerId);
+                        return [4 /*yield*/, __1.prisma.ledger.delete({
+                                where: { id: ledgerId },
+                            })];
+                    case 1:
+                        deletedLedger = _a.sent();
+                        return [2 /*return*/, res.json({ success: true, deletedLedger: deletedLedger, message: "Ledger deleted successfully" })];
+                    case 2:
+                        error_3 = _a.sent();
+                        console.error(error_3);
+                        return [2 /*return*/, res.status(500).json({ success: false, message: "Error deleting ledger" })];
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    };
     LedgerController.getLedgers = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var userId, ledgers, error_2;
+            var userId, ledgers, error_4;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -93,7 +151,7 @@ var LedgerController = /** @class */ (function () {
                         ledgers = _a.sent();
                         return [2 /*return*/, res.status(200).json({ success: true, ledgers: ledgers })];
                     case 2:
-                        error_2 = _a.sent();
+                        error_4 = _a.sent();
                         return [2 /*return*/, res.status(500).json({ success: false, message: "Error fetching ledgers" })];
                     case 3: return [2 /*return*/];
                 }
@@ -102,7 +160,7 @@ var LedgerController = /** @class */ (function () {
     };
     LedgerController.getLedgerById = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var userId, ledgerId, ledger, error_3;
+            var userId, ledgerId, ledger, error_5;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -117,7 +175,7 @@ var LedgerController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).json({ success: true, ledger: ledger })];
                     case 2:
-                        error_3 = _a.sent();
+                        error_5 = _a.sent();
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Internal server error' })];
                     case 3: return [2 /*return*/];
                 }
@@ -126,7 +184,7 @@ var LedgerController = /** @class */ (function () {
     };
     LedgerController.getLedgerByPartyId = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var userId, date, currentYear, currentMonth, partyId, _a, year, month, ledger, error_4;
+            var userId, date, currentYear, currentMonth, partyId, _a, year, month, ledger, error_6;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -150,7 +208,7 @@ var LedgerController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).json({ success: true, ledger: ledger })];
                     case 2:
-                        error_4 = _b.sent();
+                        error_6 = _b.sent();
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Internal server error' })];
                     case 3: return [2 /*return*/];
                 }
@@ -165,7 +223,7 @@ var JournalEntryController = /** @class */ (function () {
     }
     JournalEntryController.createJournalEntry = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var userId_1, _a, entryDate, description, transactions, journalEntry, error_5;
+            var userId_1, _a, entryDate, description, transactions, journalEntry, error_7;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -186,7 +244,7 @@ var JournalEntryController = /** @class */ (function () {
                         journalEntry = _b.sent();
                         return [2 /*return*/, res.status(200).json({ success: true, journalEntry: journalEntry })];
                     case 2:
-                        error_5 = _b.sent();
+                        error_7 = _b.sent();
                         return [2 /*return*/, res.status(500).json({ success: false, message: "Error creating journal entry" })];
                     case 3: return [2 /*return*/];
                 }
@@ -195,7 +253,7 @@ var JournalEntryController = /** @class */ (function () {
     };
     JournalEntryController.getJournalEntries = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var userId, journalEntries, error_6;
+            var userId, journalEntries, error_8;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -210,7 +268,7 @@ var JournalEntryController = /** @class */ (function () {
                         journalEntries = _a.sent();
                         return [2 /*return*/, res.status(200).json({ success: true, journalEntries: journalEntries })];
                     case 2:
-                        error_6 = _a.sent();
+                        error_8 = _a.sent();
                         return [2 /*return*/, res.status(500).json({ success: false, message: "Error fetching journal entries" })];
                     case 3: return [2 /*return*/];
                 }
@@ -225,7 +283,7 @@ var TransactionController = /** @class */ (function () {
     }
     TransactionController.getTransactions = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var userId, ledgerId, transactions, error_7;
+            var userId, ledgerId, transactions, error_9;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -242,7 +300,7 @@ var TransactionController = /** @class */ (function () {
                         transactions = _a.sent();
                         return [2 /*return*/, res.status(200).json({ success: true, transactions: transactions })];
                     case 2:
-                        error_7 = _a.sent();
+                        error_9 = _a.sent();
                         return [2 /*return*/, res.status(500).json({ success: false, message: "Error fetching transactions" })];
                     case 3: return [2 /*return*/];
                 }

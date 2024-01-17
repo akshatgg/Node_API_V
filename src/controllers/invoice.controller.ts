@@ -56,7 +56,7 @@ class InvoiceController {
     }
 
     static async create(req: Request, res: Response) {
-        try {
+       
             const { id: userId } = req.user!; 
 
             // Create the invoice
@@ -146,10 +146,7 @@ class InvoiceController {
             });
 
             return res.status(201).json(invoice);
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({ success: false, message: 'Internal server error' });
-        }
+        
     }
 
 
