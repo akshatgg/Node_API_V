@@ -26,6 +26,11 @@ const LoginSchema = z.object({
     password: z.string({ required_error: 'Please enter your password' }), 
 });
 
+const UserTypeSchema = z.object({
+    email: z.string().toLowerCase().email(), 
+    type: z.enum(["admin","normal","superadmin"]), 
+});
+
 export default class UserController {
     static SALT_ROUNDS = 10;
 
@@ -139,7 +144,7 @@ export default class UserController {
             if(user.verified===false){
                 return res.status(301)
                 .send({ success: false, message: 'User is Not Verified' });
-                }
+             }
 
             const authorized = await bcrypt.compare(password, user.password);
 
@@ -162,6 +167,72 @@ export default class UserController {
                 return res.status(500).send({ success: false, message: 'Something went wrong' });
             }
          
+    }
+
+    static async changeusertype(req: Request, res: Response) {
+        try {
+            const { email,type } = UserTypeSchema.parse(req.body);
+
+            const user = await prisma.user.findUnique({
+                where: { email }
+            });
+
+            if (!user) {
+                return res.status(401).send({ success: false, message: 'User with this email does not exists' });
+            }
+
+            if(user.verified===false){
+                return res.status(301)
+                .send({ success: false, message: 'User is Not Verified' });
+            }
+
+            const changeuser= await prisma.user.update({
+                where: { email },
+                data: {
+                    firstName:user.firstName,
+                    lastName:user.lastName,
+                    email:user.email,
+                    gender:user.gender,
+                    password: user.password,
+                    phone:user.phone,
+                    fatherName:user.fatherName, 
+                    aadhaar:user.aadhaar, 
+                    pan:user.pan, 
+                    pin:user.pin,
+                    verified: true,
+                    userType: req.body.type
+
+                },
+            })
+
+                return res.status(200).send({
+                    success: true,
+                    message: 'user ststus updated succesfully',
+                    data: {
+                        changeuser
+                    }
+                });
+
+            } catch (e) {
+                console.error(e);
+                return res.status(500).send({ success: false, message: 'Something went wrong' });
+            }
+         
+    }
+
+    static async gettoken(req: Request, res: Response){
+        const email = req.body.email
+        const user = await prisma.user.findUnique({
+            where: { email }
+        });
+
+        if (!user) {
+            return res.status(401).send({ success: false, message: 'User with this email does not exists' });
+        }
+        const token = TokenService.generateToken(user);
+
+        res.status(200).send({ success: true,token: token, userId: user.id});
+
     }
 
     static async forgotPassword(req: Request, res: Response) {

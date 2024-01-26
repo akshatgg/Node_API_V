@@ -14,6 +14,7 @@ datasource db {
 enum UserType {
   admin
   normal
+  superadmin
 }
 
 enum UserGender {
@@ -377,7 +378,9 @@ model Post {
   id        String   @id @default(uuid())
   userId    Int
   title     String
-  content   String   @db.LongText
+  contentheading   String 
+  contentdiscription   String  
+  category String
   imageUrl  String
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
