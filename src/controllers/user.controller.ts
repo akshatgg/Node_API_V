@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { prisma } from "..";
 import { PHONE_NUMBER_RGX, addMinutesToTime, generateOTP, validateEmail, validatePhone } from "../lib/util";
 import bcrypt from 'bcrypt';
-import EmailService from "../services/email.service";
+import  EmailService from "../services/email.service";
 import TokenService from "../services/token.service";
 import { UserGender } from "@prisma/client";
 import { ZodError, z } from "zod";
@@ -129,6 +129,24 @@ export default class UserController {
         }
     }
 
+     static async resendotp(req: Request, res: Response){
+
+            const email = req.body.email
+            const user = await prisma.user.findUnique({
+                where: { email }
+            });
+    
+            if (!user) {
+                return res.status(401).send({ success: false, message: 'User with this email does not exists' });
+            }
+
+            const otp_key = await UserController.sendOtp(email, user.id);
+    
+            res.status(200).send({ success: true,message:"succesfully otp send to email", otp_key:otp_key});
+            
+        
+    }
+
     static async login(req: Request, res: Response) {
        
             const { email, password } = LoginSchema.parse(req.body);
@@ -145,6 +163,7 @@ export default class UserController {
             if(user.verified===false){
                 return res.status(301)
                 .send({ success: false, message: 'User is Not Verified' });
+             
              }
 
 

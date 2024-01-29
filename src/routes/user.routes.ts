@@ -25,6 +25,8 @@ userRouter.post('/forgot-password', UserController.forgotPassword);
 
 userRouter.post('/verify', UserController.verifyOtp);
 
+userRouter.post('/resendotp', UserController.resendotp);
+
 userRouter.post('/send-otp', verifyToken, UserController.sendVerificationOtp);
 
 userRouter.post('/change-password', verifyToken, UserController.changePassword);

@@ -50,7 +50,6 @@ export default class BusinessProfileController {
             // Calculate the offset based on the page and limit
             const offset = (parsedPage - 1) * parsedLimit;
 
-
             const profiles = await prisma.businessProfile.findMany({
                 skip: offset,
                 take: parsedLimit,
