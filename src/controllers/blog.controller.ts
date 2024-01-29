@@ -2,11 +2,12 @@ import { prisma } from '../index';
 import { Request, Response } from 'express';
 
 export default class BlogController {
+    
     static async createPost(req: Request, res: Response): Promise<Response> {
         try {
-            const { title, content, imageUrl } = req.body;
+            const { title,category, contentheading,contentdiscription, imageUrl } = req.body;
 
-            if (!title || !content || !imageUrl) {
+            if (!title || !contentheading || !imageUrl) {
                 return res.status(400).json({ success: true, message: 'Required body params are missing' });
             }
 
@@ -16,7 +17,9 @@ export default class BlogController {
                 data: {
                     userId: user.id,
                     title,
-                    content,
+                    category,
+                    contentheading,
+                    contentdiscription,
                     imageUrl,
                 },
             });
@@ -73,7 +76,7 @@ export default class BlogController {
 
     static async updatePost(req: Request, res: Response): Promise<Response> {
         try {
-            const { title, content, imageUrl } = req.body;
+            const { title,contentheading,category, contentdiscription, imageUrl } = req.body;
 
             const { id } = req.params;
 
@@ -81,7 +84,7 @@ export default class BlogController {
                 return res.status(400).json({ success: true, message: 'Post ID is required for this operation' });
             }
 
-            if (!title || !content || !imageUrl) {
+            if (!title || !contentheading || !imageUrl) {
                 return res.status(400).json({ success: true, message: 'Required body params are missing' });
             }
 
@@ -101,7 +104,9 @@ export default class BlogController {
                 where: { id },
                 data: {
                     title,
-                    content,
+                    category,
+                    contentheading,
+                    contentdiscription,
                     imageUrl,
                 },
             });
