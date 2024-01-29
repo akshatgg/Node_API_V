@@ -63,6 +63,10 @@ var LoginSchema = zod_1.z.object({
     email: zod_1.z.string().toLowerCase().email(),
     password: zod_1.z.string({ required_error: 'Please enter your password' }),
 });
+var UserTypeSchema = zod_1.z.object({
+    email: zod_1.z.string().toLowerCase().email(),
+    type: zod_1.z.enum(["admin", "normal", "superadmin"]),
+});
 var UserController = /** @class */ (function () {
     function UserController() {
     }
@@ -183,6 +187,30 @@ var UserController = /** @class */ (function () {
             });
         });
     };
+    UserController.resendotp = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var email, user, otp_key;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        email = req.body.email;
+                        return [4 /*yield*/, __1.prisma.user.findUnique({
+                                where: { email: email }
+                            })];
+                    case 1:
+                        user = _a.sent();
+                        if (!user) {
+                            return [2 /*return*/, res.status(401).send({ success: false, message: 'User with this email does not exists' })];
+                        }
+                        return [4 /*yield*/, UserController.sendOtp(email, user.id)];
+                    case 2:
+                        otp_key = _a.sent();
+                        res.status(200).send({ success: true, message: "succesfully otp send to email", otp_key: otp_key });
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
     UserController.login = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
             var _a, email, password, user, authorized, token;
@@ -221,9 +249,86 @@ var UserController = /** @class */ (function () {
             });
         });
     };
+    UserController.changeusertype = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, email, type, user, changeuser, e_2;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _b.trys.push([0, 3, , 4]);
+                        _a = UserTypeSchema.parse(req.body), email = _a.email, type = _a.type;
+                        return [4 /*yield*/, __1.prisma.user.findUnique({
+                                where: { email: email }
+                            })];
+                    case 1:
+                        user = _b.sent();
+                        if (!user) {
+                            return [2 /*return*/, res.status(401).send({ success: false, message: 'User with this email does not exists' })];
+                        }
+                        if (user.verified === false) {
+                            return [2 /*return*/, res.status(301)
+                                    .send({ success: false, message: 'User is Not Verified' })];
+                        }
+                        return [4 /*yield*/, __1.prisma.user.update({
+                                where: { email: email },
+                                data: {
+                                    firstName: user.firstName,
+                                    lastName: user.lastName,
+                                    email: user.email,
+                                    gender: user.gender,
+                                    password: user.password,
+                                    phone: user.phone,
+                                    fatherName: user.fatherName,
+                                    aadhaar: user.aadhaar,
+                                    pan: user.pan,
+                                    pin: user.pin,
+                                    verified: true,
+                                    userType: req.body.type
+                                },
+                            })];
+                    case 2:
+                        changeuser = _b.sent();
+                        return [2 /*return*/, res.status(200).send({
+                                success: true,
+                                message: 'user ststus updated succesfully',
+                                data: {
+                                    changeuser: changeuser
+                                }
+                            })];
+                    case 3:
+                        e_2 = _b.sent();
+                        console.error(e_2);
+                        return [2 /*return*/, res.status(500).send({ success: false, message: 'Something went wrong' })];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    UserController.gettoken = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var email, user, token;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        email = req.body.email;
+                        return [4 /*yield*/, __1.prisma.user.findUnique({
+                                where: { email: email }
+                            })];
+                    case 1:
+                        user = _a.sent();
+                        if (!user) {
+                            return [2 /*return*/, res.status(401).send({ success: false, message: 'User with this email does not exists' })];
+                        }
+                        token = token_service_1.default.generateToken(user);
+                        res.status(200).send({ success: true, token: token, userId: user.id });
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
     UserController.forgotPassword = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var email, user, otp_key, e_2;
+            var email, user, otp_key, e_3;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -250,8 +355,8 @@ var UserController = /** @class */ (function () {
                                 otp_key: otp_key,
                             })];
                     case 3:
-                        e_2 = _a.sent();
-                        console.error(e_2);
+                        e_3 = _a.sent();
+                        console.error(e_3);
                         return [2 /*return*/, res.status(500).send({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -260,7 +365,7 @@ var UserController = /** @class */ (function () {
     };
     UserController.verifyOtp = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, email, otp_key, otp, id, user, otpInstance, now, validTill, token, e_3;
+            var _a, email, otp_key, otp, id, user, otpInstance, now, validTill, token, e_4;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -323,8 +428,8 @@ var UserController = /** @class */ (function () {
                                 }
                             })];
                     case 6:
-                        e_3 = _b.sent();
-                        console.error(e_3);
+                        e_4 = _b.sent();
+                        console.error(e_4);
                         return [2 /*return*/, res.status(500).send({ success: false, message: 'Something went wrong' })];
                     case 7: return [2 /*return*/];
                 }
@@ -333,7 +438,7 @@ var UserController = /** @class */ (function () {
     };
     UserController.sendVerificationOtp = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var token, _a, id, email, otp_key, e_4;
+            var token, _a, id, email, otp_key, e_5;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -350,8 +455,8 @@ var UserController = /** @class */ (function () {
                                 otp_key: otp_key,
                             })];
                     case 2:
-                        e_4 = _b.sent();
-                        console.log(e_4);
+                        e_5 = _b.sent();
+                        console.log(e_5);
                         return [2 /*return*/, res.status(500).send({ success: false, message: 'Something went wrong' })];
                     case 3: return [2 /*return*/];
                 }
@@ -360,7 +465,7 @@ var UserController = /** @class */ (function () {
     };
     UserController.changePassword = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var id, newPassword, user, hash, e_5;
+            var id, newPassword, user, hash, e_6;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -391,8 +496,8 @@ var UserController = /** @class */ (function () {
                         _a.sent();
                         return [2 /*return*/, res.status(200).send({ success: true, message: 'Password changed' })];
                     case 4:
-                        e_5 = _a.sent();
-                        console.log(e_5);
+                        e_6 = _a.sent();
+                        console.log(e_6);
                         return [2 /*return*/, res.status(500).send({ success: false, message: 'Something went wrong' })];
                     case 5: return [2 /*return*/];
                 }
@@ -401,7 +506,7 @@ var UserController = /** @class */ (function () {
     };
     UserController.updateProfile = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var id, _a, firstName, lastName, fatherName, pin, gender, address, aadhaar, pan, phone, user, e_6;
+            var id, _a, firstName, lastName, fatherName, pin, gender, address, aadhaar, pan, phone, user, e_7;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -441,8 +546,8 @@ var UserController = /** @class */ (function () {
                         _b.sent();
                         return [2 /*return*/, res.status(200).send({ success: true, message: "Profile Updated" })];
                     case 3:
-                        e_6 = _b.sent();
-                        console.log(e_6);
+                        e_7 = _b.sent();
+                        console.log(e_7);
                         return [2 /*return*/, res.status(500).send({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -451,7 +556,7 @@ var UserController = /** @class */ (function () {
     };
     UserController.getUserById = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var id, user, e_7;
+            var id, user, e_8;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -484,8 +589,8 @@ var UserController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, data: { user: user } })];
                     case 2:
-                        e_7 = _a.sent();
-                        console.error(e_7);
+                        e_8 = _a.sent();
+                        console.error(e_8);
                         return [2 /*return*/, res.status(500).send({ success: false, message: 'Something went wrong' })];
                     case 3: return [2 /*return*/];
                 }
@@ -494,7 +599,7 @@ var UserController = /** @class */ (function () {
     };
     UserController.getAllUsers = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, pageNumber, _b, order, page, users, e_8;
+            var _a, pageNumber, _b, order, page, users, e_9;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -531,8 +636,8 @@ var UserController = /** @class */ (function () {
                                 },
                             })];
                     case 2:
-                        e_8 = _c.sent();
-                        console.error(e_8);
+                        e_9 = _c.sent();
+                        console.error(e_9);
                         return [2 /*return*/, res.status(500).send({ success: false, message: 'Something went wrong' })];
                     case 3: return [2 /*return*/];
                 }
@@ -541,7 +646,7 @@ var UserController = /** @class */ (function () {
     };
     UserController.getOwnProfile = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var id, user, e_9;
+            var id, user, e_10;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -575,8 +680,8 @@ var UserController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, data: { user: user } })];
                     case 2:
-                        e_9 = _a.sent();
-                        console.error(e_9);
+                        e_10 = _a.sent();
+                        console.error(e_10);
                         return [2 /*return*/, res.status(500).send({ success: false, message: 'Something went wrong' })];
                     case 3: return [2 /*return*/];
                 }
