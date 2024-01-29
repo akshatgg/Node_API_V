@@ -163,6 +163,7 @@ export default class UserController {
             if(user.verified===false){
                 return res.status(301)
                 .send({ success: false, message: 'User is Not Verified' });
+             
              }
 
 
