@@ -129,8 +129,8 @@ export default class UserController {
         }
     }
 
-    static async resendotp(req: Request, res: Response){
-        
+    static async  resendotp(req: Request, res: Response){
+
             const email = req.body.email
             const user = await prisma.user.findUnique({
                 where: { email }
