@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { prisma } from "..";
 import { PHONE_NUMBER_RGX, addMinutesToTime, generateOTP, validateEmail, validatePhone } from "../lib/util";
 import bcrypt from 'bcrypt';
-import EmailService from "../services/email.service";
+import  EmailService from "../services/email.service";
 import TokenService from "../services/token.service";
 import { UserGender } from "@prisma/client";
 import { ZodError, z } from "zod";
