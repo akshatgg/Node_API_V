@@ -15,9 +15,17 @@ userRouter.post('/sign-up', UserController.signUp);
 
 userRouter.post('/login', UserController.login);
 
+userRouter.post('/changeadmin', UserController.changeusertype);
+
+userRouter.get("/gettoken", UserController.gettoken)
+
+userRouter.post('/changeusertype', UserController.changeusertype);
+
 userRouter.post('/forgot-password', UserController.forgotPassword);
 
 userRouter.post('/verify', UserController.verifyOtp);
+
+userRouter.post('/resendotp', UserController.resendotp);
 
 userRouter.post('/send-otp', verifyToken, UserController.sendVerificationOtp);
 

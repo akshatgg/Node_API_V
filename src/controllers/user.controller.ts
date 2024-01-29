@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { prisma } from "..";
 import { PHONE_NUMBER_RGX, addMinutesToTime, generateOTP, validateEmail, validatePhone } from "../lib/util";
 import bcrypt from 'bcrypt';
-import EmailService from "../services/email.service";
+import  EmailService from "../services/email.service";
 import TokenService from "../services/token.service";
 import { UserGender } from "@prisma/client";
 import { ZodError, z } from "zod";
@@ -24,6 +24,11 @@ const UserSchema = z.object({
 const LoginSchema = z.object({
     email: z.string().toLowerCase().email(), 
     password: z.string({ required_error: 'Please enter your password' }), 
+});
+
+const UserTypeSchema = z.object({
+    email: z.string().toLowerCase().email(), 
+    type: z.enum(["admin","normal","superadmin"]), 
 });
 
 export default class UserController {
@@ -124,6 +129,24 @@ export default class UserController {
         }
     }
 
+     static async resendotp(req: Request, res: Response){
+
+            const email = req.body.email
+            const user = await prisma.user.findUnique({
+                where: { email }
+            });
+    
+            if (!user) {
+                return res.status(401).send({ success: false, message: 'User with this email does not exists' });
+            }
+
+            const otp_key = await UserController.sendOtp(email, user.id);
+    
+            res.status(200).send({ success: true,message:"succesfully otp send to email", otp_key:otp_key});
+            
+        
+    }
+
     static async login(req: Request, res: Response) {
        
             const { email, password } = LoginSchema.parse(req.body);
@@ -135,6 +158,14 @@ export default class UserController {
             if (!user) {
                 return res.status(401).send({ success: false, message: 'User with this email does not exists' });
             }
+
+
+            if(user.verified===false){
+                return res.status(301)
+                .send({ success: false, message: 'User is Not Verified' });
+             
+             }
+
 
             const authorized = await bcrypt.compare(password, user.password);
 
@@ -152,6 +183,72 @@ export default class UserController {
                         token
                     }
                 });   
+    }
+
+    static async changeusertype(req: Request, res: Response) {
+        try {
+            const { email,type } = UserTypeSchema.parse(req.body);
+
+            const user = await prisma.user.findUnique({
+                where: { email }
+            });
+
+            if (!user) {
+                return res.status(401).send({ success: false, message: 'User with this email does not exists' });
+            }
+
+            if(user.verified===false){
+                return res.status(301)
+                .send({ success: false, message: 'User is Not Verified' });
+            }
+
+            const changeuser= await prisma.user.update({
+                where: { email },
+                data: {
+                    firstName:user.firstName,
+                    lastName:user.lastName,
+                    email:user.email,
+                    gender:user.gender,
+                    password: user.password,
+                    phone:user.phone,
+                    fatherName:user.fatherName, 
+                    aadhaar:user.aadhaar, 
+                    pan:user.pan, 
+                    pin:user.pin,
+                    verified: true,
+                    userType: req.body.type
+
+                },
+            })
+
+                return res.status(200).send({
+                    success: true,
+                    message: 'user ststus updated succesfully',
+                    data: {
+                        changeuser
+                    }
+                });
+
+            } catch (e) {
+                console.error(e);
+                return res.status(500).send({ success: false, message: 'Something went wrong' });
+            }
+         
+    }
+
+    static async gettoken(req: Request, res: Response){
+        const email = req.body.email
+        const user = await prisma.user.findUnique({
+            where: { email }
+        });
+
+        if (!user) {
+            return res.status(401).send({ success: false, message: 'User with this email does not exists' });
+        }
+        const token = TokenService.generateToken(user);
+
+        res.status(200).send({ success: true,token: token, userId: user.id});
+
     }
 
     static async forgotPassword(req: Request, res: Response) {

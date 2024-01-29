@@ -42,13 +42,13 @@ var BlogController = /** @class */ (function () {
     }
     BlogController.createPost = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, title, content, imageUrl, user, post, error_1;
+            var _a, title, category, contentheading, contentdiscription, imageUrl, user, post, error_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 2, , 3]);
-                        _a = req.body, title = _a.title, content = _a.content, imageUrl = _a.imageUrl;
-                        if (!title || !content || !imageUrl) {
+                        _a = req.body, title = _a.title, category = _a.category, contentheading = _a.contentheading, contentdiscription = _a.contentdiscription, imageUrl = _a.imageUrl;
+                        if (!title || !contentheading || !imageUrl) {
                             return [2 /*return*/, res.status(400).json({ success: true, message: 'Required body params are missing' })];
                         }
                         user = req.user;
@@ -56,7 +56,9 @@ var BlogController = /** @class */ (function () {
                                 data: {
                                     userId: user.id,
                                     title: title,
-                                    content: content,
+                                    category: category,
+                                    contentheading: contentheading,
+                                    contentdiscription: contentdiscription,
                                     imageUrl: imageUrl,
                                 },
                             })];
@@ -129,17 +131,17 @@ var BlogController = /** @class */ (function () {
     };
     BlogController.updatePost = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, title, content, imageUrl, id, user, post, updatedPost, error_4;
+            var _a, title, contentheading, category, contentdiscription, imageUrl, id, user, post, updatedPost, error_4;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 3, , 4]);
-                        _a = req.body, title = _a.title, content = _a.content, imageUrl = _a.imageUrl;
+                        _a = req.body, title = _a.title, contentheading = _a.contentheading, category = _a.category, contentdiscription = _a.contentdiscription, imageUrl = _a.imageUrl;
                         id = req.params.id;
                         if (!id) {
                             return [2 /*return*/, res.status(400).json({ success: true, message: 'Post ID is required for this operation' })];
                         }
-                        if (!title || !content || !imageUrl) {
+                        if (!title || !contentheading || !imageUrl) {
                             return [2 /*return*/, res.status(400).json({ success: true, message: 'Required body params are missing' })];
                         }
                         user = req.user;
@@ -156,7 +158,9 @@ var BlogController = /** @class */ (function () {
                                 where: { id: id },
                                 data: {
                                     title: title,
-                                    content: content,
+                                    category: category,
+                                    contentheading: contentheading,
+                                    contentdiscription: contentdiscription,
                                     imageUrl: imageUrl,
                                 },
                             })];
