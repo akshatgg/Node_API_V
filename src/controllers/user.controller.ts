@@ -129,6 +129,24 @@ export default class UserController {
         }
     }
 
+    static async resendotp(req: Request, res: Response){
+        
+            const email = req.body.email
+            const user = await prisma.user.findUnique({
+                where: { email }
+            });
+    
+            if (!user) {
+                return res.status(401).send({ success: false, message: 'User with this email does not exists' });
+            }
+
+            const otp_key = await UserController.sendOtp(email, user.id);
+    
+            res.status(200).send({ success: true,message:"succesfully otp send to email", otp_key:otp_key});
+            
+        
+    }
+
     static async login(req: Request, res: Response) {
        
             const { email, password } = LoginSchema.parse(req.body);
