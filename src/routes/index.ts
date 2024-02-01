@@ -11,12 +11,10 @@ import servicesRouter from "./services.routes";
 import paymentsRouter from "./payments.routes";
 import paymentRouter from "./payment.routes";
 import ordersRouter from "./orders.routes";
-
 import libraryRouter from "./library.routes"
 import blogRouter from "./blog.routes";
 import panRouter from "./pan.routes";
 import gstRouter from "./gst.routes";
-
 import careerRouter from "./career.route"
 import mcaRouter from "./mca.routes";
 import calculatorRouter from "./calculators.routes";
@@ -28,10 +26,10 @@ import documentRouter from "./document.routes";
 import visitorRouter from "./visitorCounter.routes"
 import registerStartupRouter from "./registerStartup,routes";
 import contactUsRouter from "./contactUs.routes";
-
 import insourancerouter from "./insurance.routes";
 import { registerAbout } from "./about.routes";
 import accountancyRouter from "./accountancy.routes";
+import ocrRouter from "./ocr.routes";
 
 const router = Router();
 
@@ -92,6 +90,8 @@ router.use('/contactUs',contactUsRouter)
 router.use('/insourance',insourancerouter)
 
 router.use('/aboutTeam',registerAbout)
+
+router.use('/ocr',ocrRouter)
 
 router.get('/', (req, res) => {
     return res.send({ message: 'Up and running' });

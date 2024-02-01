@@ -74,12 +74,6 @@ export default class AadhaarController {
         }
     }
    
-
-
-
-
-
-
     static async verifyAadhaar(req: Request, res: Response) {
         try {
             const { aadhaar_number } = req.query;
