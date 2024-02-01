@@ -131,7 +131,7 @@ static async getpandata(req: any, res: any){
   try {
     const image = sharp(req.file.path);
    
-    let outputBuffer = await image
+    let outputBuffer:any = await image
         .greyscale()
         .linear(1.0, -25)
         .toBuffer();
@@ -154,7 +154,6 @@ static async getpandata(req: any, res: any){
     return res.status(200)
     .send({ status: 'success', data });
 } catch(e) {
-    console.error("Fgghgfh",e);
     res.status(500).send({
         status: 'failure',
         message: 'Something went wrong',

@@ -13,7 +13,6 @@ userRouter.get('/profile/:id', verify_token_1.default, user_controller_1.default
 userRouter.get('/get-all-users', verify_token_1.default, admin_check_1.default, user_controller_1.default.getAllUsers);
 userRouter.post('/sign-up', user_controller_1.default.signUp);
 userRouter.post('/login', user_controller_1.default.login);
-userRouter.post('/changeadmin', user_controller_1.default.changeusertype);
 userRouter.get("/gettoken", user_controller_1.default.gettoken);
 userRouter.post('/changeusertype', user_controller_1.default.changeusertype);
 userRouter.post('/forgot-password', user_controller_1.default.forgotPassword);
