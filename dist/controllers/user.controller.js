@@ -519,7 +519,6 @@ var UserController = /** @class */ (function () {
                         if (phone && !(0, util_1.validatePhone)(phone)) {
                             return [2 /*return*/, res.status(400).send({ success: false, message: "Please enter a valid phone number" })];
                         }
-                        console.log(req.body);
                         return [4 /*yield*/, __1.prisma.user.findFirst({ where: { id: id } })];
                     case 1:
                         user = _b.sent();
