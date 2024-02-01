@@ -144,7 +144,6 @@ export default class UserController {
     
             res.status(200).send({ success: true,message:"succesfully otp send to email", otp_key:otp_key});
             
-        
     }
 
     static async login(req: Request, res: Response) {
@@ -421,8 +420,6 @@ export default class UserController {
             if (phone && !validatePhone(phone)) {
                 return res.status(400).send({ success: false, message: "Please enter a valid phone number" });
             }
-
-            console.log(req.body)
 
             const user = await prisma.user.findFirst({ where: { id } });
 

@@ -23,6 +23,7 @@ const GSTR1_SCHEMA = z.object({
 });
 
 
+
 export default class GSTController {
 
     static async searchByGSTIN(req: Request, res: Response) {
@@ -32,11 +33,12 @@ export default class GSTController {
             if (!validateGSTIN(gstin)) {
                 return res.status(400).json({ success: false, message: "Please enter valid GSTIN" });
             }
-
+            
             const endpoint = `${Sandbox.BASE_URL}/gsp/public/gstin/`;
 
             const token = await Sandbox.generateAccessToken();
 
+          
             const headers = {
                 'Authorization': token,
                 'accept': 'application/json',
