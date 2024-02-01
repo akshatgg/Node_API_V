@@ -145,12 +145,10 @@ static async getpandata(req: any, res: any){
         .map((line) => line.trim())
         .filter((line) => line);
     const data = extractPanDetails(lines);
-
     if(data.name===""||data.pan===""){
       return res.status(404)
       .json({message:"faild to extract data or  upload a valid pan card "})
     }
-
     return res.status(200)
     .send({ status: 'success', data });
 } catch(e) {
