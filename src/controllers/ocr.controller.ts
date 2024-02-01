@@ -14,6 +14,8 @@ const TESSERACT_CONFIG :any = {
     psm: Tesseract.PSM.SINGLE_LINE
 };
 
+
+
 const PAN_PATTERN = /\b[A-Z]{5}[0-9]{4}[A-Z]{1}\b/;
 
 const DOB_PATTERN = /\b\d{2}\/\d{2}\/\d{4}\b/;
