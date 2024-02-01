@@ -32,7 +32,7 @@ var contactUs_routes_1 = __importDefault(require("./contactUs.routes"));
 var insurance_routes_1 = __importDefault(require("./insurance.routes"));
 var about_routes_1 = require("./about.routes");
 var accountancy_routes_1 = __importDefault(require("./accountancy.routes"));
-var ocr_routes_1 = __importDefault(require("./ocr.routes"));
+// import ocrRouter from "./ocr.routes";
 var router = (0, express_1.Router)();
 router.use('/user', user_routes_1.default);
 router.use('/business', businessProfile_routes_1.default);
@@ -63,7 +63,7 @@ router.use('/Startup', registerStartup_routes_1.default);
 router.use('/contactUs', contactUs_routes_1.default);
 router.use('/insourance', insurance_routes_1.default);
 router.use('/aboutTeam', about_routes_1.registerAbout);
-router.use('/ocr', ocr_routes_1.default);
+// router.use('/ocr',ocrRouter)
 router.get('/', function (req, res) {
     return res.send({ message: 'Up and running' });
 });
