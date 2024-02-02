@@ -29,6 +29,7 @@ import contactUsRouter from "./contactUs.routes";
 import insourancerouter from "./insurance.routes";
 import { registerAbout } from "./about.routes";
 import accountancyRouter from "./accountancy.routes";
+import HsnAndSACRouter from "./hsnAndSac.routes";
 // import ocrRouter from "./ocr.routes";
 
 const router = Router();
@@ -90,6 +91,8 @@ router.use('/contactUs',contactUsRouter)
 router.use('/insourance',insourancerouter)
 
 router.use('/aboutTeam',registerAbout)
+
+router.use("/codes",HsnAndSACRouter)
 
 // router.use('/ocr',ocrRouter)
 

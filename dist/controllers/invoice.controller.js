@@ -106,12 +106,12 @@ var InvoiceController = /** @class */ (function () {
     };
     InvoiceController.create = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var userId, _a, invoiceNumber, gstNumber, type, partyId, totalAmount, totalGst, stateOfSupply, cgst, sgst, igst, utgst, details, extraDetails, invoiceItems, modeOfPayment, _b, credit, status, party, gstRegex, formattedInvoiceItems, invoiceData, invoice;
+            var userId, _a, invoiceNumber, gstNumber, type, partyId, itemId, totalAmount, totalGst, stateOfSupply, cgst, sgst, igst, utgst, details, extraDetails, invoiceItems, modeOfPayment, _b, credit, status, party, gstRegex, formattedInvoiceItems, invoiceData, invoice;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
                         userId = req.user.id;
-                        _a = req.body, invoiceNumber = _a.invoiceNumber, gstNumber = _a.gstNumber, type = _a.type, partyId = _a.partyId, totalAmount = _a.totalAmount, totalGst = _a.totalGst, stateOfSupply = _a.stateOfSupply, cgst = _a.cgst, sgst = _a.sgst, igst = _a.igst, utgst = _a.utgst, details = _a.details, extraDetails = _a.extraDetails, invoiceItems = _a.invoiceItems, modeOfPayment = _a.modeOfPayment, _b = _a.credit, credit = _b === void 0 ? false : _b, status = _a.status;
+                        _a = req.body, invoiceNumber = _a.invoiceNumber, gstNumber = _a.gstNumber, type = _a.type, partyId = _a.partyId, itemId = _a.itemId, totalAmount = _a.totalAmount, totalGst = _a.totalGst, stateOfSupply = _a.stateOfSupply, cgst = _a.cgst, sgst = _a.sgst, igst = _a.igst, utgst = _a.utgst, details = _a.details, extraDetails = _a.extraDetails, invoiceItems = _a.invoiceItems, modeOfPayment = _a.modeOfPayment, _b = _a.credit, credit = _b === void 0 ? false : _b, status = _a.status;
                         if (!partyId) return [3 /*break*/, 2];
                         return [4 /*yield*/, index_1.prisma.party.findUnique({ where: { id: partyId } })];
                     case 1:

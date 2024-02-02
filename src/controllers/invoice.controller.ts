@@ -65,6 +65,7 @@ class InvoiceController {
                 gstNumber,
                 type,
                 partyId,
+                itemId,
                 totalAmount,
                 totalGst,
                 stateOfSupply,
@@ -95,6 +96,7 @@ class InvoiceController {
             }
 
             // Check if invoiceItems is defined and is an array
+
             const formattedInvoiceItems = invoiceItems
                 ? invoiceItems.map(({ itemId, quantity, discount }: { itemId: string; quantity: number; discount: number }) => ({
                     item: {
@@ -149,7 +151,6 @@ class InvoiceController {
         
     }
 
-
     static async getAll(req: Request, res: Response): Promise<void> {
         try {
             const { id: userId } = req.user!;
@@ -189,6 +190,7 @@ class InvoiceController {
                     invoiceItems: true
                 }
             });
+            
 
             if (!invoice) {
                 res.status(404).json({ sucess: false, message: 'Invoice not found' });
