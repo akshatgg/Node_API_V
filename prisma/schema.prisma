@@ -282,7 +282,7 @@ model Invoice {
   party         Party         @relation(fields: [partyId], references: [id])
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @default(now())
-  invoiceItems  InvoiceItem[]
+  invoiceItems  InvoiceItem[] 
   accounts      Account[]
   status        InvoiceStatus
 }

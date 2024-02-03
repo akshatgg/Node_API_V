@@ -3,7 +3,7 @@ import { Prisma, Invoice, InvoiceItem, Item, LedgerType, Party, PartyType } from
 import { prisma } from '../index';
 
 class InvoiceController {
-
+    
     static async summary(req: Request, res: Response) {
         try {
             const { id: userId } = req.user!;
@@ -169,8 +169,12 @@ class InvoiceController {
                 skip: offset,
                 take: parsedLimit,
                 include: {
-                    invoiceItems: true
-                }
+                    invoiceItems: {
+                      include: {
+                        item: true,
+                      },
+                    },
+                  },
             });
 
             res.status(200).json({ success: true, invoices });
@@ -187,8 +191,12 @@ class InvoiceController {
             const invoice: Invoice | null = await prisma.invoice.findUnique({
                 where: { id: invoiceId },
                 include: {
-                    invoiceItems: true
-                }
+                    invoiceItems: {
+                      include: {
+                        item: true,
+                      },
+                    },
+                  },
             });
             
 
