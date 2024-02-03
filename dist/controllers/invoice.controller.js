@@ -199,8 +199,12 @@ var InvoiceController = /** @class */ (function () {
                                 skip: offset,
                                 take: parsedLimit,
                                 include: {
-                                    invoiceItems: true
-                                }
+                                    invoiceItems: {
+                                        include: {
+                                            item: true,
+                                        },
+                                    },
+                                },
                             })];
                     case 1:
                         invoices = _d.sent();
@@ -226,8 +230,12 @@ var InvoiceController = /** @class */ (function () {
                         return [4 /*yield*/, index_1.prisma.invoice.findUnique({
                                 where: { id: invoiceId },
                                 include: {
-                                    invoiceItems: true
-                                }
+                                    invoiceItems: {
+                                        include: {
+                                            item: true,
+                                        },
+                                    },
+                                },
                             })];
                     case 1:
                         invoice = _a.sent();
