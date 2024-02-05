@@ -107,6 +107,12 @@ export class Accountscontroller {
                 if (!id) {
                     return res.status(400).json({ success: true, message: ' ID is required for this operation' });
                 }
+
+                const checkifnotexist = await prisma.billpayable.findFirst({where: {id: +id}})
+
+                if(!checkifnotexist){
+                  return res.status(400).json({ success: true, message: 'bill post not found or not created' });
+                }
         
 
             const updatebill = await prisma.billpayable.update({
@@ -158,12 +164,12 @@ export class Accountscontroller {
               where: { id:+id },
           });
 
-          if(!deletebill){
-            return res.status(500).json({
-                success: false,
-                message: 'Bill post Not Found ',
-             }); 
+          const checkifnotexist = await prisma.billpayable.findFirst({where: {id: +id}})
+
+          if(!checkifnotexist){
+            return res.status(400).json({ success: true, message: 'bill post not found or not created' });
           }
+        
   
           return res.status(200).json({ success: true, message: 'Post deleted' });
      
