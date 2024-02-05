@@ -33,6 +33,7 @@ var insurance_routes_1 = __importDefault(require("./insurance.routes"));
 var about_routes_1 = require("./about.routes");
 var accountancy_routes_1 = __importDefault(require("./accountancy.routes"));
 var hsnAndSac_routes_1 = __importDefault(require("./hsnAndSac.routes"));
+var billpayable_routes_1 = __importDefault(require("./billpayable.routes"));
 // import ocrRouter from "./ocr.routes";
 var router = (0, express_1.Router)();
 router.use('/user', user_routes_1.default);
@@ -65,6 +66,7 @@ router.use('/contactUs', contactUs_routes_1.default);
 router.use('/insourance', insurance_routes_1.default);
 router.use('/aboutTeam', about_routes_1.registerAbout);
 router.use("/codes", hsnAndSac_routes_1.default);
+router.use("/billpayable", billpayable_routes_1.default);
 // router.use('/ocr',ocrRouter)
 router.get('/', function (req, res) {
     return res.send({ message: 'Up and running' });

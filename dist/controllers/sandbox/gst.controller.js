@@ -64,41 +64,42 @@ var GSTController = /** @class */ (function () {
     }
     GSTController.searchByGSTIN = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var gstin, endpoint, token, headers, _a, status, data, e_1;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var gstin, token, options, response, error_1;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        _b.trys.push([0, 3, , 4]);
+                        _a.trys.push([0, 3, , 4]);
                         gstin = req.params.gstin;
                         if (!(0, util_1.validateGSTIN)(gstin)) {
-                            return [2 /*return*/, res.status(400).json({ success: false, message: "Please enter valid GSTIN" })];
+                            return [2 /*return*/, res.status(400).json({ success: false, message: "Please enter a valid GSTIN" })];
                         }
-                        endpoint = "".concat(sandbox_service_1.default.BASE_URL, "/gsp/public/gstin/");
                         return [4 /*yield*/, sandbox_service_1.default.generateAccessToken()];
                     case 1:
-                        token = _b.sent();
-                        headers = {
-                            'Authorization': token,
-                            'accept': 'application/json',
-                            'x-api-key': process.env.SANDBOX_KEY,
-                            'x-api-version': process.env.SANDBOX_API_VERSION
+                        token = _a.sent();
+                        options = {
+                            method: 'GET',
+                            url: "".concat(sandbox_service_1.default.BASE_URL, "/gsp/public/gstin/").concat(gstin),
+                            headers: {
+                                accept: 'application/json',
+                                Authorization: token,
+                                'x-api-key': process.env.SANDBOX_KEY,
+                                'x-api-version': process.env.SANDBOX_API_VERSION
+                            }
                         };
-                        return [4 /*yield*/, axios_1.default.get(endpoint, {
-                                headers: headers,
-                                params: {
-                                    gstin: gstin
-                                }
-                            })];
+                        return [4 /*yield*/, axios_1.default.request(options)];
                     case 2:
-                        _a = _b.sent(), status = _a.status, data = _a.data.data;
-                        if (status !== 200) {
-                            return [2 /*return*/, res.status(500).send({ success: false, message: "Something went wrong" })];
+                        response = _a.sent();
+                        // Check response status
+                        if (response.status !== 200) {
+                            return [2 /*return*/, res.status(response.status).json({ success: false, message: "Error in sandbox API", error: response.data })];
                         }
-                        return [2 /*return*/, res.status(200).send({ success: true, data: data })];
+                        return [2 /*return*/, res.status(200).json({ success: true, data: response.data })];
                     case 3:
-                        e_1 = _b.sent();
-                        console.log(e_1);
-                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
+                        error_1 = _a.sent();
+                        if (error_1.response) {
+                            return [2 /*return*/, res.status(error_1.response.status).json({ success: false, message: "Error in sandbox API", error: error_1.response.data })];
+                        }
+                        return [2 /*return*/, res.status(500).json({ success: false, message: 'Internal Server Error' })];
                     case 4: return [2 /*return*/];
                 }
             });
@@ -106,7 +107,7 @@ var GSTController = /** @class */ (function () {
     };
     GSTController.searchGSTINNumberByPan = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, pan, gst_state_code, endpoint, token, headers, _b, status, data, e_2;
+            var _a, pan, gst_state_code, endpoint, token, headers, _b, status, data, e_1;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -135,8 +136,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, data: data })];
                     case 3:
-                        e_2 = _c.sent();
-                        console.log(e_2);
+                        e_1 = _c.sent();
+                        console.log(e_1);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -145,7 +146,7 @@ var GSTController = /** @class */ (function () {
     };
     GSTController.trackGSTReturn = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, gstin, financialYear, endpoint, token, headers, _b, status, data, e_3;
+            var _a, gstin, financialYear, endpoint, token, headers, _b, status, data, e_2;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -180,8 +181,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, data: data })];
                     case 3:
-                        e_3 = _c.sent();
-                        console.log(e_3);
+                        e_2 = _c.sent();
+                        console.log(e_2);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -190,7 +191,7 @@ var GSTController = /** @class */ (function () {
     };
     GSTController.proceedToFileGstr = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, gstin, returnPeriod, year, month, returnType, isNil, endpoint, token, headers, _b, status, data, e_4;
+            var _a, gstin, returnPeriod, year, month, returnType, isNil, endpoint, token, headers, _b, status, data, e_3;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -225,8 +226,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, data: data })];
                     case 3:
-                        e_4 = _c.sent();
-                        console.log(e_4);
+                        e_3 = _c.sent();
+                        console.log(e_3);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -235,7 +236,7 @@ var GSTController = /** @class */ (function () {
     };
     GSTController.registerForGST = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, gstin, payload, endpoint, token, headers, _b, status, data, e_5;
+            var _a, gstin, payload, endpoint, token, headers, _b, status, data, e_4;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -264,8 +265,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, data: data })];
                     case 3:
-                        e_5 = _c.sent();
-                        console.log(e_5);
+                        e_4 = _c.sent();
+                        console.log(e_4);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -274,7 +275,7 @@ var GSTController = /** @class */ (function () {
     };
     GSTController.generateOTP = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, gstin, username, endpoint, token, headers, _b, status, data, e_6;
+            var _a, gstin, username, endpoint, token, headers, _b, status, data, e_5;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -303,8 +304,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, data: data })];
                     case 3:
-                        e_6 = _c.sent();
-                        console.log(e_6);
+                        e_5 = _c.sent();
+                        console.log(e_5);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -313,7 +314,7 @@ var GSTController = /** @class */ (function () {
     };
     GSTController.verifyOTP = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, gstin, username, otp, endpoint, token, headers, response, e_7;
+            var _a, gstin, username, otp, endpoint, token, headers, response, e_6;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -342,8 +343,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, message: "GSTIN: ".concat(gstin, " authenticated successfully!") })];
                     case 3:
-                        e_7 = _b.sent();
-                        console.log(e_7);
+                        e_6 = _b.sent();
+                        console.log(e_6);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -355,7 +356,7 @@ var GSTController = /** @class */ (function () {
      */
     GSTController.uploadGSTR4 = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var data, _a, gstin, year, month, endpoint, token, headers, response, e_8;
+            var data, _a, gstin, year, month, endpoint, token, headers, response, e_7;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -385,8 +386,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, message: "GSTR-4 Uploaded successfully!", reference_id: response.data.reference_id })];
                     case 3:
-                        e_8 = _b.sent();
-                        console.log(e_8);
+                        e_7 = _b.sent();
+                        console.log(e_7);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -398,7 +399,7 @@ var GSTController = /** @class */ (function () {
      */
     GSTController.uploadGSTR3B = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var body, _a, gstin, year, month, endpoint, token, headers, response, e_9;
+            var body, _a, gstin, year, month, endpoint, token, headers, response, e_8;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -431,8 +432,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, message: "GSTR-3B Uploaded successfully!", reference_id: response.data.reference_id })];
                     case 3:
-                        e_9 = _b.sent();
-                        console.log(e_9);
+                        e_8 = _b.sent();
+                        console.log(e_8);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -444,7 +445,7 @@ var GSTController = /** @class */ (function () {
      */
     GSTController.fileGSTR3B = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var body, _a, gstin, year, month, endpoint, token, headers, response, e_10;
+            var body, _a, gstin, year, month, endpoint, token, headers, response, e_9;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -477,8 +478,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, message: "GSTR-3B Filed successfully!", reference_id: response.data.reference_id })];
                     case 3:
-                        e_10 = _b.sent();
-                        console.log(e_10);
+                        e_9 = _b.sent();
+                        console.log(e_9);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -490,7 +491,7 @@ var GSTController = /** @class */ (function () {
      */
     GSTController.getGSTR3BSummary = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, gstin, year, month, endpoint, token, headers, _b, status, data, e_11;
+            var _a, gstin, year, month, endpoint, token, headers, _b, status, data, e_10;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -522,8 +523,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, data: data })];
                     case 3:
-                        e_11 = _c.sent();
-                        console.log(e_11);
+                        e_10 = _c.sent();
+                        console.log(e_10);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -533,7 +534,7 @@ var GSTController = /** @class */ (function () {
     // ********   gstr 1   *********
     GSTController.gstr1AT = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, gstin, year, month, endpoint, token, headers, _b, status, data, e_12;
+            var _a, gstin, year, month, endpoint, token, headers, _b, status, data, e_11;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -565,8 +566,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, data: data, message: "GSTR-1 AT found successfully!" })];
                     case 3:
-                        e_12 = _c.sent();
-                        console.log(e_12);
+                        e_11 = _c.sent();
+                        console.log(e_11);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -575,7 +576,7 @@ var GSTController = /** @class */ (function () {
     };
     GSTController.gstr1ATA = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, gstin, year, month, endpoint, token, headers, _b, status, data, e_13;
+            var _a, gstin, year, month, endpoint, token, headers, _b, status, data, e_12;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -607,8 +608,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, data: data, message: "GSTR-1 ATA found successfully!" })];
                     case 3:
-                        e_13 = _c.sent();
-                        console.log(e_13);
+                        e_12 = _c.sent();
+                        console.log(e_12);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -617,7 +618,7 @@ var GSTController = /** @class */ (function () {
     };
     GSTController.gstr1B2B = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, gstin, year, month, ctin, action_required, from, endpoint, token, headers, _b, status, data, e_14;
+            var _a, gstin, year, month, ctin, action_required, from, endpoint, token, headers, _b, status, data, e_13;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -652,8 +653,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, data: data, message: "GSTR-1 B2B found successfully!" })];
                     case 3:
-                        e_14 = _c.sent();
-                        console.log(e_14);
+                        e_13 = _c.sent();
+                        console.log(e_13);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -662,7 +663,7 @@ var GSTController = /** @class */ (function () {
     };
     GSTController.gstr1B2BA = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, gstin, year, month, ctin, action_required, from, endpoint, token, headers, _b, status, data, e_15;
+            var _a, gstin, year, month, ctin, action_required, from, endpoint, token, headers, _b, status, data, e_14;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -697,8 +698,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, data: data, message: "GSTR-1 B2BA found successfully!" })];
                     case 3:
-                        e_15 = _c.sent();
-                        console.log(e_15);
+                        e_14 = _c.sent();
+                        console.log(e_14);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -707,7 +708,7 @@ var GSTController = /** @class */ (function () {
     };
     GSTController.gstr1B2CL = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, gstin, year, month, state_code, endpoint, token, headers, _b, status, data, e_16;
+            var _a, gstin, year, month, state_code, endpoint, token, headers, _b, status, data, e_15;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -742,8 +743,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, data: data, message: "GSTR-1 B2CL found successfully!" })];
                     case 3:
-                        e_16 = _c.sent();
-                        console.log(e_16);
+                        e_15 = _c.sent();
+                        console.log(e_15);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -752,7 +753,7 @@ var GSTController = /** @class */ (function () {
     };
     GSTController.gstr1B2CLA = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, gstin, year, month, state_code, endpoint, token, headers, _b, status, data, e_17;
+            var _a, gstin, year, month, state_code, endpoint, token, headers, _b, status, data, e_16;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -787,8 +788,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, data: data, message: "GSTR-1 B2CLA found successfully!" })];
                     case 3:
-                        e_17 = _c.sent();
-                        console.log(e_17);
+                        e_16 = _c.sent();
+                        console.log(e_16);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -797,7 +798,7 @@ var GSTController = /** @class */ (function () {
     };
     GSTController.gstr1B2CS = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, gstin, year, month, endpoint, token, headers, _b, status, data, e_18;
+            var _a, gstin, year, month, endpoint, token, headers, _b, status, data, e_17;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -829,8 +830,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, data: data, message: "GSTR-1 B2CS found successfully!" })];
                     case 3:
-                        e_18 = _c.sent();
-                        console.log(e_18);
+                        e_17 = _c.sent();
+                        console.log(e_17);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -839,7 +840,7 @@ var GSTController = /** @class */ (function () {
     };
     GSTController.gstr1B2CSA = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, gstin, year, month, endpoint, token, headers, _b, status, data, e_19;
+            var _a, gstin, year, month, endpoint, token, headers, _b, status, data, e_18;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -871,8 +872,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, data: data, message: "GSTR-1 B2CSA found successfully!" })];
                     case 3:
-                        e_19 = _c.sent();
-                        console.log(e_19);
+                        e_18 = _c.sent();
+                        console.log(e_18);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -881,7 +882,7 @@ var GSTController = /** @class */ (function () {
     };
     GSTController.gstr1CDNR = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, gstin, year, month, action_required, from, endpoint, token, headers, _b, status, data, e_20;
+            var _a, gstin, year, month, action_required, from, endpoint, token, headers, _b, status, data, e_19;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -916,8 +917,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, data: data, message: "GSTR-1 CDNR found successfully!" })];
                     case 3:
-                        e_20 = _c.sent();
-                        console.log(e_20);
+                        e_19 = _c.sent();
+                        console.log(e_19);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -926,7 +927,7 @@ var GSTController = /** @class */ (function () {
     };
     GSTController.gstr1CDNRA = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, gstin, year, month, action_required, from, endpoint, token, headers, _b, status, data, e_21;
+            var _a, gstin, year, month, action_required, from, endpoint, token, headers, _b, status, data, e_20;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -961,8 +962,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, data: data, message: "GSTR-1 CDNRA found successfully!" })];
                     case 3:
-                        e_21 = _c.sent();
-                        console.log(e_21);
+                        e_20 = _c.sent();
+                        console.log(e_20);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -971,7 +972,7 @@ var GSTController = /** @class */ (function () {
     };
     GSTController.gstr1CDNUR = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, gstin, year, month, endpoint, token, headers, _b, status, data, e_22;
+            var _a, gstin, year, month, endpoint, token, headers, _b, status, data, e_21;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -1003,8 +1004,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, data: data, message: "GSTR-1 CDNUR found successfully!" })];
                     case 3:
-                        e_22 = _c.sent();
-                        console.log(e_22);
+                        e_21 = _c.sent();
+                        console.log(e_21);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -1013,7 +1014,7 @@ var GSTController = /** @class */ (function () {
     };
     GSTController.gstr1CDNURA = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, gstin, year, month, endpoint, token, headers, _b, status, data, e_23;
+            var _a, gstin, year, month, endpoint, token, headers, _b, status, data, e_22;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -1045,8 +1046,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, data: data, message: "GSTR-1 CDNURA found successfully!" })];
                     case 3:
-                        e_23 = _c.sent();
-                        console.log(e_23);
+                        e_22 = _c.sent();
+                        console.log(e_22);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -1055,7 +1056,7 @@ var GSTController = /** @class */ (function () {
     };
     GSTController.gstr1DocumentIssued = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, gstin, year, month, endpoint, token, headers, _b, status, data, e_24;
+            var _a, gstin, year, month, endpoint, token, headers, _b, status, data, e_23;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -1087,8 +1088,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, data: data, message: "GSTR-1 Document Isued found successfully!" })];
                     case 3:
-                        e_24 = _c.sent();
-                        console.log(e_24);
+                        e_23 = _c.sent();
+                        console.log(e_23);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -1097,7 +1098,7 @@ var GSTController = /** @class */ (function () {
     };
     GSTController.gstr1EXP = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, gstin, year, month, endpoint, token, headers, _b, status, data, e_25;
+            var _a, gstin, year, month, endpoint, token, headers, _b, status, data, e_24;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -1129,8 +1130,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, data: data, message: "GSTR-1 EXP found successfully!" })];
                     case 3:
-                        e_25 = _c.sent();
-                        console.log(e_25);
+                        e_24 = _c.sent();
+                        console.log(e_24);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -1139,7 +1140,7 @@ var GSTController = /** @class */ (function () {
     };
     GSTController.gstr1EXPA = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, gstin, year, month, endpoint, token, headers, _b, status, data, e_26;
+            var _a, gstin, year, month, endpoint, token, headers, _b, status, data, e_25;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -1171,8 +1172,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, data: data, message: "GSTR-1 EXPA found successfully!" })];
                     case 3:
-                        e_26 = _c.sent();
-                        console.log(e_26);
+                        e_25 = _c.sent();
+                        console.log(e_25);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -1181,7 +1182,7 @@ var GSTController = /** @class */ (function () {
     };
     GSTController.gstr1Summary = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, gstin, year, month, endpoint, token, headers, _b, status, data, e_27;
+            var _a, gstin, year, month, endpoint, token, headers, _b, status, data, e_26;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -1213,8 +1214,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, data: data, message: "GSTR-1 Summary found successfully!" })];
                     case 3:
-                        e_27 = _c.sent();
-                        console.log(e_27);
+                        e_26 = _c.sent();
+                        console.log(e_26);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -1223,7 +1224,7 @@ var GSTController = /** @class */ (function () {
     };
     GSTController.gstr1HSNSummary = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, gstin, year, month, endpoint, token, headers, _b, status, data, e_28;
+            var _a, gstin, year, month, endpoint, token, headers, _b, status, data, e_27;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -1255,8 +1256,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, data: data, message: "GSTR-1 HSN Summary found successfully!" })];
                     case 3:
-                        e_28 = _c.sent();
-                        console.log(e_28);
+                        e_27 = _c.sent();
+                        console.log(e_27);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -1265,7 +1266,7 @@ var GSTController = /** @class */ (function () {
     };
     GSTController.gstr1NILSupplies = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, gstin, year, month, endpoint, token, headers, _b, status, data, e_29;
+            var _a, gstin, year, month, endpoint, token, headers, _b, status, data, e_28;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -1297,8 +1298,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, data: data, message: "GSTR-1 NIL Summary found successfully!" })];
                     case 3:
-                        e_29 = _c.sent();
-                        console.log(e_29);
+                        e_28 = _c.sent();
+                        console.log(e_28);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -1307,7 +1308,7 @@ var GSTController = /** @class */ (function () {
     };
     GSTController.saveGstr1 = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var data, _a, gstin, year, month, endpoint, token, headers, response, e_30;
+            var data, _a, gstin, year, month, endpoint, token, headers, response, e_29;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -1340,8 +1341,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, message: " Save GSTR-1  successfully!", reference_id: response.data.reference_id })];
                     case 3:
-                        e_30 = _b.sent();
-                        console.log(e_30);
+                        e_29 = _b.sent();
+                        console.log(e_29);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -1350,7 +1351,7 @@ var GSTController = /** @class */ (function () {
     };
     GSTController.resetGstr1 = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var data, endpoint, token, headers, response, e_31;
+            var data, endpoint, token, headers, response, e_30;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -1376,8 +1377,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, message: " Reset GSTR-1  successfully!", reference_id: response.data.reference_id })];
                     case 3:
-                        e_31 = _a.sent();
-                        console.log(e_31);
+                        e_30 = _a.sent();
+                        console.log(e_30);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -1386,7 +1387,7 @@ var GSTController = /** @class */ (function () {
     };
     GSTController.fileGSTR1 = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var body, _a, gstin, year, month, pan, otp, endpoint, token, headers, response, e_32;
+            var body, _a, gstin, year, month, pan, otp, endpoint, token, headers, response, e_31;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -1422,8 +1423,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, message: "GSTR-1 Filed successfully!", reference_id: response.data.reference_id })];
                     case 3:
-                        e_32 = _b.sent();
-                        console.log(e_32);
+                        e_31 = _b.sent();
+                        console.log(e_31);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -1433,7 +1434,7 @@ var GSTController = /** @class */ (function () {
     // **********Return GSTR-2A******************
     GSTController.gstr2aB2B = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, gstin, year, month, ctin, endpoint, token, headers, _b, status, data, e_33;
+            var _a, gstin, year, month, ctin, endpoint, token, headers, _b, status, data, e_32;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -1468,8 +1469,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, data: data, message: "GSTR-2 B2B found successfully!" })];
                     case 3:
-                        e_33 = _c.sent();
-                        console.log(e_33);
+                        e_32 = _c.sent();
+                        console.log(e_32);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -1478,7 +1479,7 @@ var GSTController = /** @class */ (function () {
     };
     GSTController.gstr2aB2BA = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, gstin, year, month, ctin, endpoint, token, headers, _b, status, data, e_34;
+            var _a, gstin, year, month, ctin, endpoint, token, headers, _b, status, data, e_33;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -1513,8 +1514,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, data: data, message: "GSTR-2 B2BA found successfully!" })];
                     case 3:
-                        e_34 = _c.sent();
-                        console.log(e_34);
+                        e_33 = _c.sent();
+                        console.log(e_33);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -1523,7 +1524,7 @@ var GSTController = /** @class */ (function () {
     };
     GSTController.gstr2aCDN = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, gstin, year, month, ctin, endpoint, token, headers, _b, status, data, e_35;
+            var _a, gstin, year, month, ctin, endpoint, token, headers, _b, status, data, e_34;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -1558,8 +1559,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, data: data, message: "GSTR-2 CDN found successfully!" })];
                     case 3:
-                        e_35 = _c.sent();
-                        console.log(e_35);
+                        e_34 = _c.sent();
+                        console.log(e_34);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -1568,7 +1569,7 @@ var GSTController = /** @class */ (function () {
     };
     GSTController.gstr2aCDNA = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, gstin, year, month, ctin, endpoint, token, headers, _b, status, data, e_36;
+            var _a, gstin, year, month, ctin, endpoint, token, headers, _b, status, data, e_35;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -1603,8 +1604,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, data: data, message: "GSTR-2 CDNA found successfully!" })];
                     case 3:
-                        e_36 = _c.sent();
-                        console.log(e_36);
+                        e_35 = _c.sent();
+                        console.log(e_35);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -1613,7 +1614,7 @@ var GSTController = /** @class */ (function () {
     };
     GSTController.gstr2aISD = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, gstin, year, month, endpoint, token, headers, _b, status, data, e_37;
+            var _a, gstin, year, month, endpoint, token, headers, _b, status, data, e_36;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -1645,8 +1646,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, data: data, message: "GSTR-2 ISD found successfully!" })];
                     case 3:
-                        e_37 = _c.sent();
-                        console.log(e_37);
+                        e_36 = _c.sent();
+                        console.log(e_36);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -1655,7 +1656,7 @@ var GSTController = /** @class */ (function () {
     };
     GSTController.gstr2A = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, gstin, year, month, endpoint, token, headers, _b, status, data, e_38;
+            var _a, gstin, year, month, endpoint, token, headers, _b, status, data, e_37;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -1687,8 +1688,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, data: data, message: "GSTR-2  found successfully!" })];
                     case 3:
-                        e_38 = _c.sent();
-                        console.log(e_38);
+                        e_37 = _c.sent();
+                        console.log(e_37);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
@@ -1698,7 +1699,7 @@ var GSTController = /** @class */ (function () {
     // ************************* GSTR -2B *********************************
     GSTController.gstr2B = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, gstin, year, month, endpoint, token, headers, _b, status, data, e_39;
+            var _a, gstin, year, month, endpoint, token, headers, _b, status, data, e_38;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -1730,8 +1731,8 @@ var GSTController = /** @class */ (function () {
                         }
                         return [2 /*return*/, res.status(200).send({ success: true, data: data, message: "GSTR-2B  found successfully!" })];
                     case 3:
-                        e_39 = _c.sent();
-                        console.log(e_39);
+                        e_38 = _c.sent();
+                        console.log(e_38);
                         return [2 /*return*/, res.status(500).json({ success: false, message: 'Something went wrong' })];
                     case 4: return [2 /*return*/];
                 }
