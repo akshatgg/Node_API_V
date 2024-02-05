@@ -141,11 +141,11 @@ var Accountscontroller = /** @class */ (function () {
     };
     Accountscontroller.updatepayablebill = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var id, _a, supplierName, supplierAddress, contact, billDate, dueDate, billAmount, billNumber, billDiscription, paymentMethod, transactionId, paymentDate, paymentAmount, tax, comment, invoiceNumber, updatebill, error_4;
+            var id, _a, supplierName, supplierAddress, contact, billDate, dueDate, billAmount, billNumber, billDiscription, paymentMethod, transactionId, paymentDate, paymentAmount, tax, comment, invoiceNumber, checkifnotexist, updatebill, error_4;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        _b.trys.push([0, 2, , 3]);
+                        _b.trys.push([0, 3, , 4]);
                         id = req.params.id;
                         _a = req.body, supplierName = _a.supplierName, supplierAddress = _a.supplierAddress, contact = _a.contact, billDate = _a.billDate, dueDate = _a.dueDate, billAmount = _a.billAmount, billNumber = _a.billNumber, billDiscription = _a.billDiscription, paymentMethod = _a.paymentMethod, transactionId = _a.transactionId, paymentDate = _a.paymentDate, paymentAmount = _a.paymentAmount, tax = _a.tax, comment = _a.comment, invoiceNumber = _a.invoiceNumber;
                         if (!supplierName || !supplierAddress || !contact || !invoiceNumber || !billNumber || !paymentAmount) {
@@ -153,6 +153,12 @@ var Accountscontroller = /** @class */ (function () {
                         }
                         if (!id) {
                             return [2 /*return*/, res.status(400).json({ success: true, message: ' ID is required for this operation' })];
+                        }
+                        return [4 /*yield*/, __1.prisma.billpayable.findFirst({ where: { id: +id } })];
+                    case 1:
+                        checkifnotexist = _b.sent();
+                        if (!checkifnotexist) {
+                            return [2 /*return*/, res.status(400).json({ success: true, message: 'bill post not found or not created' })];
                         }
                         return [4 /*yield*/, __1.prisma.billpayable.update({
                                 where: { id: +id },
@@ -174,30 +180,30 @@ var Accountscontroller = /** @class */ (function () {
                                     invoiceNumber: invoiceNumber
                                 },
                             })];
-                    case 1:
+                    case 2:
                         updatebill = _b.sent();
                         if (!updatebill) {
                             return [2 /*return*/, res.status(404).send({ success: false, message: 'Bill Post Not Found' })];
                         }
                         return [2 /*return*/, res.status(200).json({ success: true, data: updatebill })];
-                    case 2:
+                    case 3:
                         error_4 = _b.sent();
                         return [2 /*return*/, res.status(500).json({
                                 success: false,
                                 message: 'Error In creating BillPayable',
                             })];
-                    case 3: return [2 /*return*/];
+                    case 4: return [2 /*return*/];
                 }
             });
         });
     };
     Accountscontroller.deletepayablebill = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var id, deletebill, error_5;
+            var id, deletebill, checkifnotexist, error_5;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        _a.trys.push([0, 2, , 3]);
+                        _a.trys.push([0, 3, , 4]);
                         id = req.params.id;
                         if (!id) {
                             return [2 /*return*/, res.status(400).json({ success: true, message: ' ID is required for this operation' })];
@@ -207,20 +213,20 @@ var Accountscontroller = /** @class */ (function () {
                             })];
                     case 1:
                         deletebill = _a.sent();
-                        if (!deletebill) {
-                            return [2 /*return*/, res.status(500).json({
-                                    success: false,
-                                    message: 'Bill post Not Found ',
-                                })];
+                        return [4 /*yield*/, __1.prisma.billpayable.findFirst({ where: { id: +id } })];
+                    case 2:
+                        checkifnotexist = _a.sent();
+                        if (!checkifnotexist) {
+                            return [2 /*return*/, res.status(400).json({ success: true, message: 'bill post not found or not created' })];
                         }
                         return [2 /*return*/, res.status(200).json({ success: true, message: 'Post deleted' })];
-                    case 2:
+                    case 3:
                         error_5 = _a.sent();
                         return [2 /*return*/, res.status(500).json({
                                 success: false,
                                 message: 'Error In delating BillPayable',
                             })];
-                    case 3: return [2 /*return*/];
+                    case 4: return [2 /*return*/];
                 }
             });
         });
