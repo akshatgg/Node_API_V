@@ -5,7 +5,6 @@ export default class TokenService {
 
     static getTokenFromAuthHeader(authorization: string|undefined) {
         const token = authorization?.split(' ').pop();
-
         return token;
     }
 

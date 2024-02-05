@@ -2,6 +2,7 @@ import { Router } from "express";
 import UserController from "../controllers/user.controller";
 import verifyToken from "../middlewares/verify-token";
 import adminCheck from "../middlewares/admin-check";
+import superadminCheck from "../middlewares/super-admin";
 
 const userRouter = Router();
 
