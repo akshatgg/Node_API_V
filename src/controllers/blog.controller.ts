@@ -5,8 +5,11 @@ export default class BlogController {
     
     static async createPost(req: Request, res: Response): Promise<Response> {
         try {
-            const { title,category, contentheading,contentdiscription, imageUrl } = req.body;
+            const { title,category, contentheading,contentdiscription } = req.body;
+            const imageUrl: string = req.file?.path as string
 
+            console.log(imageUrl);
+            
             if (!title || !contentheading || !imageUrl) {
                 return res.status(400).json({ success: true, message: 'Required body params are missing' });
             }
@@ -20,7 +23,7 @@ export default class BlogController {
                     category,
                     contentheading,
                     contentdiscription,
-                    imageUrl,
+                    imageUrl:imageUrl,
                 },
             });
 

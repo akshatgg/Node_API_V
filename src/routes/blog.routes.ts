@@ -2,11 +2,12 @@ import { Router } from 'express';
 import BlogController from '../controllers/blog.controller';
 import verifyToken from '../middlewares/verify-token';
 import adminCheck from '../middlewares/admin-check';
+import { upload } from '../config/file-upload';
 
 const blogRouter = Router();
 
 // Create a new blog post
-blogRouter.post('/posts', verifyToken, adminCheck, BlogController.createPost);
+blogRouter.post('/posts',upload.single('imageUrl'), verifyToken, adminCheck, BlogController.createPost);
 
 // Get all blog posts
 blogRouter.get('/posts', BlogController.getAllPosts);

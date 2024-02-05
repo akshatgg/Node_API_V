@@ -41,13 +41,16 @@ var BlogController = /** @class */ (function () {
     function BlogController() {
     }
     BlogController.createPost = function (req, res) {
+        var _a;
         return __awaiter(this, void 0, void 0, function () {
-            var _a, title, category, contentheading, contentdiscription, imageUrl, user, post, error_1;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var _b, title, category, contentheading, contentdiscription, imageUrl, user, post, error_1;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
                     case 0:
-                        _b.trys.push([0, 2, , 3]);
-                        _a = req.body, title = _a.title, category = _a.category, contentheading = _a.contentheading, contentdiscription = _a.contentdiscription, imageUrl = _a.imageUrl;
+                        _c.trys.push([0, 2, , 3]);
+                        _b = req.body, title = _b.title, category = _b.category, contentheading = _b.contentheading, contentdiscription = _b.contentdiscription;
+                        imageUrl = (_a = req.file) === null || _a === void 0 ? void 0 : _a.path;
+                        console.log(imageUrl);
                         if (!title || !contentheading || !imageUrl) {
                             return [2 /*return*/, res.status(400).json({ success: true, message: 'Required body params are missing' })];
                         }
@@ -63,10 +66,10 @@ var BlogController = /** @class */ (function () {
                                 },
                             })];
                     case 1:
-                        post = _b.sent();
+                        post = _c.sent();
                         return [2 /*return*/, res.status(200).json({ success: true, data: post })];
                     case 2:
-                        error_1 = _b.sent();
+                        error_1 = _c.sent();
                         console.log(error_1);
                         return [2 /*return*/, res.status(500).json({
                                 success: false,

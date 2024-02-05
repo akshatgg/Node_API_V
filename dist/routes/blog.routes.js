@@ -7,9 +7,10 @@ var express_1 = require("express");
 var blog_controller_1 = __importDefault(require("../controllers/blog.controller"));
 var verify_token_1 = __importDefault(require("../middlewares/verify-token"));
 var admin_check_1 = __importDefault(require("../middlewares/admin-check"));
+var file_upload_1 = require("../config/file-upload");
 var blogRouter = (0, express_1.Router)();
 // Create a new blog post
-blogRouter.post('/posts', verify_token_1.default, admin_check_1.default, blog_controller_1.default.createPost);
+blogRouter.post('/posts', file_upload_1.upload.single('imageUrl'), verify_token_1.default, admin_check_1.default, blog_controller_1.default.createPost);
 // Get all blog posts
 blogRouter.get('/posts', blog_controller_1.default.getAllPosts);
 // Get a specific blog post by ID

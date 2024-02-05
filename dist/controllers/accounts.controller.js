@@ -199,7 +199,7 @@ var Accountscontroller = /** @class */ (function () {
     };
     Accountscontroller.deletepayablebill = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var id, deletebill, checkifnotexist, error_5;
+            var id, checkifnotexist, deletebill, error_5;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -208,17 +208,17 @@ var Accountscontroller = /** @class */ (function () {
                         if (!id) {
                             return [2 /*return*/, res.status(400).json({ success: true, message: ' ID is required for this operation' })];
                         }
-                        return [4 /*yield*/, __1.prisma.billpayable.delete({
-                                where: { id: +id },
-                            })];
-                    case 1:
-                        deletebill = _a.sent();
                         return [4 /*yield*/, __1.prisma.billpayable.findFirst({ where: { id: +id } })];
-                    case 2:
+                    case 1:
                         checkifnotexist = _a.sent();
                         if (!checkifnotexist) {
                             return [2 /*return*/, res.status(400).json({ success: true, message: 'bill post not found or not created' })];
                         }
+                        return [4 /*yield*/, __1.prisma.billpayable.delete({
+                                where: { id: +id },
+                            })];
+                    case 2:
+                        deletebill = _a.sent();
                         return [2 /*return*/, res.status(200).json({ success: true, message: 'Post deleted' })];
                     case 3:
                         error_5 = _a.sent();
