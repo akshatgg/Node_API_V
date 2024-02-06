@@ -1,1 +1,0 @@
-{"version":3,"file":"super-admin.js","sourceRoot":"","sources":["../../src/middlewares/super-admin.ts"],"names":[],"mappings":";;AAEA,SAAwB,eAAe,CAAC,GAAY,EAAE,GAAa,EAAE,IAAkB;IACnF,IAAG,CAAC,GAAG,CAAC,OAAO,EAAE;QACb,OAAO,GAAG,CAAC,MAAM,CAAC,GAAG,CAAC,CAAC,IAAI,CAAC,EAAE,OAAO,EAAE,KAAK,EAAE,OAAO,EAAE,sEAAsE,EAAE,CAAC,CAAC;KACpI;IACD,IAAI,EAAE,CAAC;AACX,CAAC;AALD,kCAKC"}

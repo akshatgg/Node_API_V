@@ -34,6 +34,7 @@ export default class GSTController {
             }
     
             const token = await Sandbox.generateAccessToken();
+            
     
             const options = {
                 method: 'GET',
@@ -47,6 +48,9 @@ export default class GSTController {
             };
     
             const response = await axios.request(options);
+
+            console.log(response);
+            
     
             // Check response status
             if (response.status !== 200) {

@@ -7,13 +7,13 @@ import adminCheck from "../middlewares/admin-check";
 
 const billpayablerouter = Router();
 
-billpayablerouter.post("/create",verifyToken,adminCheck,Accountscontroller.Payablebill)
+billpayablerouter.post("/create",verifyToken,Accountscontroller.Payablebill)
 
 billpayablerouter.get("/getOne/:id",verifyToken,Accountscontroller.getonepayablebill)
 
 billpayablerouter.get("/getAll",verifyToken,adminCheck,Accountscontroller.getallpayablebill)
 
-billpayablerouter.post("/update/:id",verifyToken,adminCheck,Accountscontroller.updatepayablebill)
+billpayablerouter.post("/update/:id",verifyToken,Accountscontroller.updatepayablebill)
 
-billpayablerouter.delete("/delete/:id",verifyToken,adminCheck,Accountscontroller.deletepayablebill)
+billpayablerouter.delete("/delete/:id",verifyToken,Accountscontroller.deletepayablebill)
 export default billpayablerouter;

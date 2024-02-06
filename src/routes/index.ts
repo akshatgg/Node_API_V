@@ -31,6 +31,7 @@ import { registerAbout } from "./about.routes";
 import accountancyRouter from "./accountancy.routes";
 import HsnAndSACRouter from "./hsnAndSac.routes";
 import billpayablerouter from "./billpayable.routes";
+import billrecievablerouter from "./billrecivable.routes";
 // import ocrRouter from "./ocr.routes";
 
 const router = Router();
@@ -96,6 +97,8 @@ router.use('/aboutTeam',registerAbout)
 router.use("/codes",HsnAndSACRouter)
 
 router.use("/billpayable",billpayablerouter)
+
+router.use("/billrecieve",billrecievablerouter)
 
 // router.use('/ocr',ocrRouter)
 

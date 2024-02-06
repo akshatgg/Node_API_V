@@ -25,56 +25,18 @@ export default class CMSController {
         }
     }
 
-    static async updateMainHeading(req: Request, res: Response) {
+    static async updateMainHeadingcontent(req: Request, res: Response) {
         try {
-            const { mainHeading } = req.body;
+            const {upper } = req.body;
 
-            cards.home.upper.mainHeading = mainHeading;
+            cards.home.upper = upper;
 
             await CMSController.updateCards(cards);
 
             return res.status(200).json({ 
                 success: true, 
                 message: 'Main Heading Updated', 
-                data: cards.home 
-            });
-        } catch(e) {
-            console.log(e);
-            return res.status(500).json({ success: false, message: 'Something went wrong.' });
-        }
-    }
-
-    static async updateSubHeading(req: Request, res: Response) {
-        try {
-            const { subHeading } = req.body;
-
-            cards.home.upper.subHeading = subHeading;
-
-            await CMSController.updateCards(cards);
-
-            return res.status(200).json({ 
-                success: true, 
-                message: 'Sub Heading Updated', 
-                data: cards.home 
-            });
-        } catch(e) {
-            console.log(e);
-            return res.status(500).json({ success: false, message: 'Something went wrong.' });
-        }
-    }
-
-    static async updateButton(req: Request, res: Response) {
-        try {
-            const { button } = req.body;
-
-            cards.home.upper.button = button;
-
-            await CMSController.updateCards(cards);
-
-            return res.status(200).json({ 
-                success: true, 
-                message: 'Button Updated', 
-                data: cards.home 
+                data: cards.home.upper 
             });
         } catch(e) {
             console.log(e);
@@ -92,11 +54,51 @@ export default class CMSController {
 
             return res.status(200).json({ 
                 success: true, 
-                message: 'Navcards Updated', 
-                data: cards.home 
+                message: 'Navcards Updated Successfully ', 
+                data: cards.home.navcards 
             });
         } catch(e) {
             console.log(e);
+            return res.status(500).json({ success: false, message: 'Something went wrong.' });
+        }
+    }
+
+    static async updateOnGoingprojects (req: Request, res: Response){
+        try {
+            const {ongoingPro} =req.body;
+
+            
+            cards.home.ongoingPro = ongoingPro;
+
+            await CMSController.updateCards(cards);
+
+            return res.status(200).json({ 
+                success: true, 
+                message: 'On Going Projects Updated Successfully', 
+                data: cards.home.ongoingPro
+            });
+
+        } catch (error) {
+            return res.status(500).json({ success: false, message: 'Something went wrong.' });
+        }
+    }
+
+    static async updateCorporateprojects (req: Request, res: Response){
+        try {
+            const {corporatePro} =req.body;
+
+            
+            cards.home.ongoingPro = corporatePro;
+
+            await CMSController.updateCards(cards);
+
+            return res.status(200).json({ 
+                success: true, 
+                message: 'Carporate Projects Updated Successfully', 
+                data: cards.home.corporatePro
+            });
+
+        } catch (error) {
             return res.status(500).json({ success: false, message: 'Something went wrong.' });
         }
     }

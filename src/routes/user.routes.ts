@@ -2,7 +2,7 @@ import { Router } from "express";
 import UserController from "../controllers/user.controller";
 import verifyToken from "../middlewares/verify-token";
 import adminCheck from "../middlewares/admin-check";
-import superadminCheck from "../middlewares/super-admin";
+import SuperadminCheck from "../middlewares/super-admin";
 
 const userRouter = Router();
 
@@ -18,7 +18,7 @@ userRouter.post('/login', UserController.login);
 
 userRouter.get("/gettoken", UserController.gettoken)
 
-userRouter.post('/changeusertype', UserController.changeusertype);
+userRouter.post('/changeusertype',SuperadminCheck, UserController.changeusertype);
 
 userRouter.post('/forgot-password', UserController.forgotPassword);
 
