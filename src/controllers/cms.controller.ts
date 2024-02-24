@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 
 import cards from '../config/cards.json';
+import cards1 from '../config/cards.json';
 import { writeFile } from "fs/promises";
 import { prisma } from "..";
 import { join } from "path";
@@ -63,6 +64,25 @@ export default class CMSController {
         }
     }
 
+    static async updatehomeCard(req: Request, res: Response) {
+        try {
+            const { cards } = req.body;
+            
+               cards1.home.cards = cards;
+
+            await CMSController.updateCards(cards1);
+
+            return res.status(200).json({ 
+                success: true, 
+                message: 'Cards Updated Successfully ', 
+                data: cards1.home.cards 
+            });
+        } catch(e) {
+            console.log(e);
+            return res.status(500).json({ success: false, message: 'Something went wrong.' });
+        }
+    }
+
     static async updateOnGoingprojects (req: Request, res: Response){
         try {
             const {ongoingPro} =req.body;
@@ -87,8 +107,13 @@ export default class CMSController {
         try {
             const {corporatePro} =req.body;
 
-            
-            cards.home.ongoingPro = corporatePro;
+            if (cards && cards.home) {
+                cards.home.corporatePro = corporatePro;
+            } else {
+                return res.status(404).json({ success: false, message: 'Home or cards not found.' });
+            }
+         
+            cards.home.corporatePro = corporatePro;
 
             await CMSController.updateCards(cards);
 

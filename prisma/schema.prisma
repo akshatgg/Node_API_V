@@ -14,6 +14,7 @@ datasource db {
 enum UserType {
   admin
   normal
+  agent
   superadmin
 }
 
@@ -38,6 +39,8 @@ model User {
   aadhaar         String?
   pan             String?
   dob             DateTime?
+  adminId         Int?
+  superadminId    Int?
   verified        Boolean            @default(false)
   userType        UserType           @default(normal)
   otps            Otp[]
@@ -61,6 +64,8 @@ model User {
   transactions    Transaction[]
   agentId         Agent?
   clientAccounts  Client[]
+  gstr1           Gstr1_4A[]
+  gstr1_5A        Gstr1_5A[]
 }
 
 model Otp {
@@ -680,4 +685,53 @@ model About {
   position    String
   image       String
   description String
+}
+
+// GSTR1 
+
+model Gstr1_4A { 
+  id          Int    @id @default(autoincrement())
+  userId      Int
+  user        User   @relation(fields: [userId], references: [id])
+  LegalName String
+  GSTN String
+  pos String
+  invoice_No String
+  invoice_date String
+  invoice_value String
+  rate String
+  nature String
+  source String
+  cgst String
+  igst String
+  sgst String
+  supply_type String
+  fy String
+  period String
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @default(now())
+}
+
+model Gstr1_5A {
+   id          Int    @id @default(autoincrement())
+   userId      Int
+   user        User   @relation(fields: [userId], references: [id])
+   pos            String
+   invoice_No     String
+   supply_type    String
+   invoice_date   String
+   invoice_value   String
+   total_invoice_value   String
+   gstr1_5A_items       Gstr1_5A_item[]
+}
+
+
+model Gstr1_5A_item {
+  id Int @id @default(autoincrement())
+  SN String @default("0%")
+  turnover String
+  cgst     String
+  sgst     String
+  gstr1_5A_id    Int     
+  gstr1_5A       Gstr1_5A @relation(fields: [gstr1_5A_id], references: [id])
 }

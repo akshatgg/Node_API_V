@@ -1,7 +1,9 @@
 dist
 node_modules
+controllers
 .env.dev
 .env
 uploads
+
 
  

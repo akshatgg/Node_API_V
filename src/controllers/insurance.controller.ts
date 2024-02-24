@@ -94,7 +94,7 @@ export default class InsuranceController {
                 skip: offset
             });
 
-            return res.status(200).json({ success: true, applications, totalApplications: count });
+            return res.status(200).json({ success: true,totalApplications: count, applications,  });
         } catch(e) {
             console.log(e);
             return res.status(500).json({ success: false, message: 'Something went wrong' });

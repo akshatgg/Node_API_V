@@ -9,7 +9,7 @@ export default class EmailService {
                 if (error) {
                     console.log(`Error is ${error}`);
                     
-                    resolve({ success: false, error });
+                    reject({ success: false, error });
                 } 
                 else {
                     resolve({ success: true, result });
@@ -24,18 +24,18 @@ export default class EmailService {
         }
 
         const transporter = nodemailer.createTransport({
-            // service: 'cruxtech.in',
-            host:'mail.itaxeasy.com',
-            port:465,
+            service: 'gmail',
+            // host:'mail.itaxeasy.com',
+            // port:465,
             // secure:false,
             auth: {
-                user: 'support@itaxeasy.com',
-                pass: process.env.EMAIL_PASSWORD
+                user: 'nandanesudhir1@gmail.com',
+                pass: "ekqdbfusyxomvpsj"
             },
-            tls: {
-                // do not fail on invalid certs
-                rejectUnauthorized: false
-            },
+            // tls: {
+            //     // do not fail on invalid certs
+            //     rejectUnauthorized: false
+            // },
         });
 
         await transporter.verify();

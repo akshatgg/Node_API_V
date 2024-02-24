@@ -10,15 +10,25 @@ userRouter.get('/profile', verifyToken, UserController.getOwnProfile);
 
 userRouter.get('/profile/:id', verifyToken, UserController.getUserById);
 
-userRouter.get('/get-all-users', verifyToken, adminCheck, UserController.getAllUsers);
+userRouter.get('/get-all-users', SuperadminCheck, UserController.getAllUsers);
 
 userRouter.post('/sign-up', UserController.signUp);
+
+userRouter.post('/sign-up-admin',SuperadminCheck, UserController.makeadmin);
+
+userRouter.post('/sign-up-agent',verifyToken,adminCheck, UserController.makeagent);
+
+userRouter.get('/get-all-users', SuperadminCheck, UserController.getAllUsers);
+
+userRouter.get('/get-all-agents', verifyToken,adminCheck, UserController.getallagentsbyadmin);
+
+userRouter.get('/get-all-admins', SuperadminCheck, UserController.getalladminsforsuperadmin);
 
 userRouter.post('/login', UserController.login);
 
 userRouter.get("/gettoken", UserController.gettoken)
 
-userRouter.post('/changeusertype',SuperadminCheck, UserController.changeusertype);
+userRouter.post('/changeusertype',verifyToken, UserController.changeusertype);
 
 userRouter.post('/forgot-password', UserController.forgotPassword);
 

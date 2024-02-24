@@ -4,7 +4,7 @@ import { PHONE_NUMBER_RGX, addMinutesToTime, generateOTP, validateEmail, validat
 import bcrypt from 'bcrypt';
 import  EmailService from "../services/email.service";
 import TokenService from "../services/token.service";
-import { UserGender } from "@prisma/client";
+import { UserGender, UserType } from "@prisma/client";
 import { ZodError, z } from "zod";
 
 const UserSchema = z.object({
@@ -19,6 +19,7 @@ const UserSchema = z.object({
     address: z.string().optional(), 
     aadhaar: z.string().optional(), 
     pan: z.string().optional(), 
+    type:z.nativeEnum(UserType).optional(), 
 });
 
 const LoginSchema = z.object({
@@ -62,14 +63,14 @@ export default class UserController {
             + 'Regards\n'
             + 'Itaxeasy\n\n';
 
-        await EmailService.sendMail(email, email_subject, email_message);
-
+       await EmailService.sendMail(email, email_subject, email_message);
+       
         return otp_key;
     }
 
     static async signUp(req: Request, res: Response) {
         try {
-            const { firstName, lastName, gender, fatherName, aadhaar, pan, pin, email, password, phone } = UserSchema.parse(req.body);
+            const { firstName, lastName, gender, fatherName, aadhaar, pan, pin, email, password, phone ,type} = UserSchema.parse(req.body);
 
             const found = await prisma.user.findFirst({
                 where: {
@@ -98,7 +99,7 @@ export default class UserController {
                     aadhaar, 
                     pan, 
                     pin,
-                    verified: false,
+                    verified: false   
                 }
             });
 
@@ -129,7 +130,7 @@ export default class UserController {
         }
     }
 
-     static async resendotp(req: Request, res: Response){
+    static async resendotp(req: Request, res: Response){
 
             const email = req.body.email
             const user = await prisma.user.findUnique({
@@ -201,6 +202,20 @@ export default class UserController {
                 .send({ success: false, message: 'User is Not Verified' });
             }
 
+            if (user.userType === 'superadmin'   && type !== 'normal' && type !== 'admin' && type !== 'superadmin') {
+                return res.status(403).send({ success: false, message: 'Superadmin can only change user type to normal , admin or superadmin' });
+            }
+    
+            // // If the user is an admin, they can only change the user type to 'user' or 'admin'
+            // if (user.userType === 'admin' && type !== 'normal' && type !== 'admin') {
+            //     return res.status(403).send({ success: false, message: 'Admin can only change user type to user or admin' });
+            // }
+
+            // if (user.userType === 'normal' ) {
+            //     return res.status(403).send({ success: false, message: 'normal user cant change user type' });
+            // }
+
+
             const changeuser= await prisma.user.update({
                 where: { email },
                 data: {
@@ -215,7 +230,7 @@ export default class UserController {
                     pan:user.pan, 
                     pin:user.pin,
                     verified: true,
-                    userType: req.body.type
+                    userType: type
 
                 },
             })
@@ -235,6 +250,137 @@ export default class UserController {
          
     }
 
+    static async makeadmin(req: Request, res: Response) {
+        try {
+            const { firstName, lastName, gender, fatherName, aadhaar, pan, pin, email, password, phone } = UserSchema.parse(req.body);
+
+            const { id } = req.user!;
+            console.log(id)
+            const found = await prisma.user.findFirst({
+                where: {
+                    OR: [
+                        { email },
+                        { phone }
+                    ]
+                },
+            });
+
+            if (found) {
+                return res.status(409).send({ success: false, message: "User with this email address or phone number already exists." });
+            }
+
+            const hash = await UserController.hashPassword(password);
+
+            const user = await prisma.user.create({
+                data: {
+                    firstName,
+                    lastName,
+                    email,
+                    gender,
+                    password: hash,
+                    phone,
+                    fatherName, 
+                    aadhaar, 
+                    pan, 
+                    pin,
+                    verified: false ,
+                    userType:"admin",
+                    superadminId:id  
+                }
+            });
+
+            const otp_key = await UserController.sendOtp(email, user.id);
+
+            return res.status(200).send({
+                success: true,
+                message:
+                    `An OTP has been sent to your email "${email}".` +
+                    `Verify your account by using that OTP`,
+                data: {
+                    user: {
+                        id: user.id,
+                        firstName,
+                        lastName,
+                        email,
+                        phone
+                    },
+                     otp_key
+                }
+            });
+        } catch (e) {
+            console.error(e);
+            if(e instanceof ZodError) {
+                return res.status(400).send({ success: false, message: e.message });
+            }
+            return res.status(500).send({ success: false, message: 'Something went wrong' });
+        }
+    }
+
+    static async makeagent (req: Request, res: Response) {
+        try {
+            const { id } = req.user!;
+            const { firstName, lastName, gender, fatherName, aadhaar, pan, pin, email, password, phone } = UserSchema.parse(req.body);
+
+            const found = await prisma.user.findFirst({
+                where: {
+                    OR: [
+                        { email },
+                        { phone }
+                    ]
+                },
+            });
+
+            if (found) {
+                return res.status(409).send({ success: false, message: "agent with this email address or phone number already exists." });
+            }
+
+            const hash = await UserController.hashPassword(password);
+
+            const user = await prisma.user.create({
+                data: {
+                    firstName,
+                    lastName,
+                    email,
+                    gender,
+                    password: hash,
+                    phone,
+                    fatherName, 
+                    aadhaar, 
+                    pan, 
+                    pin,
+                    verified: false ,
+                    userType:"agent",
+                    adminId:id  
+                }
+            });
+
+            const otp_key = await UserController.sendOtp(email, user.id);
+
+            return res.status(200).send({
+                success: true,
+                message:
+                    `An OTP has been sent to your email "${email}".` +
+                    `Verify your account by using that OTP`,
+                data: {
+                    user: {
+                        id: user.id,
+                        firstName,
+                        lastName,
+                        email,
+                        phone
+                    },
+                     otp_key
+                }
+            });
+        } catch (e) {
+            console.error(e);
+            if(e instanceof ZodError) {
+                return res.status(400).send({ success: false, message: e.message });
+            }
+            return res.status(500).send({ success: false, message: 'Something went wrong' });
+        }
+    }
+    
     static async gettoken(req: Request, res: Response){
         const email = req.body.email
         const user = await prisma.user.findUnique({
@@ -514,11 +660,19 @@ export default class UserController {
                 take: UserController.USERS_PER_PAGE,
             });
 
+           const totalusers = await prisma.user.findMany({})
+
+           if(!users || !totalusers){
+            res.status(404).send({message:"users not found"})
+           }
+
             return res.status(200).send({
                 success: true,
                 data: {
                     page,
+                    totalusers: totalusers?.length,
                     users,
+                   
                 },
             });
         } catch (e) {
@@ -526,6 +680,77 @@ export default class UserController {
             return res.status(500).send({ success: false, message: 'Something went wrong' });
         }
     }
+
+    static async getallagentsbyadmin ( req: Request, res: Response){
+       try {
+         const { id } = req.user!;
+         const { page: pageNumber, order = 'desc' } = req.query;
+
+         const page = parseInt((pageNumber as string) || '0');
+ 
+         const user = await prisma.user.findMany({
+             where: {
+                adminId:id,
+                userType:"agent"
+             },
+             
+            orderBy: {
+                createdAt: order === 'asc' ? 'asc' : 'desc',
+            },
+            skip: page * UserController.USERS_PER_PAGE,
+            take: UserController.USERS_PER_PAGE,
+         })
+ 
+         if(!user){
+             return res.status(200).json({success:false,message:"Agents not found"});
+         }
+ 
+         return res.json({success:true, data:user});
+       } catch (error) {
+         return res.status(500).json({success:false,message:"Internal server error"});
+       }
+
+    }
+
+    static async getalladminsforsuperadmin ( req: Request, res: Response){
+      try {
+         
+          const token = TokenService.getTokenFromAuthHeader(req.headers.authorization);
+  
+          if(!token) {
+              return res.status(403).send({ success: false, message: 'Authorization Token is required' });
+          }
+  
+          const Superadmin = TokenService.decodeToken(token);
+           
+            const { page: pageNumber, order = 'desc' } = req.query;
+   
+            const page = parseInt((pageNumber as string) || '0');
+    
+            const user = await prisma.user.findMany({
+                where: {
+                   superadminId:Superadmin.id,
+                   userType:"admin"
+                },
+                
+               orderBy: {
+                   createdAt: order === 'asc' ? 'asc' : 'desc',
+               },
+               skip: page * UserController.USERS_PER_PAGE,
+               take: UserController.USERS_PER_PAGE,
+            })
+    
+            if(!user){
+                return res.status(200).json({success:false,message:"Agents not found"});
+            }
+    
+            return res.json({success:true, data:user});
+         
+      } catch (error) {
+        return res.status(404).json({success:false,message:"internal server error"});
+      }
+ 
+     }
 
     static async getOwnProfile(req: Request, res: Response) {
         try {
@@ -563,4 +788,5 @@ export default class UserController {
             return res.status(500).send({ success: false, message: 'Something went wrong' });
         }
     }
+
 }
