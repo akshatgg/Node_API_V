@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import { prisma } from '../index';
 import { OrderStatus } from '@prisma/client';
-import { Decimal } from '@prisma/client/runtime';
 import PaymentService from './payment/payment.service';
+import Decimal from 'decimal.js';
 
 const calculateGST = (price: Decimal, gstPercentage: Decimal): Decimal => {
     const gstMultiplier = gstPercentage.div(new Decimal(100));

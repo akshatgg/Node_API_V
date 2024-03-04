@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Prisma, Invoice, InvoiceItem, Item, LedgerType, Party, PartyType } from '@prisma/client';
+import { Prisma, Invoice, Item, LedgerType, Party, PartyType } from '@prisma/client';
 import { prisma } from '../index';
 
 class InvoiceController {
