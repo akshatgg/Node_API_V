@@ -1,4 +1,7 @@
+node_modules/
 .env
+memorylogs
+*.txt
+.vscode
 dist
 uploads
-node_modules
