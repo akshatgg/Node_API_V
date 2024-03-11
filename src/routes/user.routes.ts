@@ -3,6 +3,7 @@ import UserController from "../controllers/user.controller";
 import verifyToken from "../middlewares/verify-token";
 import adminCheck from "../middlewares/admin-check";
 import SuperadminCheck from "../middlewares/super-admin";
+import { upload } from "../config/file-upload";
 
 const userRouter = Router();
 
@@ -40,6 +41,6 @@ userRouter.post('/send-otp', verifyToken, UserController.sendVerificationOtp);
 
 userRouter.post('/change-password', verifyToken, UserController.changePassword);
 
-userRouter.post('/update', verifyToken, UserController.updateProfile);
+userRouter.post('/update',upload.single('avatar'), verifyToken, UserController.updateProfile);
 
 export default userRouter;

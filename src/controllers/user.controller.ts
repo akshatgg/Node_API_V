@@ -558,7 +558,8 @@ export default class UserController {
             const { id } = req.user!;
 
             const { firstName, lastName, fatherName, pin, gender, address, aadhaar, pan, phone } = req.body;
-
+            const avatar: string = req.file?.path as string
+            
             if (!firstName.length) {
                 return res.status(400).send({ success: false, message: "First name cannot be empty" });
             }
@@ -572,7 +573,7 @@ export default class UserController {
             if(!user) {
                 return res.status(404).send({ success: false, message: 'User does not exists' });
             }
-
+    
             await prisma.user.update({
                 where: {
                     id: user.id,
@@ -587,6 +588,7 @@ export default class UserController {
                     aadhaar: aadhaar ?? user.aadhaar,
                     address: address ?? user.address,
                     phone: phone ?? user.phone,
+                    avatar:avatar ?? user.avatar
                 }
             });
 
@@ -761,6 +763,7 @@ export default class UserController {
                     id: true,
                     createdAt: true,
                     email: true,
+                    gender:true,
                     firstName: true,
                     lastName: true,
                     fatherName: true,
@@ -769,7 +772,9 @@ export default class UserController {
                     phone: true,
                     pan: true,
                     userType: true,
-                    pin:true
+                    pin:true,
+                    dob:true,
+                    avatar:true
                 },
                 where: {
                     id: {
@@ -781,8 +786,9 @@ export default class UserController {
             if (!user) {
                 return res.status(404).send({ success: false, message: 'User not found' });
             }
+            const buisnessprofile = await prisma.businessProfile.findFirst({ where: {userId: id } });
 
-            return res.status(200).send({ success: true, data: { user } });
+            return res.status(200).send({ success: true, data: { user } ,buisnessprofile:buisnessprofile ? true :false});
         } catch (e) {
             console.error(e);
             return res.status(500).send({ success: false, message: 'Something went wrong' });

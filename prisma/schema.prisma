@@ -39,6 +39,7 @@ model User {
   aadhaar         String?
   pan             String?
   dob             DateTime?
+  avatar          String?
   adminId         Int?
   superadminId    Int?
   verified        Boolean            @default(false)
