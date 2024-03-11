@@ -29,8 +29,8 @@ export default class EmailService {
             // port:465,
             // secure:false,
             auth: {
-                user: 'nandanesudhir1@gmail.com',
-                pass: "ekqdbfusyxomvpsj"
+                user: process.env.OPT_EMAIL,
+                pass: process.env.OTP_PASS
             },
             // tls: {
             //     // do not fail on invalid certs
