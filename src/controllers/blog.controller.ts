@@ -8,7 +8,6 @@ export default class BlogController {
             const { title,category, contentheading,contentdiscription } = req.body;
             const imageUrl: string = req.file?.path as string
 
-            console.log(imageUrl);
             
             if (!title || !contentheading || !imageUrl) {
                 return res.status(400).json({ success: true, message: 'Required body params are missing' });

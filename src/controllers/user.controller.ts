@@ -788,7 +788,7 @@ export default class UserController {
             }
             const buisnessprofile = await prisma.businessProfile.findFirst({ where: {userId: id } });
 
-            return res.status(200).send({ success: true, data: { user } ,buisnessprofile:buisnessprofile ? true :false});
+            return res.status(200).send({ success: true, data: { user } ,buisnessprofile: buisnessprofile ? true :false});
         } catch (e) {
             console.error(e);
             return res.status(500).send({ success: false, message: 'Something went wrong' });
