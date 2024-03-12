@@ -95,7 +95,7 @@ export default class BusinessProfileController {
                 profile = await prisma.businessProfile.create({ data: { ...data, userId: id } });
             } else {
                 const { id: _id, ...rest } = data;
-                console.log(rest);
+                // console.log(rest);
                 profile = await prisma.businessProfile.update({
                     where: {
                         id: found.id,
@@ -110,7 +110,7 @@ export default class BusinessProfileController {
             return res.status(200).send({ success: true, message: "Profile Updated", profile });
         } catch (e) {
             console.log(e);
-            return res.status(500).send({ success: false, message: 'Something went wrong' });
+            return res.status(500).send({ success: false, message: 'Enter a valid Deatils!' });
         }
     }
 

@@ -1,5 +1,15 @@
 import multer from 'multer';
 import path from 'path';
+import fs from "fs"
+const createUploadsFolder = () => {
+  const folderPath = path.join(__dirname, 'uploads');
+  if (!fs.existsSync(folderPath)) {
+    fs.mkdirSync(folderPath);
+  }
+};
+
+// Call the function to create the uploads folder
+createUploadsFolder();
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
