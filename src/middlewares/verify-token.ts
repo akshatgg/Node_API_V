@@ -18,6 +18,7 @@ export default function verifyToken(req: any, res: Response, next: NextFunction)
     }
 
     const user = TokenService.decodeToken(token);
+    
 
     req.user = user;
     req.isAdmin = user.userType === UserType.admin;
