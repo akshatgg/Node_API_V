@@ -25,40 +25,46 @@ const GSTR1_SCHEMA = z.object({
 
 export default class GSTController {
 
-    static async searchByGSTIN(req: Request, res: Response) {
+    static async searchByGSTIN(req:Request, res:Response) {
         try {
             const { gstin } = req.params;
-
+    
             if (!validateGSTIN(gstin)) {
-                return res.status(400).json({ success: false, message: "Please enter valid GSTIN" });
+                return res.status(400).json({ success: false, message: "Please enter a valid GSTIN" });
             }
-
-            const endpoint = `${Sandbox.BASE_URL}/gsp/public/gstin/`;
-
+    
             const token = await Sandbox.generateAccessToken();
-
-            const headers = {
-                'Authorization': token,
-                'accept': 'application/json',
-                'x-api-key': process.env.SANDBOX_KEY,
-                'x-api-version': process.env.SANDBOX_API_VERSION
-            };
-
-            const { status, data: { data } } = await axios.get(endpoint, {
-                headers,
-                params: {
-                    gstin
+            
+    
+            const options = {
+                method: 'GET',
+                url: `${Sandbox.BASE_URL}/gsp/public/gstin/${gstin}`,
+                headers: {
+                    accept: 'application/json',
+                    Authorization: token,
+                    'x-api-key': process.env.SANDBOX_KEY,
+                    'x-api-version': process.env.SANDBOX_API_VERSION
                 }
-            });
+            };
+    
+            const response = await axios.request(options);
 
-            if (status !== 200) {
-                return res.status(500).send({ success: false, message: "Something went wrong" });
+            console.log(response);
+            
+    
+            // Check response status
+            if (response.status !== 200) {
+                return res.status(response.status).json({ success: false, message: "Error in sandbox API", error: response.data });
             }
+    
+             return res.status(200).json({ success: true, data: response.data });
+        } catch (error:any) {
 
-            return res.status(200).send({ success: true, data });
-        } catch (e) {
-            console.log(e);
-            return res.status(500).json({ success: false, message: 'Something went wrong' });
+            if (error.response) {
+                return res.status(error.response.status).json({ success: false, message: "Error in sandbox API", error: error.response.data });
+            }
+    
+            return res.status(500).json({ success: false, message: 'Internal Server Error' });
         }
     }
 

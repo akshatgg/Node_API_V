@@ -11,4 +11,5 @@ aadhaarRouter.get('/verify', verifyToken, queryValidator(['aadhaar_number']), Aa
 aadhaarRouter.post('/aadhaar-generate-otp',verifyToken,bodyValidator,AadhaarController.aadharGenerateOtp)
 
 aadhaarRouter.post('/aadhaar-verify-otp',verifyToken,bodyValidator,AadhaarController.aadhaarVerifyOtp)
+
 export default aadhaarRouter;

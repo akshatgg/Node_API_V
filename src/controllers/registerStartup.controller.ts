@@ -11,7 +11,6 @@ export class RegisterStartupController {
 
             if (!title) {
                 return res.status(400).json({ success: false, message: 'Required Query title name was not provided' });
-
             }
             if (!image) {
                 return res.status(400).json({ success: false, message: 'Required Query image was not provided' });
@@ -80,13 +79,8 @@ export class RegisterStartupController {
             });
             return res.status(200).json({ success: true, deletedStartup, message: "Register Startup deleted sucessfully" });
         } catch (error) {
-            console.log(error)
             return res.status(500).json({ success: false, message: 'Internal server error' });
         }
-
-
-
-
     }
 
 }

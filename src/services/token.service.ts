@@ -5,11 +5,10 @@ export default class TokenService {
 
     static getTokenFromAuthHeader(authorization: string|undefined) {
         const token = authorization?.split(' ').pop();
-
         return token;
     }
 
-    static generateToken(user: Record<string, any>) {
+    static generateToken(user:UserData) {
         const token = jwt.sign(user, process.env.JWT_KEY as string, {
             issuer: "iTaxEasy",
             expiresIn: "1Y"

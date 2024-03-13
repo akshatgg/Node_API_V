@@ -14,6 +14,7 @@ datasource db {
 enum UserType {
   admin
   normal
+  agent
   superadmin
 }
 
@@ -38,6 +39,9 @@ model User {
   aadhaar         String?
   pan             String?
   dob             DateTime?
+  avatar          String?
+  adminId         Int?
+  superadminId    Int?
   verified        Boolean            @default(false)
   userType        UserType           @default(normal)
   otps            Otp[]
@@ -61,6 +65,16 @@ model User {
   transactions    Transaction[]
   agentId         Agent?
   clientAccounts  Client[]
+  gstr1           Gstr1_4A[]
+  gstr1_5A        Gstr1_5A[]
+  gstr1_6A       Gstr1_6A[]
+  gstr1_7B       Gstr1_7B[]
+  gstr1_8ABCD    Gstr1_8ABCD[]
+  gstr1_9B       Gstr1_9B[]
+  gstr1_9B_un       Gstr1_9B_un[]
+  gstr1_11_A2B    Gstr1_11A2A2[]
+  gstr1_11_B1B2    Gstr1_11B1B2[]
+  gstr1_12HSN      gstr1_12HSN[]
 }
 
 model Otp {
@@ -77,6 +91,10 @@ model BusinessProfile {
   businessName            String
   pan                     String?
   tan                     String?
+  taxpayer_type           String?
+  msme_number             String?
+  status                  String?
+  ctb                     String?
   gstin                   String?
   address                 String?
   bankName                String?
@@ -282,7 +300,7 @@ model Invoice {
   party         Party         @relation(fields: [partyId], references: [id])
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @default(now())
-  invoiceItems  InvoiceItem[]
+  invoiceItems  InvoiceItem[] 
   accounts      Account[]
   status        InvoiceStatus
 }
@@ -680,4 +698,202 @@ model About {
   position    String
   image       String
   description String
+}
+
+// GSTR1 
+
+model Gstr1_4A { 
+  id          Int    @id @default(autoincrement())
+  userId      Int
+  user        User   @relation(fields: [userId], references: [id])
+  LegalName String
+  GSTN String
+  pos String
+  invoice_No String
+  invoice_date String
+  invoice_value String
+  rate String
+  nature String
+  source String
+  cgst String
+  igst String
+  sgst String
+  supply_type String
+  fy String
+  period String
+  taxpayer_type String
+  trade_Name String?
+  processed_records String
+  status String?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @default(now())
+}
+
+model Gstr1_5A {
+   id          Int    @id @default(autoincrement())
+   userId      Int
+   user        User   @relation(fields: [userId], references: [id])
+   sr_no Int @unique
+   pos            String
+   invoice_No     String
+   supply_type    String
+   invoice_value String
+   invoice_date   String
+   total_taxable_value   String
+   integrated_tax     String
+   cess              String
+   total_invoice_value   String
+   gstr1_5A_items       Gstr1_5A_item[]
+}
+
+
+model Gstr1_5A_item {
+  id Int @id @default(autoincrement())
+  tax_rate String @default("0%")
+  Ammmout_of_tax String
+  Igst     String
+  cess     String
+  gstr1_5A_id    Int     
+  gstr1_5A       Gstr1_5A @relation(fields: [gstr1_5A_id], references: [id])
+}
+
+model Gstr1_6A {
+  id Int @id @default(autoincrement())
+   userId      Int
+   user        User   @relation(fields: [userId], references: [id])
+  sr_no Int @unique
+  pos String
+  invoice_no String
+  supply_type String
+  invoice_data String
+  invoice_value String
+  total_value String
+  gst_payement String
+  total_taxable_value String
+  integarted_tax String
+  cess String
+  gstr1_6A_items Gstr1_6A_item[]
+}
+
+model Gstr1_6A_item {
+  id Int @id @default(autoincrement())
+  pecentage String
+  integrated_value String
+  cgst String
+  sgst String
+  gstr1_6A_id Int
+  gstr1_6A Gstr1_6A @relation(fields: [gstr1_6A_id], references: [id])
+}
+
+model Gstr1_7B {
+  id Int @id @default(autoincrement())
+  userId      Int
+  user        User   @relation(fields: [userId], references: [id])
+  gstn String
+  sr_no Int @unique
+  pos String
+  taxable_value String
+  supply_type String
+  rate String
+  central_tax String
+  state_tax String
+  cess String
+  place_of_supply String
+  total_taxable String
+  integrated String
+}
+
+model Gstr1_8ABCD {
+  id Int @id @default(autoincrement())
+  userId      Int
+  user        User   @relation(fields: [userId], references: [id])
+  gstn String
+  sr_no Int @unique
+  pos String
+  taxable_value String
+  supply_type String
+  rate String
+  central_tax String
+  state_tax String
+  cess String
+}
+
+model Gstr1_9B {
+  id Int @id @default(autoincrement())
+  userId      Int
+  user        User   @relation(fields: [userId], references: [id])
+  gstn String
+  sr_no Int @unique
+  recipient_name String
+  name_as_master String
+  debit_credit_note_no String
+  debit_credit_note_date String
+  state_tax String
+  note_type String
+  supply_type String
+  items_details String
+  select_rate String
+  note_values String
+  state_tax_rs String
+  central_tax String
+  cess String
+}
+
+model Gstr1_9B_un {
+  id Int @id @default(autoincrement())
+  userId      Int
+  user        User   @relation(fields: [userId], references: [id])
+  sr_no Int @unique
+  type String
+  debit_credit_note_no String
+  debit_credit_note_date String
+  state_tax String
+  note_type String
+  supply_type String
+  item_details String
+  select_rate String
+  note_value String
+  state_tax_rs String
+  central_tax_rs String
+  cess String
+}
+
+model Gstr1_11A2A2 {
+    id Int @id @default(autoincrement())
+    userId      Int
+    user        User   @relation(fields: [userId], references: [id])
+    sr_no Int @unique
+    pos String
+    supply String
+    cess String
+}
+
+model Gstr1_11B1B2 {
+    id Int @id @default(autoincrement())
+    userId      Int
+    user        User   @relation(fields: [userId], references: [id])
+    sr_no Int @unique
+    pos String
+    taxable_value String
+    rate String
+    supply_type String
+    cess String
+    igst String
+    cgst String
+    sgst String
+}
+
+model gstr1_12HSN {
+    id Int @id @default(autoincrement())
+    userId      Int
+    user        User   @relation(fields: [userId], references: [id])
+    sr_no Int @unique
+    pos String
+    taxable_value String
+    rate String
+    supply_type String
+    cess String
+    igst String
+    cgst String
+    sgst String
 }

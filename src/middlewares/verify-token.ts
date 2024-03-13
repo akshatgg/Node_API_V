@@ -2,7 +2,9 @@ import { NextFunction, Request, Response } from "express";
 import TokenService from "../services/token.service";
 import { UserType } from "@prisma/client";
 
-export default function verifyToken(req: Request, res: Response, next: NextFunction) {
+
+
+export default function verifyToken(req: any, res: Response, next: NextFunction) {
     const token = TokenService.getTokenFromAuthHeader(req.headers.authorization);
 
     if(!token) {
@@ -19,6 +21,6 @@ export default function verifyToken(req: Request, res: Response, next: NextFunct
 
     req.user = user;
     req.isAdmin = user.userType === UserType.admin;
-
+    req.isSuperAdmin = user.userType ===UserType.superadmin;
     next();
 }

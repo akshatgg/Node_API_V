@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
-import { Prisma, Invoice, InvoiceItem, Item, LedgerType, Party, PartyType } from '@prisma/client';
+import { Prisma, Invoice, Item, LedgerType, Party, PartyType } from '@prisma/client';
 import { prisma } from '../index';
 
 class InvoiceController {
-
+    
     static async summary(req: Request, res: Response) {
         try {
             const { id: userId } = req.user!;
@@ -65,6 +65,7 @@ class InvoiceController {
                 gstNumber,
                 type,
                 partyId,
+                itemId,
                 totalAmount,
                 totalGst,
                 stateOfSupply,
@@ -95,6 +96,7 @@ class InvoiceController {
             }
 
             // Check if invoiceItems is defined and is an array
+
             const formattedInvoiceItems = invoiceItems
                 ? invoiceItems.map(({ itemId, quantity, discount }: { itemId: string; quantity: number; discount: number }) => ({
                     item: {
@@ -149,7 +151,6 @@ class InvoiceController {
         
     }
 
-
     static async getAll(req: Request, res: Response): Promise<void> {
         try {
             const { id: userId } = req.user!;
@@ -168,8 +169,12 @@ class InvoiceController {
                 skip: offset,
                 take: parsedLimit,
                 include: {
-                    invoiceItems: true
-                }
+                    invoiceItems: {
+                      include: {
+                        item: true,
+                      },
+                    },
+                  },
             });
 
             res.status(200).json({ success: true, invoices });
@@ -186,9 +191,14 @@ class InvoiceController {
             const invoice: Invoice | null = await prisma.invoice.findUnique({
                 where: { id: invoiceId },
                 include: {
-                    invoiceItems: true
-                }
+                    invoiceItems: {
+                      include: {
+                        item: true,
+                      },
+                    },
+                  },
             });
+            
 
             if (!invoice) {
                 res.status(404).json({ sucess: false, message: 'Invoice not found' });
@@ -201,49 +211,105 @@ class InvoiceController {
         }
     }
 
-    static async update(req: Request, res: Response): Promise<void> {
+    static async update(req: Request, res: Response) {
         try {
-            const invoiceId = req.params.id;
-            const { invoiceNumber, gstNumber, type, partyId, totalAmount, totalGst, stateOfSupply, cgst, sgst, igst, utgst, details, extraDetails, items, status } = req.body;
+            const { id: userId } = req.user!; 
 
-            const { id: userId } = req.user!;
+            // Create the invoice
+            const {
+                invoiceNumber,
+                gstNumber,
+                type,
+                partyId,
+                totalAmount,
+                totalGst,
+                stateOfSupply,
+                cgst,
+                sgst,
+                igst,
+                utgst,
+                details,
+                extraDetails,
+                invoiceItems,
+                modeOfPayment,
+                credit = false,
+                status
+            } = req.body;
 
-            const invoice = await prisma.invoice.findFirst({ where: { id: invoiceId, userId } });
+            const invoiceid =req.params.id
 
-            if (!invoice) {
-                res.status(200).json({ success: false, message: 'Invoice not found' });
-                return;
+            if(!invoiceid){
+            return res.status(401).json({ success: false, message: 'id params not pass or not found!' });  
             }
 
-            // Update the invoice
-            const updatedInvoice: Invoice | null = await prisma.invoice.update({
-                where: { id: invoiceId },
-                data: {
-                    invoiceNumber,
-                    gstNumber,
-                    type,
-                    partyId,
-                    totalAmount,
-                    totalGst,
-                    stateOfSupply,
-                    cgst,
-                    sgst,
-                    igst,
-                    utgst,
-                    details,
-                    extraDetails,
-                    status,
+            if (partyId) {
+                const party = await prisma.party.findUnique({ where: { id: partyId } });
+
+                if (!party) {
+                    return res.status(401).json({ success: false, message: 'Party not found' });
+                }
+            }
+
+            const gstRegex = /^\d{2}[A-Z]{5}\d{4}[A-Z]{1}\d[Z]{1}[A-Z\d]{1}$/;
+
+            if (!gstRegex.test(gstNumber)) {
+                return res.status(400).json({ error: 'Invalid GST number' });
+            }
+
+            // Check if invoiceItems is defined and is an array
+
+            const formattedInvoiceItems = invoiceItems
+                ? invoiceItems.map(({ itemId, quantity, discount }: { itemId: string; quantity: number; discount: number }) => ({
+                    item: {
+                        connect: {
+                            id: itemId,
+                        },
+                    },
+                    quantity,
+                    discount,
+                }))
+                : [];
+
+            const invoiceData: Prisma.InvoiceUpdateInput = {
+                invoiceNumber,
+                gstNumber,
+                type,
+                party: {
+                    connect: { id: partyId },
+                },
+                totalAmount,
+                totalGst,
+                stateOfSupply,
+                cgst,
+                sgst,
+                igst,
+                utgst,
+                details,
+                extraDetails,
+                modeOfPayment,
+                credit,
+                status,
+                invoiceItems: {
+                    create: formattedInvoiceItems,
+                },
+                user: {
+                    connect: { id: userId },
+                },
+            };
+
+            const updatedInvoice = await prisma.invoice.update({
+                where: { id: invoiceid },
+                data: invoiceData,
+                include: {
                     invoiceItems: {
-                        upsert: items.map((item: InvoiceItem) => ({
-                            where: { id: item.id },
-                            create: item,
-                            update: item,
-                        })),
+                        include: {
+                            item: true,
+                        },
                     },
                 },
             });
 
-            res.status(200).json({ sucess: true, updatedInvoice });
+            return res.status(200).json({success: true,message:"successfully update invoice"});
         } catch (error) {
             res.status(500).json({ sucess: false, message: 'Internal server error' });
         }
