@@ -23,6 +23,16 @@ app.use((req, res, next) => {
     next();
 });
 
+// Middleware to log request status
+app.use((req, res, next) => {
+    const start = Date.now(); // Timestamp when the request was received
+    res.on('finish', () => {
+      const duration = Date.now() - start; // Calculate duration of request handling
+      console.log(`[${new Date().toLocaleString()}] ${req.method} ${req.url} - ${res.statusCode} - ${duration}ms`);
+    });
+    next();
+  });
+
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 100, // maximum 100 requests per windowMs
