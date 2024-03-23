@@ -15,6 +15,14 @@ export const prisma = new PrismaClient();
 
 const app = express();
 
+// Handle CORS
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', 'https://itaxeasy.com');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    next();
+});
+
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 100, // maximum 100 requests per windowMs
