@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/itax-easy/node-api#readme",
   "dependencies": {
-    "@prisma/client": "^4.16.2",
+    "@prisma/client": "^5.11.0",
     "@types/bcrypt": "^5.0.0",
     "@types/helmet": "^4.0.0",
     "@types/nodemailer": "^6.4.8",
@@ -58,7 +58,7 @@
     "@typescript-eslint/parser": "^6.3.0",
     "eslint": "^8.46.0",
     "nodemon": "^2.0.22",
-    "prisma": "^4.16.1",
+    "prisma": "^5.11.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.1.3"
   }

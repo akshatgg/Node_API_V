@@ -48,11 +48,12 @@ export default class CareerController {
           gender,
         },
       });
-      console.log("🚀 ~ CareerController ~ createCareer ~ career:", career);
 
-      return res
-        .status(200)
-        .json({ success: true, message: "Career created", career });
+      return res.status(200).json({
+        success: true,
+        message: "Success! We will get back to you.",
+        career,
+      });
     } catch (e) {
       console.log(e);
       return res

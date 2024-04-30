@@ -76,6 +76,7 @@ model User {
   gstr1_11_B1B2   Gstr1_11B1B2[]
   gstr1_12HSN     gstr1_12HSN[]
   Cart            Cart?
+  Subscriptions   Subscriptions[]
 }
 
 model Otp {
@@ -124,10 +125,10 @@ model Cart {
 }
 
 model ApiService {
-  id           String   @id @default(uuid())
+  id           String          @id @default(uuid())
   title        String
   category     String
-  overview     String   @db.Text
+  overview     String          @db.Text
   price        Float
   upcoming     Boolean
   endpoint     Json?
@@ -135,10 +136,40 @@ model ApiService {
   response     Json?
   responseJSON Json?
   carts        Cart[]
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @default(now())
-  Order        Order?   @relation(fields: [orderId], references: [id])
-  orderId      Int?
+  subscription Subscriptions[]
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @default(now())
+}
+
+enum SubscriptionStatus {
+  initiated
+  pending
+  success
+  failure
+  usercancelled
+  dropped
+  bounced
+}
+
+enum SubscriptionsDuration {
+  monthly
+  quarterly
+  halfYealy
+  yearly
+}
+
+model Subscriptions {
+  id                   String                @id @default(uuid())
+  userId               Int
+  user                 User                  @relation(fields: [userId], references: [id])
+  services             ApiService[]
+  amountForServices    Float
+  txnid                String?               @unique @default(uuid())
+  pid                  String?
+  subscriptionDuration SubscriptionsDuration @default(monthly)
+  status               SubscriptionStatus    @default(pending)
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @default(now())
 }
 
 enum LedgerType {
@@ -369,15 +400,15 @@ enum OrderStatus {
 }
 
 model Order {
-  id            Int          @id @default(autoincrement())
-  services      ApiService[]
-  status        OrderStatus  @default(pending)
+  id            Int         @id @default(autoincrement())
+  services      Json
+  status        OrderStatus @default(pending)
   price         Decimal
   gst           Decimal
   orderTotal    Decimal
   stateOfSupply String
   userId        Int
-  user          User         @relation(references: [id], fields: [userId])
+  user          User        @relation(references: [id], fields: [userId])
 }
 
 enum PaymentStatus {
