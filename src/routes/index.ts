@@ -11,11 +11,11 @@ import servicesRouter from "./services.routes";
 import paymentsRouter from "./payments.routes";
 import paymentRouter from "./payment.routes";
 import ordersRouter from "./orders.routes";
-import libraryRouter from "./library.routes"
+import libraryRouter from "./library.routes";
 import blogRouter from "./blog.routes";
 import panRouter from "./pan.routes";
 import gstRouter from "./gst.routes";
-import careerRouter from "./career.route"
+import careerRouter from "./career.route";
 import mcaRouter from "./mca.routes";
 import calculatorRouter from "./calculators.routes";
 import tanRouter from "./tan.routes";
@@ -23,7 +23,7 @@ import bankRouter from "./bank.routes";
 import aadhaarRouter from "./aadhaar.routes";
 import loanRouter from "./loan.routes";
 import documentRouter from "./document.routes";
-import visitorRouter from "./visitorCounter.routes"
+import visitorRouter from "./visitorCounter.routes";
 import registerStartupRouter from "./registerStartup,routes";
 import contactUsRouter from "./contactUs.routes";
 import insourancerouter from "./insurance.routes";
@@ -37,82 +37,82 @@ import gstr1Router from "./gstr1.routes";
 
 const router = Router();
 
-router.use('/user', userRouter);
+router.use("/user", userRouter);
 
-router.use('/business', businessProfileRouter);
+router.use("/business", businessProfileRouter);
 
-router.use('/invoice', invoiceRouter);
+router.use("/invoice", invoiceRouter);
 
-router.use('/cms', cmsRouter);
+router.use("/cms", cmsRouter);
 
-router.use('/pincode', pincodeRouter);
+router.use("/pincode", pincodeRouter);
 
-router.use('/postOffice', postOfficeRouter);
+router.use("/postOffice", postOfficeRouter);
 
-router.use('/pan', panRouter);
+router.use("/pan", panRouter);
 
-router.use('/gst', gstRouter);
+router.use("/gst", gstRouter);
 
-router.use('/accountancy', accountancyRouter);
+router.use("/accountancy", accountancyRouter);
 
-router.use('/services', servicesRouter);
+router.use("/services", servicesRouter);
 
-router.use('/payments', paymentsRouter);
+router.use("/payments", paymentsRouter);
 
-router.use('/payment', paymentRouter);
+router.use("/payment", paymentRouter);
 
-router.use('/orders', ordersRouter);
+router.use("/orders", ordersRouter);
 
-router.use('/library', libraryRouter);
+router.use("/library", libraryRouter);
 
-router.use('/blog', blogRouter);
+router.use("/blog", blogRouter);
 
-router.use('/mca', mcaRouter);
+router.use("/mca", mcaRouter);
 
-router.use('/tan', tanRouter);
+router.use("/tan", tanRouter);
 
-router.use('/bank', bankRouter);
+router.use("/bank", bankRouter);
 
-router.use('/aadhaar', aadhaarRouter);
+router.use("/aadhaar", aadhaarRouter);
 
-router.use('/calculator', calculatorRouter);
+router.use("/calculator", calculatorRouter);
 
-router.use('/career', careerRouter);
+router.use("/career", careerRouter);
 
-router.use('/loan', loanRouter);
+router.use("/loan", loanRouter);
 
-router.use('/documents', documentRouter);
+router.use("/documents", documentRouter);
 
-router.use('/insurance', documentRouter);
+router.use("/insurance", documentRouter);
 
-router.use('/visitorCount',visitorRouter)
+router.use("/visitorCount", visitorRouter);
 
-router.use('/Startup',registerStartupRouter)
+router.use("/Startup", registerStartupRouter);
 
-router.use('/contactUs',contactUsRouter)
+router.use("/contactUs", contactUsRouter);
 
-router.use('/insourance',insourancerouter)
+router.use("/insourance", insourancerouter);
 
-router.use('/aboutTeam',registerAbout)
+router.use("/aboutTeam", registerAbout);
 
-router.use("/codes",HsnAndSACRouter)
+router.use("/codes", HsnAndSACRouter);
 
-router.use("/billpayable",billpayablerouter)
+router.use("/billpayable", billpayablerouter);
 
-router.use("/billrecieve",billrecievablerouter)
+router.use("/billrecieve", billrecievablerouter);
 
-router.use("/gstr1",gstr1Router)
+router.use("/gstr1", gstr1Router);
 
-router.get('/', (req, res) => {
-    return res.send({ message: 'Up and running' });
+router.get("/", (req, res) => {
+  return res.send({ message: "Up and running" });
 });
 
 const handlePageNotFound = (req: Request, res: Response) => {
-    return res.status(404).send({ message: 'Endpoint not found' });
+  return res.status(404).send({ message: "Endpoint not found" });
 };
 
-router.get('*', handlePageNotFound);
+router.get("*", handlePageNotFound);
 
-router.post('*', handlePageNotFound);
+router.post("*", handlePageNotFound);
 
 export default router;

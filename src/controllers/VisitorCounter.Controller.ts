@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { prisma } from '../index';
-import { Visitor } from '@prisma/client'
+// import { Visitor } from '@prisma/client'
 
 export class VisitorCounterController {
 
