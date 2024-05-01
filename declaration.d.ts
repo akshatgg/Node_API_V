@@ -4,6 +4,6 @@ declare namespace Express {
   export interface Request {
     user?: UserData;
     isAdmin?: boolean;
-    isSuperadmin?: boolean;
+    isSuperAdmin?: boolean;
   }
 }
