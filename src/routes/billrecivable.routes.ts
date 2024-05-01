@@ -14,4 +14,5 @@ billrecievablerouter.get("/getAll",verifyToken,adminCheck,Accountscontroller.get
  billrecievablerouter.post("/update/:id",verifyToken,Accountscontroller.updaterecivalebill)
 
 billrecievablerouter.delete("/delete/:id",verifyToken,Accountscontroller.deleterecivalebill)
+
 export default billrecievablerouter;

@@ -9,7 +9,7 @@
     "lint": "eslint ./src --fix",
     "build": "tsc --build",
     "build:linux": "rm -rf dist && tsc --build",
-    "start": "pm2 start dist/index.js",
+    "start": "pm2 start dist/index.js  --name itaxeasy-node-app",
     "dev": "nodemon --exec ts-node --files src/index.ts"
   },
   "repository": {
