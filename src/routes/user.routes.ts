@@ -58,8 +58,8 @@ userRouter.post("/change-password", verifyToken, UserController.changePassword);
 
 userRouter.put(
   "/update",
-  multerInstance.single("avatar"),
   verifyToken,
+  multerInstance.single("avatar"),
   UserController.updateProfile
 );
 

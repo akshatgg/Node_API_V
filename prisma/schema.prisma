@@ -99,12 +99,16 @@ model BusinessProfile {
   status                 String?
   ctb                    String?
   gstin                  String?
-  address                String?
+  statecode              String?
+  street                 String?
+  city                   String?
+  dst                    String?
+  stcd                   String? // State
+  landmark               String?
   bankName               String?
   bankAccountNo          String?
   bankIfsc               String?
   bankBranch             String?
-  state                  String?
   userId                 Int      @unique
   user                   User     @relation(fields: [userId], references: [id])
   createdAt              DateTime @default(now())
