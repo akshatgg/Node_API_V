@@ -101,6 +101,15 @@ export default class BusinessProfileController {
           .send({ success: false, message: "User does not exists" });
       }
 
+      if (data.pan !== user.pan) {
+        return res
+          .status(400)
+          .send({
+            success: false,
+            message: "User and business profile pan needs to be same!",
+          });
+      }
+
       const found = await prisma.businessProfile.findFirst({
         where: {
           userId: id,
