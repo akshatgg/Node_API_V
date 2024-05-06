@@ -462,8 +462,8 @@ model Post {
   id                 String   @id @default(uuid())
   userId             Int
   title              String
-  contentheading     String
-  contentdiscription String
+  contentHeading     String
+  contentDescription String   @db.LongText()
   category           String
   imageUrl           String
   user               User     @relation(fields: [userId], references: [id])
