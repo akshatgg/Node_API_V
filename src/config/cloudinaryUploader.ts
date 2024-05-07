@@ -14,7 +14,7 @@ cloudinary.v2.config({
 const params = {
   folder: (req: Request) => {
     if (req.user) {
-      return `dashboard/users/${req.user.id}`;
+      return `dashboard/users/${req.user.email}/${req.url.replace("/", "")}`;
     }
     const { email } = req.body;
     return `dashboard/careers/${email}`;
