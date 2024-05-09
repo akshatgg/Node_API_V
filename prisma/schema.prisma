@@ -60,7 +60,6 @@ model User {
   documents       UploadedDocument[]
   insurances      Insurance[]
   registerStartup RegisterStartup[]
-  contactUs       ContactUs[]
   journalEntries  JournalEntry[]
   legders         Ledger[]
   transactions    Transaction[]
@@ -740,22 +739,21 @@ enum StartupCategory {
 }
 
 model RegisterStartup {
-  id         Int             @id @default(autoincrement())
-  title      String
-  image      String
-  userId     Int
-  categories StartupCategory
-  user       User            @relation(fields: [userId], references: [id])
+  id           Int             @id @default(autoincrement())
+  title        String
+  image        String
+  priceWithGst Int
+  aboutService String          @db.LongText
+  userId       Int
+  categories   StartupCategory
+  user         User            @relation(fields: [userId], references: [id])
 }
 
 model ContactUs {
-  id          Int    @id @default(autoincrement())
-  name        String
-  email       String
-  message     String
-  phoneNumber String
-  userId      Int
-  user        User   @relation(fields: [userId], references: [id])
+  id      Int    @id @default(autoincrement())
+  name    String
+  email   String
+  message String
 }
 
 model About {

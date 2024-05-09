@@ -5,8 +5,7 @@ import { ContactUs } from "@prisma/client";
 export class ContactUsController {
   static async contactUs(req: Request, res: Response): Promise<void> {
     try {
-      const { id: userId } = req.user!;
-      const { name, email, message, phoneNumber } = req.body;
+      const { name, email, message } = req.body;
 
       // Validation: Name should only contain characters
       if (!/^[A-Za-z\s]+$/.test(name)) {
@@ -15,10 +14,10 @@ export class ContactUsController {
       }
 
       // Validation: Phone number should be numeric and have a maximum length of 10
-      if (!/^\d{10}$/.test(phoneNumber)) {
-        res.status(400).json({ error: "Invalid phone number format" });
-        return;
-      }
+      // if (!/^\d{10}$/.test(phoneNumber)) {
+      //   res.status(400).json({ error: "Invalid phone number format" });
+      //   return;
+      // }
 
       // Validation: Email format
       if (!/^\S+@\S+\.\S+$/.test(email)) {
@@ -26,36 +25,23 @@ export class ContactUsController {
         return;
       }
 
-      const existingUser = await prisma.user.findUnique({
-        where: { id: userId },
-      });
-      if (!existingUser) {
-        res.status(404).json({ error: "User not found" });
-        return;
-      }
       const newContactUs: ContactUs = await prisma.contactUs.create({
         data: {
           name,
           email,
           message,
-          phoneNumber,
-          userId,
         },
       });
-      res
-        .status(201)
-        .json({
-          result: newContactUs,
-          message: "Sucessfull Contact us registerd",
-        });
+      res.status(201).json({
+        result: newContactUs,
+        message: "Sucessfull Contact us registerd",
+      });
     } catch (error) {
-      res
-        .status(500)
-        .json({
-          success: false,
-          message: "Internal server error",
-          errors: error,
-        });
+      res.status(500).json({
+        success: false,
+        message: "Internal server error",
+        errors: error,
+      });
     }
   }
 
@@ -65,13 +51,11 @@ export class ContactUsController {
 
       res.status(200).json({ success: true, allContactUs });
     } catch (error) {
-      res
-        .status(500)
-        .json({
-          success: false,
-          message: "Internal server error",
-          errors: error,
-        });
+      res.status(500).json({
+        success: false,
+        message: "Internal server error",
+        errors: error,
+      });
     }
   }
 
@@ -103,13 +87,11 @@ export class ContactUsController {
       const deletedContactUs = await prisma.contactUs.delete({
         where: { id: parseInt(id) },
       });
-      res
-        .status(200)
-        .json({
-          success: true,
-          deletedContactUs,
-          message: "Contact us deleted sucessfully",
-        });
+      res.status(200).json({
+        success: true,
+        deletedContactUs,
+        message: "Contact us deleted sucessfully",
+      });
     } catch (error) {
       console.log(error);
       res

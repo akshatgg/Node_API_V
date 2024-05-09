@@ -4,158 +4,221 @@ import { PHONE_NUMBER_RGX } from "../lib/util";
 import { UserGender } from "@prisma/client";
 import { prisma } from "..";
 
+type query = { userId?: number };
+
 const InsuranceSchema = z.object({
-    name: z.string(),
-    address: z.string(),
-    email:z.string(),
-    mobile: z.string().regex(PHONE_NUMBER_RGX, 'Enter valid 10 digit mobile number'),
-    maritalStatus: z.string(),
-    gender: z.nativeEnum(UserGender),
-    type: z.string(),
-    dob: z.coerce.date(),
-    
+  name: z.string(),
+  address: z.string(),
+  email: z.string(),
+  mobile: z
+    .string()
+    .regex(PHONE_NUMBER_RGX, "Enter valid 10 digit mobile number"),
+  maritalStatus: z.string(),
+  gender: z.nativeEnum(UserGender),
+  type: z.string(),
+  dob: z.coerce.date(),
 });
 
 export default class InsuranceController {
+  static async applyForInsurance(req: Request, res: Response) {
+    try {
+      const { id: userId } = req.user!;
 
-    static async applyForInsurance(req: Request, res: Response) {
-        try {
-            const { id: userId } = req.user!;
+      const { name, address, mobile, dob, gender, maritalStatus, type, email } =
+        InsuranceSchema.parse(req.body);
 
-            const { name, address, mobile, dob, gender, maritalStatus, type ,email} = InsuranceSchema.parse(req.body);
+      const application = await prisma.insurance.create({
+        data: {
+          name,
+          address,
+          mobile,
+          dob,
+          gender,
+          maritalStatus,
+          type,
+          email,
+          userId,
+        },
+      });
 
-            const application = await prisma.insurance.create({
-                data: {
-                    name,
-                    address,
-                    mobile,
-                    dob,
-                    gender,
-                    maritalStatus,
-                    type,
-                    email,
-                    userId,
-                }
-            });
-
-            return res.status(201).json({ success: true, message: 'Successfully applied for insurance', application });
-        } catch(e) {
-            console.log(e);
-            if (e instanceof ZodError) {
-                return res.status(400).json({ success: false, message: e.message });
-            }
-            return res.status(500).json({ success: false, message: 'Something went wrong' });
-        }
+      return res.status(201).json({
+        success: true,
+        message: "Successfully applied for insurance",
+        application,
+      });
+    } catch (e) {
+      console.log(e);
+      if (e instanceof ZodError) {
+        return res.status(400).json({ success: false, message: e.message });
+      }
+      return res
+        .status(500)
+        .json({ success: false, message: "Something went wrong" });
     }
+  }
 
-    static async getInsuranceById(req: Request, res: Response) {
-        try {
-            const { id: userId } = req.user!;
+  static async updateInsurance(req: Request, res: Response) {
+    try {
+      // const { userType } = req.user!;
 
-            const { id } = req.params;
+      const { name, address, mobile, dob, gender, maritalStatus, type, email } =
+        InsuranceSchema.parse(req.body);
+      const { id } = req.params;
 
-             const insurance = await prisma.insurance.findUnique({ where: { id } });
+      const application = await prisma.insurance.update({
+        where: { id },
+        data: {
+          name,
+          address,
+          mobile,
+          dob,
+          gender,
+          maritalStatus,
+          type,
+          email,
+        },
+      });
 
-            if(insurance && (insurance.userId != userId || !req.isAdmin)) {
-                return res.status(403).json({ success: false, message: 'Unauthorized Access' });
-            }
-
-            return res.status(200).json({ success: true, application: insurance });
-        } catch(e) {
-            console.log(e);
-            return res.status(500).json({ success: false, message: 'Something went wrong' });
-        }
+      return res.status(200).json({
+        success: true,
+        message: "Successfully updated application",
+        application,
+      });
+    } catch (e) {
+      console.log(e);
+      if (e instanceof ZodError) {
+        return res.status(400).json({ success: false, message: e.message });
+      }
+      return res
+        .status(500)
+        .json({ success: false, message: "Something went wrong" });
     }
+  }
 
-    static async getInsuranceApplications(req: Request, res: Response) {
-        try {
-            const { id: userId } = req.user!;
+  static async getInsuranceById(req: Request, res: Response) {
+    try {
+      const { id: userId } = req.user!;
 
-            const { order }: { order?: string } = req.query;
+      const { id } = req.params;
 
-            // Pagination parameters
-            const { page = 1, limit = 10 } = req.query;
-            const parsedPage = parseInt(page.toString(), 10);
-            const parsedLimit = parseInt(limit.toString(), 10);
+      const insurance = await prisma.insurance.findUnique({ where: { id } });
 
-            // Calculate the offset based on the page and limit
-            const offset = (parsedPage - 1) * parsedLimit;
+      if (insurance && (insurance.userId != userId || !req.isAdmin)) {
+        return res
+          .status(403)
+          .json({ success: false, message: "Unauthorized Access" });
+      }
 
-            const count = await prisma.insurance.count({
-                where: { userId }
-            });
-
-            const applications = await prisma.insurance.findMany({
-                where: { userId },
-                orderBy: {
-                    createdAt: order === 'asc' ? 'asc' : 'desc',
-                },
-                take: parsedLimit,
-                skip: offset
-            });
-
-            return res.status(200).json({ success: true,totalApplications: count, applications,  });
-        } catch(e) {
-            console.log(e);
-            return res.status(500).json({ success: false, message: 'Something went wrong' });
-        }
+      return res.status(200).json({ success: true, application: insurance });
+    } catch (e) {
+      console.log(e);
+      return res
+        .status(500)
+        .json({ success: false, message: "Something went wrong" });
     }
+  }
 
-    static async getInsuranceApplicationsByUser(req: Request, res: Response) {
-        try {
-            const { id } = req.params;
+  static async getInsuranceApplications(req: Request, res: Response) {
+    try {
+      const { id: userId, userType } = req.user!;
+      const isSuperAdmin = userType === "superadmin";
+      const { order }: { order?: string } = req.query;
+      const query: query = {};
 
-            const userId = parseInt(id);
+      if (!isSuperAdmin) {
+        query.userId = userId;
+      }
 
-            const { order }: { order?: string } = req.query;
+      // Pagination parameters
+      const { page = 1, limit = 10 } = req.query;
+      const parsedPage = parseInt(page.toString(), 10);
+      const parsedLimit = parseInt(limit.toString(), 10);
 
-            // Pagination parameters
-            const { page = 1, limit = 10 } = req.query;
-            const parsedPage = parseInt(page.toString(), 10);
-            const parsedLimit = parseInt(limit.toString(), 10);
+      // Calculate the offset based on the page and limit
+      const offset = (parsedPage - 1) * parsedLimit;
 
-            // Calculate the offset based on the page and limit
-            const offset = (parsedPage - 1) * parsedLimit;
+      const count = await prisma.insurance.count({
+        where: query,
+      });
 
-            const count = await prisma.insurance.count({
-                where: { userId }
-            });
+      const applications = await prisma.insurance.findMany({
+        where: query,
+        orderBy: {
+          createdAt: order === "asc" ? "asc" : "desc",
+        },
+        take: parsedLimit,
+        skip: offset,
+      });
 
-            const applications = await prisma.insurance.findMany({
-                where: { userId },
-                orderBy: {
-                    createdAt: order === 'asc' ? 'asc' : 'desc',
-                },
-                take: parsedLimit,
-                skip: offset
-            });
-
-            return res.status(200).json({ success: true, applications, totalApplications: count });
-        } catch(e) {
-            console.log(e);
-            return res.status(500).json({ success: false, message: 'Something went wrong' });
-        }
+      return res.status(200).json({
+        success: true,
+        totalApplications: Math.ceil(count / parsedLimit),
+        applications,
+      });
+    } catch (e) {
+      console.log(e);
+      return res
+        .status(500)
+        .json({ success: false, message: "Something went wrong" });
     }
+  }
 
-    static async deleteInsourance(req: Request, res: Response): Promise<void> {
-        try {
-           
-            const { id } = req.params;
-            const deleted = await prisma.insurance.delete({
-                where: { id: (id) },
+  static async getInsuranceApplicationsByUser(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
 
-            });
-            res.status(200).json({ success: true, deleted, message: "Insourance  delete sucessfully" });
-        } catch (error) {
-            console.log(error)
-            res.status(500).json({ success: false, message: 'Internal server error' });
-        }
+      const userId = parseInt(id);
 
+      const { order }: { order?: string } = req.query;
 
+      // Pagination parameters
+      const { page = 1, limit = 10 } = req.query;
+      const parsedPage = parseInt(page.toString(), 10);
+      const parsedLimit = parseInt(limit.toString(), 10);
 
+      // Calculate the offset based on the page and limit
+      const offset = (parsedPage - 1) * parsedLimit;
 
+      const count = await prisma.insurance.count({
+        where: { userId },
+      });
+
+      const applications = await prisma.insurance.findMany({
+        where: { userId },
+        orderBy: {
+          createdAt: order === "asc" ? "asc" : "desc",
+        },
+        take: parsedLimit,
+        skip: offset,
+      });
+
+      return res
+        .status(200)
+        .json({ success: true, applications, totalApplications: count });
+    } catch (e) {
+      console.log(e);
+      return res
+        .status(500)
+        .json({ success: false, message: "Something went wrong" });
     }
+  }
 
-
-
+  static async deleteInsourance(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const deleted = await prisma.insurance.delete({
+        where: { id: id },
+      });
+      res.status(200).json({
+        success: true,
+        deleted,
+        message: "Insourance  delete sucessfully",
+      });
+    } catch (error) {
+      console.log(error);
+      res
+        .status(500)
+        .json({ success: false, message: "Internal server error" });
+    }
+  }
 }

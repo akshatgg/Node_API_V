@@ -2,23 +2,52 @@ import { Router } from "express";
 import InsuranceController from "../controllers/insurance.controller";
 import verifyToken from "../middlewares/verify-token";
 import bodyValidator from "../middlewares/body-validator";
+import adminCheck from "../middlewares/admin-check";
 
-const insourancerouter = Router();
+const insuranceRouter = Router();
 
-insourancerouter.post(
+insuranceRouter.post(
   "/apply",
   verifyToken,
+  adminCheck,
   bodyValidator,
   InsuranceController.applyForInsurance
 );
 
-insourancerouter.get("/getOne/:id",verifyToken, InsuranceController.getInsuranceById);
+insuranceRouter.put(
+  "/update/:id",
+  verifyToken,
+  adminCheck,
+  bodyValidator,
+  InsuranceController.updateInsurance
+);
 
-insourancerouter.get( "/getAll",verifyToken,InsuranceController.getInsuranceApplications);
+insuranceRouter.get(
+  "/getOne/:id",
+  verifyToken,
+  adminCheck,
+  InsuranceController.getInsuranceById
+);
 
-insourancerouter.get( "/user/:id",verifyToken,InsuranceController.getInsuranceApplicationsByUser);
+insuranceRouter.get(
+  "/getAll",
+  verifyToken,
+  adminCheck,
+  InsuranceController.getInsuranceApplications
+);
 
-insourancerouter.delete( "/delete/:id",verifyToken,InsuranceController.deleteInsourance);
+insuranceRouter.get(
+  "/user/:id",
+  verifyToken,
+  adminCheck,
+  InsuranceController.getInsuranceApplicationsByUser
+);
 
+insuranceRouter.delete(
+  "/delete/:id",
+  verifyToken,
+  adminCheck,
+  InsuranceController.deleteInsourance
+);
 
-export default insourancerouter;
+export default insuranceRouter;
