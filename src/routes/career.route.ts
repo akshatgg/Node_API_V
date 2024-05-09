@@ -23,4 +23,5 @@ careerRouter.get("/findOne/:id", CareerController.findOneCareer);
 careerRouter.delete("/delete/:id", CareerController.deleteCareer);
 
 careerRouter.get("/getCv/:id", CareerController.getCVByCareerId);
+
 export default careerRouter;

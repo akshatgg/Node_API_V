@@ -49,7 +49,7 @@ export default class CareerController {
         },
       });
 
-      return res.status(200).json({
+      return res.status(201).json({
         success: true,
         message: "Success! We will get back to you.",
         career,

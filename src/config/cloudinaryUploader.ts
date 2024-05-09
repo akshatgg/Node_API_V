@@ -19,11 +19,11 @@ const params = {
     const { email } = req.body;
     return `dashboard/careers/${email}`;
   },
-  allowedFormats: ["jpeg", "png", "jpg"],
+  allowedFormats: ["jpeg", "png", "jpg", "pdf"],
   public_id: (req: Request, file: Express.Multer.File) => {
-    const originalFileName = file.originalname.split(".").at(0); // Extracting the original file name without extension
-    const timestamp = Date.now(); // Getting current timestamp
-    return `${originalFileName}_${timestamp}`; // Combining original file name and timestamp
+    const originalFileName = file.originalname.split(".").at(0);
+    const timestamp = Date.now();
+    return `${originalFileName}_${timestamp}`;
   },
 };
 
@@ -33,17 +33,16 @@ const options: Options = {
 };
 
 const limits = {
-  fileSize: 3 * 1024 * 1024, // 3 MB in bytes
+  fileSize: 1 * 1024 * 1024,
 };
 
-// Add file filter for image files
 const fileFilter = (
   req: Request,
   file: Express.Multer.File,
   cb: multer.FileFilterCallback
 ) => {
-  if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
-    return cb(new Error("Only image files are allowed!"));
+  if (!file.originalname.match(/\.(jpg|jpeg|png|pdf)$/)) {
+    return cb(new Error("Only image and PDF files are allowed!"));
   }
   cb(null, true);
 };
