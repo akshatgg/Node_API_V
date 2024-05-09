@@ -26,7 +26,7 @@ import documentRouter from "./document.routes";
 import visitorRouter from "./visitorCounter.routes";
 import registerStartupRouter from "./registerStartup,routes";
 import contactUsRouter from "./contactUs.routes";
-import insourancerouter from "./insurance.routes";
+import insurancerouter from "./insurance.routes";
 import { registerAbout } from "./about.routes";
 import accountancyRouter from "./accountancy.routes";
 import HsnAndSACRouter from "./hsnAndSac.routes";
@@ -91,7 +91,7 @@ router.use("/Startup", registerStartupRouter);
 
 router.use("/contactUs", contactUsRouter);
 
-router.use("/insourance", insourancerouter);
+router.use("/insurance", insurancerouter);
 
 router.use("/aboutTeam", registerAbout);
 

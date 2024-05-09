@@ -1,32 +1,34 @@
 import { Request, Response } from "express";
 import { prisma } from "../index";
 import { RegisterStartup } from "@prisma/client";
+import { ZodError, z } from "zod";
+
+const categoriesType = z.enum([
+  "registration",
+  "companyRegistration",
+  "returns",
+  "audits",
+]);
+
+const startupCreateSchema = z.object({
+  title: z.string(),
+  categories: categoriesType,
+  image: z.string().min(1, "image is required"),
+  priceWithGst: z.string().min(1, "priceWithGst is required"),
+  aboutService: z.string().min(1, "aboutService is required"),
+});
 
 export class RegisterStartupController {
   static async RegisterStartup(req: Request, res: Response) {
     try {
-      const image: string = req.file?.path as string;
-      const { title, categories } = req.body;
+      const imageUrl: string = req.file?.path as string;
+      // Data validation;
+      const { title, categories, image, aboutService, priceWithGst } =
+        startupCreateSchema.parse({
+          ...req.body,
+          image: imageUrl,
+        });
       const { id: userId } = req.user!;
-
-      if (!title) {
-        return res.status(400).json({
-          success: false,
-          message: "Required Query title name was not provided",
-        });
-      }
-      if (!image) {
-        return res.status(400).json({
-          success: false,
-          message: "Required Query image was not provided",
-        });
-      }
-      if (!categories) {
-        return res.status(400).json({
-          success: false,
-          message: "Required Query categories was not provided",
-        });
-      }
 
       const existingUser = await prisma.user.findUnique({
         where: { id: userId },
@@ -43,6 +45,8 @@ export class RegisterStartupController {
             image,
             userId,
             categories,
+            aboutService,
+            priceWithGst: parseInt(priceWithGst, 10),
           },
         });
 
@@ -51,10 +55,13 @@ export class RegisterStartupController {
         message: "Sucessfully Register Startup Setting created",
       });
     } catch (error) {
-      console.log(
-        "🚀 ~ RegisterStartupController ~ RegisterStartup ~ error:",
-        error
-      );
+      if (error instanceof ZodError) {
+        return res.status(400).json({
+          success: false,
+          message: "Validation Error",
+          errors: error.message,
+        });
+      }
       return res.status(500).json({
         success: false,
         message: "Internal server error",
