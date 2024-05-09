@@ -742,8 +742,8 @@ model RegisterStartup {
   id           Int             @id @default(autoincrement())
   title        String
   image        String
-  priceWithGst Int
-  aboutService String          @db.LongText
+  priceWithGst Int?
+  aboutService String?         @db.LongText
   userId       Int
   categories   StartupCategory
   user         User            @relation(fields: [userId], references: [id])
