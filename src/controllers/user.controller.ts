@@ -18,6 +18,7 @@ const UserSchema = z.object({
     .string({ required_error: "First name is required" })
     .min(1, "First name must be atleast 1 character long"),
   lastName: z.string().optional(),
+  middleName: z.string().optional(),
   gender: z.nativeEnum(UserGender),
   email: z.string().toLowerCase().email(),
   password: z.string().min(6, "Password must be atleast 6 characters long"),
@@ -297,16 +298,18 @@ export default class UserController {
   static async makeadmin(req: Request, res: Response) {
     try {
       const {
-        firstName,
-        lastName,
-        gender,
-        fatherName,
         aadhaar,
-        pan,
-        pin,
         email,
+        fatherName,
+        firstName,
+        middleName,
+        address,
+        gender,
+        lastName,
+        pan,
         password,
         phone,
+        pin,
       } = UserSchema.parse(req.body);
 
       const { id } = req.user!;
@@ -336,6 +339,8 @@ export default class UserController {
           password: hash,
           phone,
           fatherName,
+          middleName,
+          address,
           aadhaar,
           pan,
           pin,
@@ -349,9 +354,7 @@ export default class UserController {
 
       return res.status(200).send({
         success: true,
-        message:
-          `An OTP has been sent to your email "${email}".` +
-          `Verify your account by using that OTP`,
+        message: `An OTP has been sent to your email.` + `Verify your account.`,
         data: {
           user: {
             id: user.id,
@@ -361,6 +364,96 @@ export default class UserController {
             phone,
           },
           otp_key,
+        },
+      });
+    } catch (e) {
+      console.error(e);
+      if (e instanceof ZodError) {
+        return res.status(400).send({ success: false, message: e.message });
+      }
+      return res
+        .status(500)
+        .send({ success: false, message: "Something went wrong" });
+    }
+  }
+
+  static async updateadmin(req: Request, res: Response) {
+    try {
+      const {
+        aadhaar,
+        pan,
+        email,
+        phone,
+        fatherName,
+        firstName,
+        middleName,
+        lastName,
+        gender,
+        password,
+      } = UserSchema.extend({ password: z.string().optional() }).parse(
+        req.body
+      );
+
+      const { id: superadminId } = req.user!;
+      const { id } = req.params;
+
+      const found = await prisma.user.findFirst({
+        where: {
+          OR: [{ email }, { phone }],
+        },
+      });
+
+      if (!found) {
+        return res.status(409).send({
+          success: false,
+          message: "User with this email address or phone number do not exist.",
+        });
+      }
+
+      let newPassword;
+      if (password) {
+        const hash = await UserController.hashPassword(password);
+
+        if (found.password === hash) {
+          console.log("Password is same");
+          newPassword = found.password;
+        } else {
+          console.log("Password is updated");
+          newPassword = hash;
+        }
+      }
+
+      const user = await prisma.user.update({
+        where: {
+          id: parseInt(id, 10),
+        },
+        data: {
+          firstName,
+          lastName,
+          gender,
+          password: newPassword,
+          fatherName,
+          middleName,
+          aadhaar,
+          pan,
+          userType: "admin",
+          superadminId,
+        },
+      });
+
+      // const otp_key = await UserController.sendOtp(email, user.id);
+
+      return res.status(200).send({
+        success: true,
+        message: `User is updated`,
+        data: {
+          user: {
+            id: user.id,
+            firstName,
+            lastName,
+            email,
+            phone,
+          },
         },
       });
     } catch (e) {
@@ -684,7 +777,6 @@ export default class UserController {
         phone,
       } = req.body;
       const avatar: string = req.file?.path as string;
-      console.log("🚀 ~ UserController ~ updateProfile ~ avatar:", avatar);
 
       if (!firstName.length) {
         return res
@@ -729,6 +821,53 @@ export default class UserController {
       return res
         .status(200)
         .send({ success: true, message: "Profile Updated" });
+    } catch (e) {
+      console.log(e);
+      return res
+        .status(500)
+        .send({ success: false, message: "Something went wrong" });
+    }
+  }
+
+  static async deleteUser(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      if (!id) {
+        return res
+          .status(400)
+          .send({ success: false, message: "User id is required" });
+      }
+
+      const token = TokenService.getTokenFromAuthHeader(
+        req.headers.authorization
+      );
+
+      if (!token) {
+        return res
+          .status(403)
+          .send({ success: false, message: "Authorization Token is required" });
+      }
+
+      const Superadmin = TokenService.decodeToken(token);
+
+      const foundUser = await prisma.user.findFirst({
+        where: {
+          id: parseInt(id, 10),
+        },
+      });
+
+      if (!foundUser) {
+        return res
+          .status(404)
+          .send({ success: false, message: "User not found" });
+      }
+
+      await prisma.user.delete({
+        where: {
+          id: parseInt(id, 10),
+          superadminId: Superadmin.id,
+        },
+      });
     } catch (e) {
       console.log(e);
       return res
@@ -878,12 +1017,18 @@ export default class UserController {
 
       const page = parseInt((pageNumber as string) || "0");
 
+      const usersCount = await prisma.user.count({
+        where: {
+          superadminId: Superadmin.id,
+          userType: "admin",
+        },
+      });
+
       const user = await prisma.user.findMany({
         where: {
           superadminId: Superadmin.id,
           userType: "admin",
         },
-
         orderBy: {
           createdAt: order === "asc" ? "asc" : "desc",
         },
@@ -897,7 +1042,19 @@ export default class UserController {
           .json({ success: false, message: "Agents not found" });
       }
 
-      return res.json({ success: true, data: user });
+      const filteredUsers = user.map((user) => {
+        const newUser = Object.fromEntries(
+          Object.entries(user).filter(([entry]) => entry !== "password")
+        );
+        return newUser;
+      });
+
+      return res.json({
+        success: true,
+        data: filteredUsers,
+        totalusers: usersCount,
+        page: Math.ceil(usersCount / UserController.USERS_PER_PAGE),
+      });
     } catch (error) {
       return res
         .status(404)
