@@ -53,6 +53,6 @@ cmsRouter.post(
 
 // Footer
 cmsRouter.put("/footer", verifyToken, adminCheck, CMSController.updateFooter);
-cmsRouter.get("/footer", verifyToken, adminCheck, CMSController.getFooter);
+cmsRouter.get("/footer", CMSController.getFooter);
 
 export default cmsRouter;
