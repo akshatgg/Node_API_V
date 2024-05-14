@@ -743,7 +743,7 @@ model RegisterStartup {
   title        String
   image        String
   priceWithGst Int?
-  aboutService String?          @db.LongText
+  aboutService String?         @db.LongText
   userId       Int
   categories   StartupCategory
   user         User            @relation(fields: [userId], references: [id])

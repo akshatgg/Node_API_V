@@ -17,6 +17,11 @@ userRouter.get("/get-all-users", SuperadminCheck, UserController.getAllUsers);
 userRouter.post("/sign-up", UserController.signUp);
 
 userRouter.post("/sign-up-admin", SuperadminCheck, UserController.makeadmin);
+userRouter.put(
+  "/sign-up-admin/:id",
+  SuperadminCheck,
+  UserController.updateadmin
+);
 
 userRouter.post(
   "/sign-up-agent",
@@ -61,6 +66,12 @@ userRouter.put(
   verifyToken,
   multerInstance.single("avatar"),
   UserController.updateProfile
+);
+
+userRouter.delete(
+  "/delete-user/:id",
+  SuperadminCheck,
+  UserController.deleteUser
 );
 
 export default userRouter;
