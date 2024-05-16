@@ -1,3 +1,4 @@
+import { deleteImageByUrl } from "../config/cloudinaryUploader";
 import { prisma } from "../index";
 import { Request, Response } from "express";
 
@@ -90,6 +91,7 @@ export default class BlogController {
     try {
       const { title, contentHeading, category, contentDescription } = req.body;
       const imageUrl: string = req.file?.path as string;
+      console.log("🚀 ~ BlogController ~ updatePost ~ imageUrl:", imageUrl);
 
       const { id } = req.params;
 
@@ -118,10 +120,11 @@ export default class BlogController {
           .json({ success: true, message: "Post not found" });
       }
 
-      if (post.userId !== user.id) {
-        return res
-          .status(403)
-          .json({ success: true, message: "Unauthorized Access" });
+      const oldImage = post.imageUrl;
+
+      if (imageUrl && oldImage) {
+        // delete old image
+        await deleteImageByUrl([oldImage]);
       }
 
       const updatedPost = await prisma.post.update({
@@ -131,12 +134,13 @@ export default class BlogController {
           category,
           contentHeading,
           contentDescription,
-          imageUrl: imageUrl ?? post.imageUrl,
+          imageUrl: imageUrl ?? oldImage,
         },
       });
 
       return res.status(200).json({ success: true, data: updatedPost });
     } catch (error) {
+      console.log("🚀 ~ BlogController ~ updatePost ~ error:", error);
       return res.status(500).json({
         success: false,
         message: "Something went wrong",
