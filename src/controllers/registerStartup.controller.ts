@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { prisma } from "../index";
 import { RegisterStartup } from "@prisma/client";
 import { ZodError, z } from "zod";
+import { deleteImageByUrl } from "../config/cloudinaryUploader";
 
 const categoriesType = z.enum([
   "registration",
@@ -13,7 +14,7 @@ const categoriesType = z.enum([
 const startupCreateSchema = z.object({
   title: z.string(),
   categories: categoriesType,
-  image: z.string().min(1, "image is required"),
+  image: z.string().optional(),
   priceWithGst: z.string().min(1, "priceWithGst is required"),
   aboutService: z.string().min(1, "aboutService is required"),
 });
@@ -23,11 +24,13 @@ export class RegisterStartupController {
     try {
       const imageUrl: string = req.file?.path as string;
       // Data validation;
-      const { title, categories, image, aboutService, priceWithGst } =
-        startupCreateSchema.parse({
-          ...req.body,
-          image: imageUrl,
-        });
+      const { title, categories, aboutService, priceWithGst } =
+        startupCreateSchema.parse(req.body);
+
+      if (!imageUrl) {
+        return res.status(400).json({ error: "Image is required" });
+      }
+
       const { id: userId } = req.user!;
 
       const existingUser = await prisma.user.findUnique({
@@ -42,7 +45,7 @@ export class RegisterStartupController {
         await prisma.registerStartup.create({
           data: {
             title,
-            image,
+            image: imageUrl,
             userId,
             categories,
             aboutService,
@@ -130,20 +133,17 @@ export class RegisterStartupController {
 
   static async update(req: Request, res: Response) {
     try {
-      const { id, title, categories } = req.body;
-      const { id: userId } = req.user!;
+      const { id } = req.body;
+      const { title, categories, aboutService, priceWithGst } =
+        startupCreateSchema.parse(req.body);
+
       const image: string = req.file?.path as string;
+      const { id: userId } = req.user!;
 
       if (!title) {
         return res.status(400).json({
           success: false,
           message: "Required Query title name was not provided",
-        });
-      }
-      if (!image) {
-        return res.status(400).json({
-          success: false,
-          message: "Required Query image was not provided",
         });
       }
       if (!categories) {
@@ -165,6 +165,10 @@ export class RegisterStartupController {
         where: { id: parseInt(id) },
       });
 
+      if (existingStartup?.image && image) {
+        await deleteImageByUrl([existingStartup.image]);
+      }
+
       const updatedStartup = await prisma.registerStartup.update({
         where: { id: parseInt(id) },
         data: {
@@ -172,6 +176,8 @@ export class RegisterStartupController {
           categories,
           userId,
           image: image ?? existingStartup?.image,
+          aboutService,
+          priceWithGst: parseInt(priceWithGst, 10),
         },
       });
 
