@@ -356,6 +356,9 @@ model Invoice {
   utgst         Float?
   details       String?
   extraDetails  String?
+  invoiceDate   DateTime?
+  dueDate       DateTime?
+  isInventory   Boolean?
   modeOfPayment ModeOfPayment
   credit        Boolean
   userId        Int
