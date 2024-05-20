@@ -306,7 +306,10 @@ model Item {
   openingStock  Decimal?
   closingStock  Decimal?
   purchasePrice Decimal?
-  gst           Decimal?
+  cgst          Decimal?
+  sgst          Decimal?
+  igst          Decimal?
+  utgst         Decimal?
   taxExempted   Boolean       @default(false)
   description   String?
   hsnCode       String?
@@ -374,13 +377,14 @@ model Invoice {
 }
 
 model InvoiceItem {
-  id        String  @id @default(uuid())
-  itemId    String
-  quantity  Int
-  discount  Decimal @default(0.0)
-  item      Item    @relation(fields: [itemId], references: [id])
-  invoiceId String
-  invoice   Invoice @relation(fields: [invoiceId], references: [id])
+  id         String  @id @default(uuid())
+  itemId     String
+  quantity   Int
+  discount   Decimal @default(0.0)
+  taxPercent Decimal @default(0.0)
+  item       Item    @relation(fields: [itemId], references: [id])
+  invoiceId  String
+  invoice    Invoice @relation(fields: [invoiceId], references: [id])
 }
 
 model Service {

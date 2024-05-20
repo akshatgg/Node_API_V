@@ -90,15 +90,6 @@ class InvoiceController {
         credit = false,
         status,
       } = req.body;
-      console.log(
-        "🚀 ~ InvoiceController ~ create ~ isInventory:",
-        isInventory
-      );
-      console.log("🚀 ~ InvoiceController ~ create ~ dueDate:", dueDate);
-      console.log(
-        "🚀 ~ InvoiceController ~ create ~ invoiceDate:",
-        invoiceDate
-      );
 
       if (partyId) {
         const party = await prisma.party.findUnique({ where: { id: partyId } });
@@ -124,10 +115,12 @@ class InvoiceController {
               itemId,
               quantity,
               discount,
+              taxPercent,
             }: {
               itemId: string;
               quantity: number;
               discount: number;
+              taxPercent: number;
             }) => ({
               item: {
                 connect: {
@@ -136,6 +129,7 @@ class InvoiceController {
               },
               quantity,
               discount,
+              taxPercent,
             })
           )
         : [];
@@ -183,6 +177,7 @@ class InvoiceController {
 
       return res.status(201).json(invoice);
     } catch (error) {
+      console.log("🚀 ~ InvoiceController ~ create ~ error:", error);
       return res
         .status(500)
         .json({ success: false, message: "Internal server error" });
@@ -223,6 +218,7 @@ class InvoiceController {
         pagination: { pages: Math.ceil(count / parsedLimit) },
       });
     } catch (error) {
+      console.log("🚀 ~ InvoiceController ~ getAll ~ error:", error);
       res
         .status(500)
         .json({ success: false, message: "Internal server error" });
@@ -357,7 +353,7 @@ class InvoiceController {
         },
       };
 
-      const updatedInvoice = await prisma.invoice.update({
+      await prisma.invoice.update({
         where: { id: invoiceid },
         data: invoiceData,
         include: {
@@ -525,7 +521,10 @@ class InvoiceController {
         openingStock,
         closingStock,
         purchasePrice,
-        gst,
+        cgst,
+        sgst,
+        igst,
+        utgst,
         taxExempted,
         description,
         hsnCode,
@@ -541,7 +540,10 @@ class InvoiceController {
           openingStock,
           closingStock,
           purchasePrice,
-          gst,
+          cgst,
+          sgst,
+          igst,
+          utgst,
           userId,
           taxExempted,
           description,
