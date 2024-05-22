@@ -33,6 +33,7 @@ import HsnAndSACRouter from "./hsnAndSac.routes";
 import billpayablerouter from "./billpayable.routes";
 import billrecievablerouter from "./billrecivable.routes";
 import gstr1Router from "./gstr1.routes";
+import orcRoutes from "./ocr.routes";
 // import ocrRouter from "./ocr.routes";
 
 const router = Router();
@@ -102,6 +103,8 @@ router.use("/billpayable", billpayablerouter);
 router.use("/billrecieve", billrecievablerouter);
 
 router.use("/gstr1", gstr1Router);
+
+router.use("/ocr", orcRoutes);
 
 router.get("/", (req, res) => {
   return res.send({ message: "Up and running" });
