@@ -5,3 +5,4 @@ memorylogs
 .vscode
 dist
 uploads
+/compose.yaml

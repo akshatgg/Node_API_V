@@ -6,6 +6,8 @@ import {
   LedgerType,
   Party,
   PartyType,
+  InvoiceType,
+  InvoiceStatus,
 } from "@prisma/client";
 import { prisma } from "../index";
 
@@ -189,18 +191,41 @@ class InvoiceController {
       const { id: userId } = req.user!;
 
       // Pagination parameters
-      const { page = 1, limit = 10 } = req.query;
+      const { page = 1, limit = 10, type, search, status } = req.query;
       const parsedPage = parseInt(page.toString(), 10);
       const parsedLimit = parseInt(limit.toString(), 10);
 
       // Calculate the offset based on the page and limit
       const offset = (parsedPage - 1) * parsedLimit;
 
-      const count = await prisma.invoice.count({ where: { userId } });
+      // Build the where clause for filters
+      const whereClause: Prisma.InvoiceWhereInput = { userId };
 
-      // Get all invoices for the user with pagination
+      if (type) {
+        whereClause.type = type.toString() as InvoiceType;
+      }
+
+      if (search) {
+        whereClause.OR = [
+          { gstNumber: { contains: search.toString() } },
+          { invoiceNumber: { contains: search.toString() } },
+        ];
+      }
+
+      if (status) {
+        if (!whereClause.OR) whereClause.OR = [];
+        whereClause.OR.push({
+          status: {
+            equals: status.toString() as InvoiceStatus,
+          },
+        });
+      }
+
+      const count = await prisma.invoice.count({ where: whereClause });
+
+      // Get all invoices for the user with pagination and filters
       const invoices: Invoice[] = await prisma.invoice.findMany({
-        where: { userId },
+        where: whereClause,
         skip: offset,
         take: parsedLimit,
         include: {
@@ -215,7 +240,12 @@ class InvoiceController {
       res.status(200).json({
         success: true,
         invoices,
-        pagination: { pages: Math.ceil(count / parsedLimit) },
+        pagination: {
+          pages: Math.ceil(count / parsedLimit),
+          currentPage: parsedPage,
+          limit: parsedLimit,
+          totalItems: count,
+        },
       });
     } catch (error) {
       console.log("🚀 ~ InvoiceController ~ getAll ~ error:", error);
@@ -256,7 +286,6 @@ class InvoiceController {
     try {
       const { id: userId } = req.user!;
 
-      // Create the invoice
       const {
         invoiceNumber,
         gstNumber,
@@ -265,6 +294,9 @@ class InvoiceController {
         totalAmount,
         totalGst,
         stateOfSupply,
+        invoiceDate,
+        dueDate,
+        isInventory,
         cgst,
         sgst,
         igst,
@@ -280,9 +312,9 @@ class InvoiceController {
       const invoiceid = req.params.id;
 
       if (!invoiceid) {
-        return res.status(401).json({
+        return res.status(400).json({
           success: false,
-          message: "id params not pass or not found!",
+          message: "Invoice ID not provided",
         });
       }
 
@@ -291,48 +323,30 @@ class InvoiceController {
 
         if (!party) {
           return res
-            .status(401)
+            .status(404)
             .json({ success: false, message: "Party not found" });
         }
       }
 
       const gstRegex = /^\d{2}[A-Z]{5}\d{4}[A-Z]{1}\d[Z]{1}[A-Z\d]{1}$/;
 
-      if (!gstRegex.test(gstNumber)) {
+      if (gstNumber && !gstRegex.test(gstNumber)) {
         return res.status(400).json({ error: "Invalid GST number" });
       }
 
-      // Check if invoiceItems is defined and is an array
-
-      const formattedInvoiceItems = invoiceItems
-        ? invoiceItems.map(
-            ({
-              itemId,
-              quantity,
-              discount,
-            }: {
-              itemId: string;
-              quantity: number;
-              discount: number;
-            }) => ({
-              item: {
-                connect: {
-                  id: itemId,
-                },
-              },
-              quantity,
-              discount,
-            })
-          )
-        : [];
+      const formattedInvoiceItems =
+        invoiceItems?.map(
+          (item: { itemId: string; quantity: number; discount: number }) => ({
+            itemId: item.itemId,
+            quantity: item.quantity,
+            discount: item.discount,
+          })
+        ) || [];
 
       const invoiceData: Prisma.InvoiceUpdateInput = {
         invoiceNumber,
         gstNumber,
         type,
-        party: {
-          connect: { id: partyId },
-        },
         totalAmount,
         totalGst,
         stateOfSupply,
@@ -343,14 +357,17 @@ class InvoiceController {
         details,
         extraDetails,
         modeOfPayment,
+        invoiceDate,
+        dueDate,
+        isInventory,
         credit,
         status,
+        party: partyId ? { connect: { id: partyId } } : undefined,
         invoiceItems: {
+          deleteMany: {},
           create: formattedInvoiceItems,
         },
-        user: {
-          connect: { id: userId },
-        },
+        user: { connect: { id: userId } },
       };
 
       await prisma.invoice.update({
@@ -367,9 +384,12 @@ class InvoiceController {
 
       return res
         .status(200)
-        .json({ success: true, message: "successfully update invoice" });
+        .json({ success: true, message: "Successfully updated invoice" });
     } catch (error) {
-      res.status(500).json({ sucess: false, message: "Internal server error" });
+      console.error("Error ==> ", error);
+      return res
+        .status(500)
+        .json({ success: false, message: "Internal server error" });
     }
   }
 
