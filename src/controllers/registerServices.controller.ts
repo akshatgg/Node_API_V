@@ -76,6 +76,12 @@ export class RegisterServicesController {
       if (req.user?.userType === "normal") {
         whereClause["userId"] = userId;
       }
+
+      // Pagination parameters
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const skip = (page - 1) * limit;
+
       const allServices = await prisma.registerServices.findMany({
         where: whereClause,
         include: {
@@ -98,9 +104,25 @@ export class RegisterServicesController {
             },
           },
         },
+        skip,
+        take: limit,
       });
 
-      return res.status(200).json({ success: true, data: allServices });
+      // Total count for pagination info
+      const totalCount = await prisma.registerServices.count({
+        where: whereClause,
+      });
+
+      return res.status(200).json({
+        success: true,
+        data: allServices,
+        pagination: {
+          total: totalCount,
+          totalPages: Math.ceil(totalCount / limit),
+          currentPage: page,
+          pageSize: limit,
+        },
+      });
     } catch (error) {
       return res.status(500).json({
         success: false,
