@@ -34,6 +34,7 @@ import billpayablerouter from "./billpayable.routes";
 import billrecievablerouter from "./billrecivable.routes";
 import gstr1Router from "./gstr1.routes";
 import orcRoutes from "./ocr.routes";
+import registerServicesRouter from "./registerServices.routes";
 // import ocrRouter from "./ocr.routes";
 
 const router = Router();
@@ -89,6 +90,7 @@ router.use("/insurance", documentRouter);
 router.use("/visitorCount", visitorRouter);
 
 router.use("/Startup", registerStartupRouter);
+router.use("/registration", registerServicesRouter);
 
 router.use("/contactUs", contactUsRouter);
 

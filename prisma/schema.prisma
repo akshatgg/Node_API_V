@@ -25,58 +25,59 @@ enum UserGender {
 }
 
 model User {
-  id              Int                @id @default(autoincrement())
-  createdAt       DateTime           @default(now())
-  email           String             @unique
-  password        String
-  firstName       String
-  middleName      String?
-  lastName        String?
-  fatherName      String?
-  phone           String?
-  gender          UserGender
-  address         String?
-  pin             String?
-  aadhaar         String?
-  pan             String?
-  dob             DateTime?
-  avatar          String?
-  adminId         Int?
-  superadminId    Int?
-  verified        Boolean            @default(false)
-  userType        UserType           @default(normal)
-  otps            Otp[]
-  businessProfile BusinessProfile?
-  invoices        Invoice[]
-  categories      Category[]
-  items           Item[]
-  parties         Party[]
-  payments        Payment[]
-  orders          Order[]
-  posts           Post[]
-  accounts        Account[]
-  bankAccounts    BankDetails[]
-  loans           LoanApplication[]
-  documents       UploadedDocument[]
-  insurances      Insurance[]
-  registerStartup RegisterStartup[]
-  journalEntries  JournalEntry[]
-  legders         Ledger[]
-  transactions    Transaction[]
-  agentId         Agent?
-  clientAccounts  Client[]
-  gstr1           Gstr1_4A[]
-  gstr1_5A        Gstr1_5A[]
-  gstr1_6A        Gstr1_6A[]
-  gstr1_7B        Gstr1_7B[]
-  gstr1_8ABCD     Gstr1_8ABCD[]
-  gstr1_9B        Gstr1_9B[]
-  gstr1_9B_un     Gstr1_9B_un[]
-  gstr1_11_A2B    Gstr1_11A2A2[]
-  gstr1_11_B1B2   Gstr1_11B1B2[]
-  gstr1_12HSN     gstr1_12HSN[]
-  Cart            Cart?
-  Subscriptions   Subscriptions[]
+  id               Int                @id @default(autoincrement())
+  createdAt        DateTime           @default(now())
+  email            String             @unique
+  password         String
+  firstName        String
+  middleName       String?
+  lastName         String?
+  fatherName       String?
+  phone            String?
+  gender           UserGender
+  address          String?
+  pin              String?
+  aadhaar          String?
+  pan              String?
+  dob              DateTime?
+  avatar           String?
+  adminId          Int?
+  superadminId     Int?
+  verified         Boolean            @default(false)
+  userType         UserType           @default(normal)
+  otps             Otp[]
+  businessProfile  BusinessProfile?
+  invoices         Invoice[]
+  categories       Category[]
+  items            Item[]
+  parties          Party[]
+  payments         Payment[]
+  orders           Order[]
+  posts            Post[]
+  accounts         Account[]
+  bankAccounts     BankDetails[]
+  loans            LoanApplication[]
+  documents        UploadedDocument[]
+  insurances       Insurance[]
+  registerStartup  RegisterStartup[]
+  journalEntries   JournalEntry[]
+  legders          Ledger[]
+  transactions     Transaction[]
+  agentId          Agent?
+  clientAccounts   Client[]
+  gstr1            Gstr1_4A[]
+  gstr1_5A         Gstr1_5A[]
+  gstr1_6A         Gstr1_6A[]
+  gstr1_7B         Gstr1_7B[]
+  gstr1_8ABCD      Gstr1_8ABCD[]
+  gstr1_9B         Gstr1_9B[]
+  gstr1_9B_un      Gstr1_9B_un[]
+  gstr1_11_A2B     Gstr1_11A2A2[]
+  gstr1_11_B1B2    Gstr1_11B1B2[]
+  gstr1_12HSN      gstr1_12HSN[]
+  Cart             Cart?
+  Subscriptions    Subscriptions[]
+  RegisterServices RegisterServices[]
 }
 
 model Otp {
@@ -746,14 +747,28 @@ enum StartupCategory {
 }
 
 model RegisterStartup {
-  id           Int             @id @default(autoincrement())
-  title        String
-  image        String
-  priceWithGst Int?
-  aboutService String?         @db.LongText
-  userId       Int
-  categories   StartupCategory
-  user         User            @relation(fields: [userId], references: [id])
+  id               Int                @id @default(autoincrement())
+  title            String
+  image            String
+  priceWithGst     Int?
+  aboutService     String?            @db.LongText
+  userId           Int
+  categories       StartupCategory
+  user             User               @relation(fields: [userId], references: [id])
+  RegisterServices RegisterServices[]
+}
+
+model RegisterServices {
+  id              Int             @id @default(autoincrement())
+  serviceId       Int             @unique
+  registerStartup RegisterStartup @relation(fields: [serviceId], references: [id])
+  userId          Int
+  user            User            @relation(fields: [userId], references: [id])
+
+  aadhaarCard    String
+  panCard        String
+  gstCertificate String
+  photo          String
 }
 
 model ContactUs {
