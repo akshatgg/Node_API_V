@@ -10,7 +10,7 @@ cmsRouter.get("/homescreen", CMSController.getHomeScreen);
 
 cmsRouter.get("/total-users", CMSController.getUserCount);
 
-cmsRouter.get("/stats", verifyToken, adminCheck, CMSController.getStats);
+cmsRouter.get("/stats", CMSController.getStats);
 
 cmsRouter.get(
   "/mailing-list",

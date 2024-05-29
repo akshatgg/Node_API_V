@@ -10,6 +10,7 @@ const careerRouter = Router();
 careerRouter.post(
   "/create",
   multerInstance.single("cv"),
+  CareerController.checkDuplicate,
   CareerController.createCareer
 );
 

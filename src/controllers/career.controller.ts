@@ -1,12 +1,48 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { Career } from "@prisma/client";
 import { join } from "path";
 import { cwd } from "process";
 import { prisma } from "..";
+import { deleteImageByUrl } from "../config/cloudinaryUploader";
 
 const currentDir = cwd();
 
 export default class CareerController {
+  static async checkDuplicate(req: Request, res: Response, next: NextFunction) {
+    try {
+      const file = req.file as Express.Multer.File;
+      const { name, address, pin, email, mobile, skills, gender } = req.body;
+      if (
+        !name ||
+        !skills ||
+        !gender ||
+        !email ||
+        !pin ||
+        !address ||
+        !mobile
+      ) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Missing required fields." });
+      }
+
+      const existingEntry = await prisma.career.findFirst({
+        where: { email },
+      });
+
+      if (existingEntry) {
+        await deleteImageByUrl([file.path]);
+        return res.status(400).json({
+          success: false,
+          message: "We have already recieved your request.",
+        });
+      }
+      next();
+    } catch (error) {
+      next(error);
+    }
+  }
+
   //create career
   static async createCareer(req: Request, res: Response) {
     try {
@@ -19,20 +55,6 @@ export default class CareerController {
       }
 
       const { name, address, pin, email, mobile, skills, gender } = req.body;
-
-      if (
-        !name ||
-        !address ||
-        !pin ||
-        !email ||
-        !mobile ||
-        !skills ||
-        !gender
-      ) {
-        return res
-          .status(400)
-          .json({ success: false, message: "Missing required fields." });
-      }
 
       const { path: cvFilePath } = file;
 

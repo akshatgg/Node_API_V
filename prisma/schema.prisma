@@ -121,12 +121,13 @@ model BusinessProfile {
 }
 
 model Cart {
-  id        String       @id @default(uuid())
-  userId    Int          @unique
-  user      User         @relation(fields: [userId], references: [id])
-  services  ApiService[]
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @default(now())
+  id                   String             @id @default(uuid())
+  userId               Int                @unique
+  user                 User               @relation(fields: [userId], references: [id])
+  registrationServices RegisterServices[]
+  services             ApiService[]
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @default(now())
 }
 
 model ApiService {
@@ -769,6 +770,7 @@ model RegisterServices {
   panCard        String
   gstCertificate String
   photo          String
+  cart           Cart[]
 }
 
 model ContactUs {
