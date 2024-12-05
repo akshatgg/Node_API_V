@@ -9,9 +9,13 @@ export default class TokenService {
     }
 
     static generateToken(user:UserData) {
-        const token = jwt.sign(user, process.env.JWT_KEY as string, {
+        const tokenPayload = {
+            email: user.email,
+            id: user.id
+          };
+        const token = jwt.sign(tokenPayload, process.env.JWT_KEY as string, {
             issuer: "iTaxEasy",
-            expiresIn: "1Y"
+            expiresIn: "24h"
         });
 
         return token;

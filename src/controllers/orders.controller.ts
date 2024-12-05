@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { prisma } from '../index';
 import { OrderStatus } from '@prisma/client';
-import PaymentService from './payment/payment.service';
+import PaymentService from '../services/payment.service';
 import Decimal from 'decimal.js';
 
 const calculateGST = (price: Decimal, gstPercentage: Decimal): Decimal => {

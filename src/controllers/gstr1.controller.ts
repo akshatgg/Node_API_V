@@ -56,7 +56,7 @@ export default class GSTR1Controller {
               })
       
               res.status(201).
-              json({success:true,          
+              json({success:true,
               message:"successfully created Record",
               data:gstr1})
     

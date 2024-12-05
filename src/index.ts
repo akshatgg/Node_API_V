@@ -3,7 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import cors from "cors";
 import helmet from "helmet";
 import { rateLimit } from "express-rate-limit";
-
+import cookieParser from 'cookie-parser';
 import { config } from "dotenv";
 import router from "./routes";
 
@@ -43,7 +43,7 @@ const limiter = rateLimit({
 });
 
 app.use(helmet());
-
+app.use(cookieParser());
 app.use(cors());
 
 app.use(
@@ -54,7 +54,7 @@ app.use(
 
 app.use(limiter);
 
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
   console.error(err.stack);
   return res.status(500).json({ error: "Internal Server Error" });
 });

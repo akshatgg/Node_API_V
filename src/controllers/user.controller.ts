@@ -57,7 +57,7 @@ export default class UserController {
 
   static async sendOtp(email: string, userId: number) {
     const otp = generateOTP();
-
+    console.log(otp)
     const { id: otp_key } = await prisma.otp.create({
       data: {
         otp,
@@ -159,6 +159,7 @@ export default class UserController {
 
   static async resendotp(req: Request, res: Response) {
     const email = req.body.email;
+    console.log(email)
     const user = await prisma.user.findUnique({
       where: { email },
     });
@@ -171,6 +172,7 @@ export default class UserController {
     }
 
     const otp_key = await UserController.sendOtp(email, user.id);
+    console.log(otp_key)
 
     res.status(200).send({
       success: true,
@@ -178,47 +180,68 @@ export default class UserController {
       otp_key: otp_key,
     });
   }
-
   static async login(req: Request, res: Response) {
-    const { email, password } = LoginSchema.parse(req.body);
-
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
-
-    if (!user) {
-      return res.status(401).send({
+    try {
+      const { email, password } = LoginSchema.parse(req.body);
+  
+      // Find user by email
+      const user = await prisma.user.findUnique({
+        where: { email },
+      });
+  
+      // Check if user exists
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "User with this email does not exist",
+        });
+      }
+  
+      // Check if user is verified
+      if (!user.verified) {
+        return res.status(403).json({
+          success: false,
+          message: "User is not verified",
+        });
+      }
+  
+      // Compare passwords
+      const authorized = await bcrypt.compare(password, user.password);
+      if (!authorized) {
+        return res.status(401).json({
+          success: false,
+          message: "Invalid credentials",
+        });
+      }
+  
+      // Generate token with limited user data
+      const token = TokenService.generateToken(user);
+  
+      res.cookie('authToken', token, {
+        httpOnly: true,       // Prevents JavaScript from accessing the cookie
+        secure: process.env.NODE_ENV === 'production', // Ensures cookie is sent over HTTPS only in production
+        maxAge: 24 * 60 * 60 * 1000, // Cookie expiration time (1 day)
+        sameSite: 'Strict',   // Restricts cookie to same-site requests
+      });
+  
+      // Exclude sensitive data (e.g., password) from the user object
+      const { password: _, ...userWithoutPassword } = user;
+  
+      return res.status(200).json({
+        success: true,
+        message: "Login successful",
+        data: {
+          user: userWithoutPassword,
+        },
+      });
+    } catch (error) {
+      console.error("Login error:", error);
+      return res.status(500).json({
         success: false,
-        message: "User with this email does not exists",
+        message: "Internal server error",
       });
     }
-
-    if (user.verified === false) {
-      return res
-        .status(301)
-        .send({ success: false, message: "User is Not Verified" });
-    }
-
-    const authorized = await bcrypt.compare(password, user.password);
-
-    if (!authorized) {
-      return res
-        .status(401)
-        .send({ success: false, message: "Invalid credentials" });
-    }
-
-    const token = TokenService.generateToken(user);
-
-    return res.status(200).send({
-      success: true,
-      message: "OTP Verified",
-      data: {
-        user,
-        token,
-      },
-    });
   }
-
   static async changeusertype(req: Request, res: Response) {
     try {
       const { email, type } = UserTypeSchema.parse(req.body);

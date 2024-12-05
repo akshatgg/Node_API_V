@@ -1,7 +1,7 @@
-import { PaymentData, PaymentResponseData } from "./types";
-import { axiosCall, checkReverseHash, createPaymentForm, generateHash, generatePayoutHash, generateRefundHash, generateTransactionDateHash, generateTransactionHash, getPaymentURL, getQueryURL, validatePaymentData } from "./utils";
-import { config } from "./config";
-import { payoutSchema, refundSchema, transactionDateSchema, transactionSchema } from "./schemas";
+import { PaymentData, PaymentResponseData } from "../controllers/payment/types";
+import { axiosCall, checkReverseHash, createPaymentForm, generateHash, generatePayoutHash, generateRefundHash, generateTransactionDateHash, generateTransactionHash, getPaymentURL, getQueryURL, validatePaymentData } from "../controllers/payment/utils";
+import { config } from "../controllers/payment/config";
+import { payoutSchema, refundSchema, transactionDateSchema, transactionSchema } from "../controllers/payment/schemas";
 import { ZodError, z } from "zod";
 
 export default class PaymentService {

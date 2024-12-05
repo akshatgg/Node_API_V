@@ -1,11 +1,16 @@
 {
   "compilerOptions": {
+    "target": "ES2015",                 // Keep ES2015 or upgrade to a newer version like ES2020
+    "module": "commonjs",               // Use "commonjs" or "ESNext" depending on your environment
     "sourceMap": true,
     "outDir": "dist",
     "strict": true,
-    "lib": ["esnext", "es6", "dom"],
+    "lib": ["esnext", "dom"],           // Remove redundant "es6" as it's included in "esnext"
     "esModuleInterop": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "skipLibCheck": true,               // Skip type checking in node_modules (optional, helps avoid library conflicts)
+    "moduleResolution": "node",        // Ensure proper resolution for npm modules
+    "allowSyntheticDefaultImports": true // Improve compatibility with non-ES modules
   },
   "include": ["src/**/*", "./tesseract-override.d.ts"]
 }

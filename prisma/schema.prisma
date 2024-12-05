@@ -1,13 +1,9 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["fullTextSearch", "fullTextIndex"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -29,6 +25,7 @@ model User {
   createdAt        DateTime           @default(now())
   email            String             @unique
   password         String
+  userProfile      UserProfile?
   firstName        String
   middleName       String?
   lastName         String?
@@ -89,6 +86,22 @@ model Otp {
   used      Boolean  @default(false)
 }
 
+model UserProfile {
+  id         Int        @id @default(autoincrement())
+  pan        String?
+  aadhaar    String?
+  firstName  String
+  middleName String?
+  lastName   String?
+  email      String     @unique
+  phone      String?
+  gender     UserGender
+  address    String?
+  pincode    String?
+  userId     Int        @unique
+  user       User       @relation(fields: [userId], references: [id])
+}
+
 model BusinessProfile {
   id                     Int      @id @default(autoincrement())
   businessName           String
@@ -125,6 +138,7 @@ model Cart {
   userId               Int                @unique
   user                 User               @relation(fields: [userId], references: [id])
   registrationServices RegisterServices[]
+  registrationStartup  RegisterStartup[]
   services             ApiService[]
   createdAt            DateTime           @default(now())
   updatedAt            DateTime           @default(now())
@@ -168,6 +182,8 @@ model Subscriptions {
   id                   String                @id @default(uuid())
   userId               Int
   user                 User                  @relation(fields: [userId], references: [id])
+  registrationServices RegisterServices[]
+  registrationStartup  RegisterStartup[]
   services             ApiService[]
   amountForServices    Float
   txnid                String?               @unique @default(uuid())
@@ -264,8 +280,6 @@ model Party {
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @default(now())
   ledgers           Ledger[]
-
-  @@fulltext([partyName])
 }
 
 model Category {
@@ -324,8 +338,6 @@ model Item {
   user          User          @relation(fields: [userId], references: [id])
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @default(now())
-
-  @@fulltext([itemName])
 }
 
 enum InvoiceType {
@@ -380,11 +392,11 @@ model Invoice {
 
 model InvoiceItem {
   id         String  @id @default(uuid())
-  itemId     String
+  itemId     String?
   quantity   Int
   discount   Decimal @default(0.0)
   taxPercent Decimal @default(0.0)
-  item       Item    @relation(fields: [itemId], references: [id])
+  item       Item?   @relation(fields: [itemId], references: [id], onDelete: SetNull)
   invoiceId  String
   invoice    Invoice @relation(fields: [invoiceId], references: [id])
 }
@@ -458,8 +470,8 @@ model Library {
   order_result        String
   tribunal_order_date String
   assessment_year     String
-  judgment            String   @db.LongText
-  conclusion          String   @db.LongText
+  judgment            String
+  conclusion          String
   download            String
   upload              String?
   createdAt           DateTime @default(now())
@@ -471,7 +483,7 @@ model Post {
   userId             Int
   title              String
   contentHeading     String
-  contentDescription String   @db.LongText()
+  contentDescription String   @db.Text
   category           String
   imageUrl           String
   user               User     @relation(fields: [userId], references: [id])
@@ -752,11 +764,13 @@ model RegisterStartup {
   title            String
   image            String
   priceWithGst     Int?
-  aboutService     String?            @db.LongText
+  aboutService     String?
   userId           Int
   categories       StartupCategory
   user             User               @relation(fields: [userId], references: [id])
   RegisterServices RegisterServices[]
+  subscriptions    Subscriptions[]
+  cart             Cart[]
 }
 
 model RegisterServices {
@@ -771,6 +785,7 @@ model RegisterServices {
   gstCertificate String
   photo          String
   cart           Cart[]
+  subscriptions  Subscriptions[]
 }
 
 model ContactUs {

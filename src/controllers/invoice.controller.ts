@@ -642,42 +642,38 @@ class InvoiceController {
   static async getAllParties(req: Request, res: Response) {
     try {
       const { id: userId } = req.user!;
-
+  
       // Pagination parameters
       const { page = 1, limit = 10, search } = req.query;
-
       const parsedPage = parseInt(page.toString(), 10);
       const parsedLimit = parseInt(limit.toString(), 10);
-      // const regEx = new RegExp('^[0-9a-zA-Z]+$');
-      // const searchString = search != undefined ? search.toString(): "";
-      // console.log(typeof search,search?.length,regEx.test(searchString));
+  
       // Calculate the offset based on the page and limit
       const offset = (parsedPage - 1) * parsedLimit;
-      let where;
-      if (search == undefined) where = { userId };
-      else {
-        const regEx = new RegExp("^[0-9a-zA-Z]+$");
-        const searchString = search.toString();
-        if (searchString.length > 3 && regEx.test(searchString)) {
-          where = {
+  
+      // Construct the `where` clause
+      const where: Prisma.PartyWhereInput = search
+        ? {
             userId,
             partyName: {
-              search: "*" + search + "*",
+              contains: search.toString(), // Use `contains` for string-based search
+              mode: "insensitive", // Optional: Makes the search case-insensitive
             },
+          }
+        : {
+            userId,
           };
-        } else return res.status(200).json({ success: true, parties: [] });
-      }
-
+  
       // Get all parties of the user with pagination
       const parties: Party[] = await prisma.party.findMany({
         where,
         skip: offset,
         take: parsedLimit,
       });
-
+  
       return res.status(200).json({ success: true, parties });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return res
         .status(500)
         .json({ success: false, message: "Internal server error" });
@@ -712,46 +708,46 @@ class InvoiceController {
     }
   }
 
-  static async getAllItems(req: Request, res: Response) {
-    try {
-      const { id: userId } = req.user!;
+static async getAllItems(req: Request, res: Response) {
+  try {
+    const { id: userId } = req.user!;
 
-      // Pagination parameters
-      const { page = 1, limit = 10, search } = req.query;
-      const parsedPage = parseInt(page.toString(), 10);
-      const parsedLimit = parseInt(limit.toString(), 10);
+    // Pagination parameters
+    const { page = 1, limit = 10, search } = req.query;
+    const parsedPage = parseInt(page.toString(), 10);
+    const parsedLimit = parseInt(limit.toString(), 10);
 
-      // Calculate the offset based on the page and limit
-      const offset = (parsedPage - 1) * parsedLimit;
-      let where;
-      if (search == undefined) where = { userId };
-      else {
-        const regEx = new RegExp("^[0-9a-zA-Z]+$");
-        const searchString = search.toString();
-        if (searchString.length > 3 && regEx.test(searchString)) {
-          where = {
-            userId,
-            itemName: {
-              search: "*" + search + "*",
-            },
-          };
-        } else return res.status(200).json({ success: true, parties: [] });
-      }
+    // Calculate the offset based on the page and limit
+    const offset = (parsedPage - 1) * parsedLimit;
 
-      // Get all parties of the user with pagination
-      const items: Item[] = await prisma.item.findMany({
-        where,
-        skip: offset,
-        take: parsedLimit,
-      });
+    // Construct the `where` clause
+    const where: Prisma.ItemWhereInput = search
+      ? {
+          userId,
+          itemName: {
+            contains: search.toString(), // Use `contains` for string-based search
+            mode: "insensitive", // Optional: Makes the search case-insensitive
+          },
+        }
+      : {
+          userId,
+        };
 
-      return res.status(200).json({ success: true, items });
-    } catch (error) {
-      return res
-        .status(500)
-        .json({ success: false, message: "Internal server error" });
-    }
+    // Get all items of the user with pagination
+    const items: Item[] = await prisma.item.findMany({
+      where,
+      skip: offset,
+      take: parsedLimit,
+    });
+
+    return res.status(200).json({ success: true, items });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
   }
+}
+
 
   static async getItemById(req: Request, res: Response) {
     try {
