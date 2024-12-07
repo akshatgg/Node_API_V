@@ -40,10 +40,12 @@ model User {
   avatar           String?
   adminId          Int?
   superadminId     Int?
+  ispanlinked      Boolean            @default(false)
   verified         Boolean            @default(false)
   userType         UserType           @default(normal)
   otps             Otp[]
   businessProfile  BusinessProfile?
+  inventory        Boolean            @default(false)
   invoices         Invoice[]
   categories       Category[]
   items            Item[]
@@ -78,12 +80,13 @@ model User {
 }
 
 model Otp {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  otp       String
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id])
-  used      Boolean  @default(false)
+  id         Int      @id @default(autoincrement())
+  createdAt  DateTime @default(now())
+  otp        String
+  deletedate DateTime
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+  used       Boolean  @default(false)
 }
 
 model UserProfile {

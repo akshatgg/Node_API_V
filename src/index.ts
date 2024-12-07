@@ -6,13 +6,13 @@ import { rateLimit } from "express-rate-limit";
 import cookieParser from 'cookie-parser';
 import { config } from "dotenv";
 import router from "./routes";
+import path from "path";
 
 config();
 
 const PORT = process.env.PORT || 8080;
 
 export const prisma = new PrismaClient();
-
 const app = express();
 
 // Handle CORS
@@ -22,7 +22,7 @@ app.use((req, res, next) => {
   res.header("Access-Control-Allow-Headers", "Content-Type");
   next();
 });
-
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // Middleware to log request status
 app.use((req, res, next) => {
   const start = Date.now(); // Timestamp when the request was received

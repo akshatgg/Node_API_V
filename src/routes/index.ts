@@ -24,7 +24,7 @@ import aadhaarRouter from "./aadhaar.routes";
 import loanRouter from "./loan.routes";
 import documentRouter from "./document.routes";
 import visitorRouter from "./visitorCounter.routes";
-import registerStartupRouter from "./registerStartup,routes";
+import registerStartupRouter from "./registerStartup.routes";
 import contactUsRouter from "./contactUs.routes";
 import insurancerouter from "./insurance.routes";
 import { registerAbout } from "./about.routes";
@@ -35,6 +35,7 @@ import billrecievablerouter from "./billrecivable.routes";
 import gstr1Router from "./gstr1.routes";
 import orcRoutes from "./ocr.routes";
 import registerServicesRouter from "./registerServices.routes";
+import pdfRouter from "./pdfhandler.routes";
 // import ocrRouter from "./ocr.routes";
 
 const router = Router();
@@ -108,6 +109,7 @@ router.use("/gstr1", gstr1Router);
 
 router.use("/ocr", orcRoutes);
 
+router.use("/pdf", pdfRouter);
 router.get("/", (req, res) => {
   return res.send({ message: "Up and running" });
 });

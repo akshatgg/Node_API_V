@@ -28,10 +28,8 @@ export default function verifyToken(
 
   req.user = user;
   req.isAdmin =
-    user.userType === UserType.admin ||
-    user.email === "jishankhannew@gmail.com";
+    user.userType === UserType.admin ;
   req.isSuperAdmin =
-    user.userType === UserType.superadmin ||
-    user.email === "jishankhannew@gmail.com";
+    user.userType === UserType.superadmin;
   next();
 }

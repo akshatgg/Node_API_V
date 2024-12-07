@@ -3,7 +3,7 @@ import fs from "fs"
 import hsnfile  from '../config/hsncode.json';
 import sacfile from '../config/saccodes.json';
 import { writeFile } from "fs/promises";
-import { prisma } from "..";
+import { Prisma } from "prisma/prisma-client";
 import { join } from "path";
 interface Code {
     HSNCode: string;
