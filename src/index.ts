@@ -16,12 +16,12 @@ export const prisma = new PrismaClient();
 const app = express();
 
 // Handle CORS
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "https://itaxeasy.com");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-  res.header("Access-Control-Allow-Headers", "Content-Type");
-  next();
-});
+app.use(cors(
+  {
+    credentials:true,
+    origin:["https://85734xgp-8080.inc1.devtunnels.ms","http://localhost:3000"]
+  }
+))
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // Middleware to log request status
 app.use((req, res, next) => {

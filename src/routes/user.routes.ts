@@ -51,6 +51,7 @@ userRouter.get("/gettoken", UserController.gettoken);
 
 userRouter.post("/changeusertype", verifyToken, UserController.changeusertype);
 
+userRouter.get("/profile",verifyToken,UserController.getProfile)
 userRouter.post("/forgot-password", UserController.forgotPassword);
 
 userRouter.post("/verify", UserController.verifyOtp);

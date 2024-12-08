@@ -7,7 +7,12 @@ export default function verifyToken(
   res: Response,
   next: NextFunction
 ) {
-  const token = TokenService.getTokenFromAuthHeader(req.headers.authorization);
+  const token = req.cookies?.authToken
+  console.log(token)
+  ?? (req.headers.authorization?.startsWith("Bearer ")
+      ? req.headers.authorization.split(" ")[1]
+      : null);
+
 
   if (!token) {
     return res

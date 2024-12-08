@@ -1,11 +1,15 @@
 import jwt from 'jsonwebtoken';
 import { UserData } from '../types/user-data';
-
+import { Request } from 'express';
 export default class TokenService {
 
-    static getTokenFromAuthHeader(authorization: string|undefined) {
-        const token = authorization?.split(' ').pop();
-        return token;
+    static getTokenFromAuthHeader(req: Request): string | undefined {
+        const authorization = req.headers['authorization'];
+        const tokenFromHeader = authorization?.split(' ').pop();
+        const tokenFromCookies = req.cookies?.token;
+    
+        // Use ternary operator to return token from header or cookies
+        return tokenFromHeader ?? tokenFromCookies;
     }
 
     static generateToken(user:UserData) {

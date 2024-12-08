@@ -237,7 +237,7 @@ export default class UserController {
       otp_key: otp_key,
     });
   }
-  
+
   static async login(req: Request, res: Response) {
     try {
       const { email, password } = LoginSchema.parse(req.body);
@@ -290,6 +290,7 @@ export default class UserController {
         message: "Login successful",
         data: {
           user: userWithoutPassword,
+          token
         },
       });
     } catch (error) {
@@ -776,7 +777,7 @@ export default class UserController {
   static async sendVerificationOtp(req: Request, res: Response) {
     try {
       const token = TokenService.getTokenFromAuthHeader(
-        req.headers.authorization
+        req
       );
 
       const { id, email } = TokenService.decodeToken(token!);
@@ -857,6 +858,7 @@ export default class UserController {
         pan,
         phone,
         inventory,
+        ispanlinked
       } = req.body;
       const avatar: string = req.file?.path as string;
   
@@ -880,23 +882,6 @@ export default class UserController {
           .status(404)
           .send({ success: false, message: "User does not exist" });
       }
-  
-      let isLinked = false;
-      if (pan && aadhaar) {
-        try {
-          const response = await axios.get(
-            `${process.env.url}/pan-aadhaar-link-status?pan=${encodeURIComponent(pan)}&aadhaar=${encodeURIComponent(aadhaar)}`,
-          );
-          console.log(response.data);
-          isLinked = response.data; // Assuming response.data is a boolean
-        } catch (error) {
-          console.error("Failed to check PAN-Aadhaar link");
-          return res.status(500).send({
-            success: false,
-            message: "Failed to verify PAN-Aadhaar link status",
-          });
-        }
-      }
       await prisma.user.update({
         where: {
           id: user.id,
@@ -913,7 +898,7 @@ export default class UserController {
           address: address ?? user.address,
           phone: phone ?? user.phone,
           avatar: avatar ?? user.avatar,
-          ispanlinked: isLinked,
+          ispanlinked: user.ispanlinked,
           inventory: inventory ?? user.inventory,
         },
       });
@@ -937,7 +922,7 @@ export default class UserController {
       }
 
       const token = TokenService.getTokenFromAuthHeader(
-        req.headers.authorization
+        req
       );
 
       if (!token) {
@@ -973,6 +958,42 @@ export default class UserController {
         .send({ success: false, message: "Something went wrong" });
     }
   }
+
+  static async getProfile(req: Request, res: Response): Promise<void> {
+    try {
+        // Get token from header or cookies
+        const token = TokenService.getTokenFromAuthHeader(req);
+
+        if (!token) {
+            res.status(401).send("Token is missing");
+            return;
+        }
+
+        // Decode the token (ensure `decodeToken` handles errors appropriately)
+        const { id, email } = TokenService.decodeToken(token);
+
+        if (!id || !email) {
+            res.status(401).send("Invalid token payload");
+            return;
+        }
+
+        // Fetch the user from the database
+        const user = await prisma.user.findFirst({
+            where: { id }, // Proper format for Prisma query
+        });
+
+        if (!user) {
+            res.status(403).send("ID is not valid");
+            return;
+        }
+
+        // Send the user profile as response
+        res.status(200).json(user);
+    } catch (error) {
+        console.error("Error in getProfile:", error);
+        res.status(500).send("An unexpected error occurred");
+    }
+}
 
   static async getUserById(req: Request, res: Response) {
     try {
@@ -1100,7 +1121,7 @@ export default class UserController {
   static async getalladminsforsuperadmin(req: Request, res: Response) {
     try {
       const token = TokenService.getTokenFromAuthHeader(
-        req.headers.authorization
+        req
       );
 
       if (!token) {
