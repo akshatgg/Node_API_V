@@ -12,6 +12,7 @@ import TokenService from "../services/token.service";
 import { UserGender, UserType } from "@prisma/client";
 import { ZodError, z } from "zod";
 import axios from "axios";
+import { uploadToCloudinary } from "../config/cloudinaryUploader";
 
 const UserSchema = z.object({
   firstName: z
@@ -271,8 +272,7 @@ export default class UserController {
           message: "Invalid credentials",
         });
       }
-  
-      // Generate token with limited user data
+      // Generate token with user data and role flags (isAdmin, isSuperadmin)
       const token = TokenService.generateToken(user);
   
       res.cookie('authToken', token, {
@@ -364,7 +364,7 @@ export default class UserController {
 
       return res.status(200).send({
         success: true,
-        message: "user ststus updated succesfully",
+        message: "user status updated succesfully",
         data: {
           changeuser,
         },
@@ -860,7 +860,13 @@ export default class UserController {
         inventory,
         ispanlinked
       } = req.body;
-      const avatar: string = req.file?.path as string;
+      let avatar: string | null = null;
+      if (req.file) {
+        // Upload the avatar to Cloudinary and get the URL
+        const localFilePath = req.file.path;
+        const cloudinaryResult = await uploadToCloudinary(localFilePath, "image", req, req.file);
+        avatar = cloudinaryResult.secure_url;  // Cloudinary URL for the uploaded image
+      }
   
       if (!firstName.length) {
         return res
@@ -898,7 +904,7 @@ export default class UserController {
           address: address ?? user.address,
           phone: phone ?? user.phone,
           avatar: avatar ?? user.avatar,
-          ispanlinked: user.ispanlinked,
+          ispanlinked: Boolean(ispanlinked) ?? user.ispanlinked,
           inventory: inventory ?? user.inventory,
         },
       });

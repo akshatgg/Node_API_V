@@ -4,7 +4,8 @@ import { Request } from 'express';
 export default class TokenService {
 
     static getTokenFromAuthHeader(req: Request): string | undefined {
-        const authorization = req.headers['authorization'];
+        console.log(req.headers)
+        const authorization = req.headers["authorization"];
         const tokenFromHeader = authorization?.split(' ').pop();
         const tokenFromCookies = req.cookies?.token;
     
@@ -13,10 +14,12 @@ export default class TokenService {
     }
 
     static generateToken(user:UserData) {
+        console.log(user,"suer")
         const tokenPayload = {
             email: user.email,
-            id: user.id
-          };
+            id: user.id,
+            Usertype:user.usertype
+        };
         const token = jwt.sign(tokenPayload, process.env.JWT_KEY as string, {
             issuer: "iTaxEasy",
             expiresIn: "24h"

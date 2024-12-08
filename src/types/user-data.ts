@@ -10,6 +10,6 @@ export interface UserData {
     email: string,
     phone: string|null,
     verified: boolean|null,
-    userType: UserType,
+    usertype: UserType,
     createdAt: Date,
 }

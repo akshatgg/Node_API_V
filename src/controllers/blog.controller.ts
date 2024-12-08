@@ -1,14 +1,15 @@
-import { deleteImageByUrl } from "../config/cloudinaryUploader";
+import { deleteImageByUrl, uploadToCloudinary } from "../config/cloudinaryUploader";
 import { prisma } from "../index";
 import { Request, Response } from "express";
 
 export default class BlogController {
   static async createPost(req: Request, res: Response): Promise<Response> {
     try {
+      console.log(req.body)
       const { title, category, contentHeading, contentDescription } = req.body;
-
-      const imageUrl: string = req.file?.path as string;
-
+      const localFilePath = req.file?.path;
+      const cloudinaryResult = await uploadToCloudinary(localFilePath, "image", req, req.file);
+      const imageUrl = cloudinaryResult.secure_url
       if (!title || !contentHeading || !imageUrl) {
         return res
           .status(400)

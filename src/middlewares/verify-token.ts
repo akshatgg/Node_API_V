@@ -1,7 +1,6 @@
 import { NextFunction, Response } from "express";
 import TokenService from "../services/token.service";
 import { UserType } from "@prisma/client";
-
 export default function verifyToken(
   req: any,
   res: Response,
@@ -24,7 +23,7 @@ export default function verifyToken(
 
   if (!verified) {
     return res.status(401).send({
-      success: false,
+      success: false, 
       message: "Unauthorized: Access is denied due to invalid credentials",
     });
   }
@@ -32,9 +31,12 @@ export default function verifyToken(
   const user = TokenService.decodeToken(token);
 
   req.user = user;
+  console.log(user.Usertype)
   req.isAdmin =
-    user.userType === UserType.admin ;
-  req.isSuperAdmin =
-    user.userType === UserType.superadmin;
+    user.Usertype === UserType.admin;
+
+  req.isSuperadmin =
+user.Usertype === UserType.superadmin;
+console.log(user.Usertype === UserType.superadmin)
   next();
 }
