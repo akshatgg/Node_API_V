@@ -74,5 +74,10 @@ userRouter.delete(
   SuperadminCheck,
   UserController.deleteUser
 );
+userRouter.get(
+  "/isadmin",
+  verifyToken,
+  UserController.isadmin
+)
 
 export default userRouter;

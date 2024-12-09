@@ -67,8 +67,8 @@ export default class UserController {
     const { id: otp_key } = await prisma.otp.create({
       data: {
         otp,
-        userId,
-        deletedate, // Add expiry date to the database record
+        userId, // Add expiry date to the database record
+        deletedate: deletedate,
       },
     });
   
@@ -1236,6 +1236,24 @@ export default class UserController {
       return res
         .status(500)
         .send({ success: false, message: "Something went wrong" });
+    }
+  }
+  static async isadmin(req:Request,res : Response){
+    try {
+      const { id } = req.user!;
+      const user = await prisma.user.findFirst({
+        where: {
+          id: id
+        },
+      });
+      if (user?.userType !== 'admin' && user?.userType !== 'superadmin') {
+        return res.status(200).send({ success: false, message: "User is not admin" });
+      }
+      return res.status(200).send({ success: true, message: "User is admin" });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ success: false, message: "Internal server error" });
     }
   }
 }

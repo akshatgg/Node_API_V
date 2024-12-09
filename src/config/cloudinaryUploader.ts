@@ -2,13 +2,13 @@ import fs from "fs/promises"; // Correct import for `fs` with promises
 import multer from "multer";
 import { v2 as cloudinary } from "cloudinary"; // Correct import for cloudinary.v2
 import { Request } from "express";
-import { config } from "../lib/config";
+// import { config } from "../lib/config";
 import path from "path";
 
 cloudinary.config({
-  cloud_name: config.CLOUD_NAME,
-  api_key: config.CLOUD_API_KEY,
-  api_secret: config.CLOUD_SECRET,
+  cloud_name: "dhqpgwpgq",
+  api_key: "931122266428593",
+  api_secret: "rUE4CKJVhCudoUQyHG5B_X6nyYY",
 });
 
 // Cloudinary-specific parameters
@@ -35,7 +35,7 @@ const params = {
 // Local storage configuration for Multer
 const localStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const uploadPath = path.join(__dirname, "../uploads");
+    const uploadPath = path.join(__dirname, "../routes/uploads");
     cb(null, uploadPath); // Save files to the 'uploads' directory
   },
   filename: (req, file, cb) => {

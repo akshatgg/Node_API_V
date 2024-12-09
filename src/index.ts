@@ -8,7 +8,11 @@ import { config } from "dotenv";
 import router from "./routes";
 import path from "path";
 
-config();
+config(
+  {
+    path: path.resolve(__dirname, "../.env"),
+  }
+);
 
 const PORT = process.env.PORT || 8080;
 
@@ -19,7 +23,7 @@ const app = express();
 app.use(cors(
   {
     credentials:true,
-    origin:["https://85734xgp-8080.inc1.devtunnels.ms","http://localhost:3000"]
+    origin:[process.env.CLIENT_URL as string]
   }
 ))
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
