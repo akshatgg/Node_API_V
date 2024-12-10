@@ -1,8 +1,8 @@
+import { rateLimit } from 'express-rate-limit';
 import express, { NextFunction, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import cors from "cors";
 import helmet from "helmet";
-import { rateLimit } from "express-rate-limit";
 import cookieParser from 'cookie-parser';
 import { config } from "dotenv";
 import router from "./routes";

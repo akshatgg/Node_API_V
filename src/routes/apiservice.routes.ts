@@ -7,6 +7,7 @@ import SuperadminCheck from "../middlewares/super-admin";
 const apirouter = Router();
 
 apirouter.get('/get-all-apis',ApiServiceController.getallapis);
+apirouter.create('/create-api',verifyToken,SuperadminCheck,ApiServiceController.createApi);
 
 apirouter.post('/add-api',verifyToken,ApiServiceController.addApiToCart);
 

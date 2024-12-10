@@ -1,5 +1,8 @@
+import { Category } from './../../node_modules/.prisma/client/index.d';
+import { CategoryType } from './apiservice.controller';
 import { prisma } from "..";
 import { Request, Response } from "express";
+
 export default class ApiServiceController {
     static getallapis = async (req: Request, res: Response) => {
         try {
@@ -7,6 +10,51 @@ export default class ApiServiceController {
             return res.status(200).json({
                 success: true,
                 data: apis,
+            });
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                message: "Something went wrong",
+            });
+        }
+    }
+    static createapi = async (req: Request, res: Response) => {
+        interface CategoryType {
+            id: number; // Timestamp or unique identifier
+            src: string; // URL or path to an image
+            title: string; // Title for the category
+            path: string; // Path or description for the category
+          }
+        const {
+            title,
+            category,
+            categoryType:CategoryType,
+            overview,
+            price,
+            upcoming,
+            endpoint,
+            bodyParams,
+            response,
+            responseJSON,
+          } = req.body;
+        try {
+            const api = await prisma.apiService.create({
+                data: {
+                    title,
+                    category,
+                    CategoryType,
+                    overview,
+                    price,
+                    upcoming,
+                    endpoint,
+                    bodyParams,
+                    response,
+                    responseJSON,
+                },
+            });
+            return res.status(201).json({
+                success: true,
+                data: api,
             });
         } catch (error) {
             return res.status(500).json({

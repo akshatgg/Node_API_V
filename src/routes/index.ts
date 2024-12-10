@@ -37,7 +37,17 @@ import orcRoutes from "./ocr.routes";
 import registerServicesRouter from "./registerServices.routes";
 import pdfRouter from "./pdfhandler.routes";
 import apirouter from "./apiservice.routes";
+import rateLimit from "express-rate-limit";
 // import ocrRouter from "./ocr.routes";
+
+const strictLimiter = rateLimit({
+  windowMs: 3 * 60 * 1000, // 3 minutes
+  max: 1, // Limit each IP to 1 requests per windowMs
+  message: {
+    success: false,
+    message: 'Too many requests, please try again later.',
+  },
+});
 
 const router = Router();
 
@@ -55,7 +65,7 @@ router.use("/postOffice", postOfficeRouter);
 
 router.use("/pan", panRouter);
 
-router.use("/gst", gstRouter);
+router.use("/gst",strictLimiter, gstRouter);
 
 router.use("/accountancy", accountancyRouter);
 
@@ -71,13 +81,13 @@ router.use("/library", libraryRouter);
 
 router.use("/blog", blogRouter);
 
-router.use("/mca", mcaRouter);
+router.use("/mca",strictLimiter, mcaRouter);
 
-router.use("/tan", tanRouter);
+router.use("/tan",strictLimiter, tanRouter);
 
 router.use("/bank", bankRouter);
 
-router.use("/aadhaar", aadhaarRouter);
+router.use("/aadhaar",strictLimiter, aadhaarRouter);
 
 router.use("/calculator", calculatorRouter);
 
@@ -106,7 +116,7 @@ router.use("/billpayable", billpayablerouter);
 
 router.use("/billrecieve", billrecievablerouter);
 
-router.use("/gstr1", gstr1Router);
+router.use("/gstr1",strictLimiter, gstr1Router);
 
 router.use("/ocr", orcRoutes);
 
