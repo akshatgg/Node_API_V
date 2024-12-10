@@ -23,7 +23,7 @@ const app = express();
 app.use(cors(
   {
     credentials:true,
-    origin:[process.env.CLIENT_URL as string,"https://itaxeasy-chi.vercel.app"],
+    origin:[process.env.CLIENT_URL as string,"https://itaxeasy-chi.vercel.app","http://localhost:3000"],
     methods:['GET','POST','PUT','DELETE','PATCH','OPTIONS']
   }
 ))

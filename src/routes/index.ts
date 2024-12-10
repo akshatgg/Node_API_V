@@ -38,6 +38,7 @@ import registerServicesRouter from "./registerServices.routes";
 import pdfRouter from "./pdfhandler.routes";
 import apirouter from "./apiservice.routes";
 import rateLimit from "express-rate-limit";
+import downloadrouter from "./download.routes";
 // import ocrRouter from "./ocr.routes";
 
 const strictLimiter = rateLimit({
@@ -123,6 +124,7 @@ router.use("/ocr", orcRoutes);
 router.use("/pdf", pdfRouter);
 
 router.use("/apis",apirouter);
+router.use("/download",downloadrouter)
 router.get("/", (req, res) => {
   return res.send({ message: "Up and running" });
 });

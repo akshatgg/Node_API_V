@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 class FinanceDataController {
   static async getStatusWiseIncomeTaxCode(req:Request, res:Response) {
     try {
-      const data = await prisma.stat.findMany();
+      const data = await prisma..findMany();
       return res.status(200).json({ success: true, data });
     } catch (error) {
       console.error("Error fetching Status Wise Income Tax Code:", error);
@@ -17,7 +17,7 @@ class FinanceDataController {
   // Fetch all data from PAN Code table
   static async getPanCode(req:Request, res:Response) {
     try {
-      const data = await prisma.panCode.findMany();
+      const data = await prisma.panAndITCodeByStatus.findMany();
       return res.status(200).json({ success: true, data });
     } catch (error) {
       console.error("Error fetching PAN Code:", error);
