@@ -8,6 +8,6 @@ const panRouter = Router();
 
 panRouter.get('/pan-aadhaar-link-status', verifyToken,queryValidator(['pan','aadhaar']), PanAadhaarController.checkLinkStatus);
 
-panRouter.get('/get-pan-details', verifyToken, queryValidator(['pan']), PanController.getAdvancePanDetails);
+panRouter.post('/get-pan-details', verifyToken, PanController.getAdvancePanDetails);
 
 export default panRouter;

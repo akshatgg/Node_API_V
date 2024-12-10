@@ -272,6 +272,7 @@ export default class UserController {
           message: "Invalid credentials",
         });
       }
+      console.log(user)
       // Generate token with user data and role flags (isAdmin, isSuperadmin)
       const token = TokenService.generateToken(user);
   

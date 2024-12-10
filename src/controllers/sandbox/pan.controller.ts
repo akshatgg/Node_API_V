@@ -6,41 +6,96 @@ export default class PanController {
 
     static async getAdvancePanDetails(req: Request, res: Response) {
         try {
-            const { pan } = req.query;
-
-            if (!pan) {
-                return res.status(400).json({ success: false, message: 'Enter a valid PAN Number' });
+            const { pan, name_as_per_pan, date_of_birth, consent, reason } = req.body;
+    
+            // Validate Required Parameters
+            if (!pan || !/^[A-Z]{3}[PCFTGHLABJ]{1}[A-Z]{1}[0-9]{4}[A-Z]{1}$/.test(pan)) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Enter a valid PAN Number (e.g., ABCDE1234F)."
+                });
             }
-
-            const endpoint = `${Sandbox.BASE_URL}/kyc/pan`;
-
+    
+            if (!name_as_per_pan) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Name as per PAN is required."
+                });
+            }
+    
+            if (!date_of_birth || !/^\d{2}\/\d{2}\/\d{4}$/.test(date_of_birth)) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Date of Birth is required in DD/MM/YYYY format."
+                });
+            }
+    
+            if (!consent || !['Y', 'y'].includes(consent)) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Consent is required and must be 'Y' or 'y'."
+                });
+            }
+    
+            if (!reason || reason.length < 20) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Reason is required and must be at least 20 characters long."
+                });
+            }
+    
+            const endpoint = `${Sandbox.BASE_URL}/kyc/pan/verify`;
+    
+            // Generate Access Token
             const token = await Sandbox.generateAccessToken();
-
+    
+            // Set headers for the request
             const headers = {
                 'Authorization': token,
                 'accept': 'application/json',
                 'x-api-key': process.env.SANDBOX_KEY,
-                'x-api-version': process.env.SANDBOX_API_VERSION
+                'x-api-version': process.env.SANDBOX_API_VERSION,
             };
-
-            const { status, data: { data } } = await axios.post(endpoint, {
-                pan,
-                consent: 'Y',
-                reason: 'For KYC of User',
-            }, {
-                headers,
-            });
-
-            if(status !== 200) {
-                return res.status(500).send({ success: false, message: "Something went wrong" });
+    
+            // Make the POST request with the required body parameters
+            const response = await axios.post(
+                endpoint,
+                { 
+                    "@entity": "in.co.sandbox.kyc.pan_verification.request", // Ensure the property matches API expectations
+                    pan,
+                    name_as_per_pan,
+                    date_of_birth,
+                    consent,
+                    reason
+                },
+                { headers }
+            );
+    
+            const { status, data } = response;
+    
+            // Handle non-200 status codes
+            if (status !== 200) {
+                return res.status(500).json({
+                    success: false,
+                    message: "Failed to verify PAN details.",
+                    apiResponse: data,
+                });
             }
-
-            return res.status(200).send({ success: true, data });
+    
+            // Respond with the API data
+            return res.status(200).json({
+                success: true,
+                data: data.data,
+                message: "PAN details verified successfully.",
+            });
         } catch (e) {
-            console.log(e);
-
-            return res.status(500).send({ success: false, message: "Something went wrong" });
+            console.error(e);
+            return res.status(500).json({
+                success: false,
+                message: "An unexpected error occurred. Please try again later.",
+            });
         }
     }
+    
 
 }

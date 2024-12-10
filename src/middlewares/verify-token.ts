@@ -6,6 +6,7 @@ export default function verifyToken(
   res: Response,
   next: NextFunction
 ) {
+  console.log(req.headers)
   const token = req.headers.authorization?.startsWith("Bearer ")
   ? req.headers.authorization.split(" ")[1]
   : null;
@@ -28,7 +29,7 @@ export default function verifyToken(
   const user = TokenService.decodeToken(token);
 
   req.user = user;
-  console.log(user.Usertype)
+  console.log(user)
   req.isAdmin =
     user.Usertype === UserType.admin;
 

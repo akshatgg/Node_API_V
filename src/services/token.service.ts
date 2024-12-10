@@ -14,11 +14,11 @@ export default class TokenService {
     }
 
     static generateToken(user:UserData) {
-        console.log(user,"suer")
+        console.log(user.userType,"suer")
         const tokenPayload = {
             email: user.email,
             id: user.id,
-            Usertype:user.usertype
+            Usertype:user.userType
         };
         const token = jwt.sign(tokenPayload, process.env.JWT_KEY as string, {
             issuer: "iTaxEasy",

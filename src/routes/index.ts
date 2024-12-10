@@ -36,6 +36,7 @@ import gstr1Router from "./gstr1.routes";
 import orcRoutes from "./ocr.routes";
 import registerServicesRouter from "./registerServices.routes";
 import pdfRouter from "./pdfhandler.routes";
+import apirouter from "./apiservice.routes";
 // import ocrRouter from "./ocr.routes";
 
 const router = Router();
@@ -110,6 +111,8 @@ router.use("/gstr1", gstr1Router);
 router.use("/ocr", orcRoutes);
 
 router.use("/pdf", pdfRouter);
+
+router.use("/apis",apirouter);
 router.get("/", (req, res) => {
   return res.send({ message: "Up and running" });
 });
