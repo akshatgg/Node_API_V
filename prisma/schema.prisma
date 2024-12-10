@@ -151,7 +151,6 @@ model ApiService {
   id           String          @id @default(uuid())
   title        String
   category     String
-  categoryType Json   @default("{}")
   overview     String          @db.Text
   price        Float
   upcoming     Boolean

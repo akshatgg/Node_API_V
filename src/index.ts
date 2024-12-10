@@ -23,9 +23,11 @@ const app = express();
 app.use(cors(
   {
     credentials:true,
-    origin:[process.env.CLIENT_URL as string]
+    origin:[process.env.CLIENT_URL as string,"https://itaxeasy-chi.vercel.app"],
+    methods:['GET','POST','PUT','DELETE','PATCH','OPTIONS']
   }
 ))
+
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // Middleware to log request status
 app.use((req, res, next) => {

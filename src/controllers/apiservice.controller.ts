@@ -19,16 +19,9 @@ export default class ApiServiceController {
         }
     }
     static createapi = async (req: Request, res: Response) => {
-        interface CategoryType {
-            id: number; // Timestamp or unique identifier
-            src: string; // URL or path to an image
-            title: string; // Title for the category
-            path: string; // Path or description for the category
-          }
         const {
             title,
             category,
-            categoryType:CategoryType,
             overview,
             price,
             upcoming,
@@ -42,7 +35,6 @@ export default class ApiServiceController {
                 data: {
                     title,
                     category,
-                    CategoryType,
                     overview,
                     price,
                     upcoming,
