@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 class FinanceDataController {
   static async getStatusWiseIncomeTaxCode(req:Request, res:Response) {
     try {
-      const data = await prisma..findMany();
+      // const data = await prisma..findMany();
       return res.status(200).json({ success: true, data });
     } catch (error) {
       console.error("Error fetching Status Wise Income Tax Code:", error);
@@ -72,7 +72,7 @@ class FinanceDataController {
   // Fetch Depreciation Table
   static async getDepreciationTable(req:Request, res:Response) {
     try {
-      const data = await prisma..findMany();
+      // const data = await prisma..findMany();
       return res.status(200).json({ success: true, data });
     } catch (error) {
       console.error("Error fetching Depreciation Table:", error);
@@ -83,7 +83,7 @@ class FinanceDataController {
   // Fetch Interest on KVP
   static async getInterestKVP(req:Request, res:Response) {
     try {
-      const data = await prisma.ge.findMany();
+      // const data = await prisma.ge.findMany();
       return res.status(200).json({ success: true, data });
     } catch (error) {
       console.error("Error fetching Interest on KVP:", error);
