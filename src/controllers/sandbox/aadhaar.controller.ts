@@ -5,10 +5,10 @@ import axios from "axios";
 export default class AadhaarController {
     static async aadharGenerateOtp(req: Request, res: Response) {
         try {
-          const { aadhaar_number } = req.body;
+          const { aadhaar } = req.body;
     
           // Validate the `aadhaar_number` field
-          if (!aadhaar_number) {
+          if (!aadhaar) {
             return res
               .status(400)
               .json({ success: false, message: "Body parameter 'aadhaar_number' is required" });
@@ -30,7 +30,7 @@ export default class AadhaarController {
     
           // Prepare the request body
           const body = {
-            aadhaar_number,
+            aadhaar,
             entity: "in.co.sandbox.kyc.aadhaar.okyc.otp.request",
             consent: "Y",
             reason: "For KYC of User",
@@ -121,7 +121,7 @@ export default class AadhaarController {
             aadhaar_number,
             otp,
             reference_id,
-            entity: "in.co.sandbox.kyc.aadhaar.okyc.otp.verify",
+            "@entity": "in.co.sandbox.kyc.aadhaar.okyc.otp.verify",
           };
     
           // Make POST request to verify Aadhaar OTP

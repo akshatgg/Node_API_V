@@ -5,6 +5,7 @@ import adminCheck from "../middlewares/admin-check";
 import SuperadminCheck from "../middlewares/super-admin";
 // import { upload } from "../config/file-upload";
 import { multerInstance } from "../config/cloudinaryUploader";
+import { googleController } from "../controllers/google.controller";
 
 const userRouter = Router();
 
@@ -79,5 +80,12 @@ userRouter.get(
   verifyToken,
   UserController.isadmin
 )
+userRouter.post("/signup", googleController.signupWithGoogle);
+
+// Route for logging in with Google
+userRouter.post("/login", googleController.loginWithGoogle);
+
+// Route for fetching user profile using access token
+userRouter.post("/profile", googleController.getUserProfile);
 
 export default userRouter;

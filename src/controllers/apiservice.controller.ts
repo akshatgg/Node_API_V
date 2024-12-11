@@ -1,4 +1,3 @@
-import { Category } from './../../node_modules/.prisma/client/index.d';
 import { CategoryType } from './apiservice.controller';
 import { prisma } from "..";
 import { Request, Response } from "express";
@@ -279,10 +278,10 @@ export default class ApiServiceController {
           });
         }
       }
-      static subscribeToSingleApi = async (req:Request, res:Response) => {
+      static subscribeToSingleApi = async (req: Request, res: Response) => {
         const userId = req.user?.id; // Assuming userId is stored in req.user
         const { apiServiceId } = req.body;
-        console.log(apiServiceId)
+      
         try {
           // Validate input
           if (!userId) {
@@ -299,7 +298,7 @@ export default class ApiServiceController {
             });
           }
       
-          // Check if the API service exists in the cart
+          // Check if the cart exists for the user
           const cart = await prisma.cart.findUnique({
             where: { userId },
             include: { services: true },
@@ -311,43 +310,59 @@ export default class ApiServiceController {
               message: 'Cart not found for the user.',
             });
           }
-        console.log(cart.services.some(service => service.id))
+      
+          // Check if the API service is in the cart
           const apiServiceInCart = cart.services.some(service => service.id === apiServiceId);
       
           if (!apiServiceInCart) {
             return res.status(400).json({
               success: false,
-              message: 'API Service not found in the cart.',
+              message: 'The selected API service is not available in your cart.',
             });
           }
       
-          // Add subscription for the single API
+          // Proceed with the subscription logic (if the service is found in the cart)
+          // Create the subscription
           const subscription = await prisma.subscriptions.create({
             data: {
               userId,
-              services: { connect: { id: apiServiceId } },
-              amountForServices: cart.services.find(service => service.id === apiServiceId)?.price || 0,
+              services: {
+                connect: { id: apiServiceId }, // Connect the selected service
+              },
+              // Additional subscription details can be added here
+            },
+          });
+      
+          // Remove the API service from the cart after subscription
+          await prisma.cart.update({
+            where: { userId },
+            data: {
+              services: {
+                disconnect: { id: apiServiceId }, // Disconnect the selected service from the cart
+              },
             },
           });
       
           return res.status(200).json({
             success: true,
-            message: 'Subscribed to the API successfully.',
+            message: 'Subscribed to the API service successfully, and the service has been removed from your cart.',
             subscription,
           });
+      
         } catch (error) {
-          console.error('Error subscribing to API:', error);
+          console.error('Error subscribing to the API service:', error);
           return res.status(500).json({
             success: false,
             message: 'Internal Server Error',
           });
         }
       };
-      static subscribeToAllApis = async (req:Request, res:Response) => {
+      static subscribeToAllApis = async (req: Request, res: Response) => {
         const userId = req.user?.id; // Assuming userId is stored in req.user
+        const { totalAmount } = req.body; // Assuming totalAmount is passed in the request body
       
         try {
-          // Validate input
+          // Validate userId and totalAmount
           if (!userId) {
             return res.status(400).json({
               success: false,
@@ -355,23 +370,27 @@ export default class ApiServiceController {
             });
           }
       
-          // Fetch the user's cart with all associated APIs
+          if (!totalAmount) {
+            return res.status(400).json({
+              success: false,
+              message: 'Total amount for services is required.',
+            });
+          }
+      
+          // Retrieve the user's cart with associated services
           const cart = await prisma.cart.findUnique({
             where: { userId },
             include: { services: true },
           });
       
-          if (!cart || cart.services.length === 0) {
+          if (!cart) {
             return res.status(404).json({
               success: false,
-              message: 'Cart is empty or not found for the user.',
+              message: 'Cart not found for the user.',
             });
           }
       
-          // Calculate the total amount for all services
-          const totalAmount = cart.services.reduce((sum, service) => sum + service.price, 0);
-      
-          // Add a subscription for all APIs in the cart
+          // Create the subscription by connecting all services in the cart
           const subscription = await prisma.subscriptions.create({
             data: {
               userId,
@@ -382,11 +401,22 @@ export default class ApiServiceController {
             },
           });
       
+          // Empty the cart after successful subscription
+          await prisma.cart.update({
+            where: { userId },
+            data: {
+              services: {
+                disconnect: cart.services.map(service => ({ id: service.id })), // Remove all services
+              },
+            },
+          });
+      
           return res.status(200).json({
             success: true,
             message: 'Subscribed to all APIs in the cart successfully.',
             subscription,
           });
+      
         } catch (error) {
           console.error('Error subscribing to all APIs:', error);
           return res.status(500).json({
@@ -395,6 +425,7 @@ export default class ApiServiceController {
           });
         }
       };
+
       static getAllSubscriptions = async (req: Request, res: Response) => {
         const { id:apiServiceId } = req.params; // Assume API ID is passed as a route parameter
         console.log(apiServiceId)
@@ -434,6 +465,51 @@ export default class ApiServiceController {
           });
         } catch (error) {
           console.error('Error fetching subscriptions:', error);
+          return res.status(500).json({
+            success: false,
+            message: 'Internal Server Error',
+          });
+        }
+      };
+      static getcountofcart = async (req: Request, res: Response) => {
+        const userId = req.user?.id;  // Assuming userId is stored in req.user
+        try {
+          // Validate if userId exists in req.user
+          if (!userId) {
+            return res.status(400).json({
+              success: false,
+              message: 'User ID is required.',
+            });
+          }
+      
+          // Fetch the cart and associated API services for the user
+          const cart = await prisma.cart.findUnique({
+            where: { userId },
+            include: {
+              services: true,  // Include the related ApiService data
+            },
+          });
+      
+          if (!cart) {
+            return res.status(404).json({
+              success: false,
+              message: 'Cart not found for the user.',
+            });
+          }
+      
+          // Return the cart data
+          return res.status(200).json({
+            success: true,
+            cart: {
+              id: cart.id,
+              userId: cart.userId,
+              services: cart.services.length,  // List of ApiServices in the cart
+              createdAt: cart.createdAt,
+              updatedAt: cart.updatedAt,
+            },
+          });
+        } catch (error) {
+          console.error('Error retrieving cart:', error);
           return res.status(500).json({
             success: false,
             message: 'Internal Server Error',

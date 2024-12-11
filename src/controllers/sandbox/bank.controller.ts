@@ -6,13 +6,13 @@ export default class BankController {
 
     static async getBankDetailsByIfsc(req: Request, res: Response) {
         try {
-            const { ifsc } = req.query;
+            const { ifsc } = req.body;
 
             if (!ifsc) {
                 return res.status(400).json({ success: false, message: 'Query Parameter "ifsc" is missing' });
             }
 
-            const endpoint = `${Sandbox.BASE_URL}/bank/${ifsc}`;
+            const endpoint = `${Sandbox.BASE_URL}/bank/ifsc`; // Fixed the missing closing quote
 
             const token = await Sandbox.generateAccessToken();
 
@@ -23,11 +23,11 @@ export default class BankController {
                 'x-api-version': process.env.SANDBOX_API_VERSION
             };
 
-            const { status, data } = await axios.get(endpoint, {
-                headers,
+            const { status, data } = await axios.get(endpoint,{
+                headers
             });
 
-            if(status !== 200) {
+            if (status !== 200) {
                 return res.status(500).send({ success: false, message: "Something went wrong" });
             }
 
@@ -63,7 +63,7 @@ export default class BankController {
                 headers,
             });
 
-            if(status !== 200) {
+            if (status !== 200) {
                 return res.status(500).send({ success: false, message: "Something went wrong" });
             }
 
@@ -76,9 +76,9 @@ export default class BankController {
 
     static async upiVerification(req: Request, res: Response) {
         try {
-            const { virtual_payment_address,name } = req.query;
+            const { virtual_payment_address, name } = req.query;
 
-            if(!virtual_payment_address || !name) {
+            if (!virtual_payment_address || !name) {
                 return res.status(400).json({ success: false, message: 'Required Query parameter was not provided' });
             }
 
@@ -97,15 +97,14 @@ export default class BankController {
                 headers
             });
 
-            if(status !== 200) {
+            if (status !== 200) {
                 return res.status(500).send({ success: false, message: "Something went wrong" });
             }
-            
+
             return res.status(200).json({ success: true, data });
-        } catch(e) {
+        } catch (e) {
             console.log(e);
-            return res.status(500).json({ status: false, message: 'Something went wrong ,' });
+            return res.status(500).json({ success: false, message: 'Something went wrong' });
         }
     }
-
 }
