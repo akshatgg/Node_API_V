@@ -80,10 +80,10 @@ userRouter.get(
   verifyToken,
   UserController.isadmin
 )
-userRouter.post("/signup", googleController.signupWithGoogle);
+userRouter.post("/googlesignup", googleController.signupWithGoogle);
 
 // Route for logging in with Google
-userRouter.post("/login", googleController.loginWithGoogle);
+userRouter.post("/googlelogin", googleController.loginWithGoogle);
 
 // Route for fetching user profile using access token
 userRouter.post("/profile", googleController.getUserProfile);
