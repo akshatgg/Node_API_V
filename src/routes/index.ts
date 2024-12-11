@@ -15,7 +15,7 @@ import libraryRouter from "./library.routes";
 import blogRouter from "./blog.routes";
 import panRouter from "./pan.routes";
 import gstRouter from "./gst.routes";
-import careerRouter from "./career.route";
+import careerRouter from "./career.routes";
 import mcaRouter from "./mca.routes";
 import calculatorRouter from "./calculators.routes";
 import tanRouter from "./tan.routes";
