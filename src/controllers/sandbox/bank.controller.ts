@@ -12,7 +12,7 @@ export default class BankController {
                 return res.status(400).json({ success: false, message: 'Query Parameter "ifsc" is missing' });
             }
 
-            const endpoint = `${Sandbox.BASE_URL}/bank/ifsc`; // Fixed the missing closing quote
+            const endpoint = `${Sandbox.BASE_URL}/bank/${ifsc}`; // Fixed the missing closing quote
 
             const token = await Sandbox.generateAccessToken();
 
@@ -23,7 +23,8 @@ export default class BankController {
                 'x-api-version': process.env.SANDBOX_API_VERSION
             };
 
-            const { status, data } = await axios.get(endpoint,{
+            const { status, data } = await axios.get(endpoint,
+                {
                 headers
             });
 
@@ -48,7 +49,7 @@ export default class BankController {
                 return res.status(400).json({ success: false, message: 'Required Query Parameters are missing' });
             }
 
-            const endpoint = `${Sandbox.BASE_URL}/bank/${ifsc}/accounts/${accountNumber}/verify?name=${name}&mobile=${mobile}`;
+            const endpoint =`${Sandbox.BASE_URL}/bank/${ifsc}/accounts/${accountNumber}/verify?name=${name}&mobile=${mobile}`;
 
             const token = await Sandbox.generateAccessToken();
 
@@ -76,13 +77,13 @@ export default class BankController {
 
     static async upiVerification(req: Request, res: Response) {
         try {
-            const { virtual_payment_address, name } = req.query;
+            const { virtual_payment_address, name } = req.body;
 
             if (!virtual_payment_address || !name) {
                 return res.status(400).json({ success: false, message: 'Required Query parameter was not provided' });
             }
 
-            const endpoint = `${Sandbox.BASE_URL}/bank/upi/${virtual_payment_address}`;
+            const endpoint = `${Sandbox.BASE_URL}/bank/upi/${"7838034911%40axl"}?name=${name}`;
 
             const token = await Sandbox.generateAccessToken();
 
@@ -93,7 +94,7 @@ export default class BankController {
                 'x-api-version': process.env.SANDBOX_API_VERSION
             };
 
-            const { status, data: { data } } = await axios.get(endpoint, {
+            const { status,data} = await axios.get(endpoint, {
                 headers
             });
 

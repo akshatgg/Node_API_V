@@ -4,6 +4,6 @@ import verifyToken from "../middlewares/verify-token";
 
 const tanRouter = Router();
 
-tanRouter.get('/search', verifyToken, TanController.searchByTanNo);
+tanRouter.post('/search', verifyToken, TanController.searchByTanNo);
 
 export default tanRouter;

@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import e, { Request, Response } from "express";
 import Sandbox from "../../services/sandbox.service";
 import axios from "axios";
 
@@ -30,8 +30,8 @@ export default class AadhaarController {
     
           // Prepare the request body
           const body = {
-            aadhaar,
-            entity: "in.co.sandbox.kyc.aadhaar.okyc.otp.request",
+            aadhaar_number:aadhaar,
+            "@entity": "in.co.sandbox.kyc.aadhaar.okyc.otp.request",
             consent: "Y",
             reason: "For KYC of User",
           };
@@ -56,12 +56,11 @@ export default class AadhaarController {
     
     static async aadhaarVerifyOtp(req: Request, res: Response) {
         try {
-            const {  otp ,ref_id} = req.body;
-
+            const {otp ,reference_id} = req.body;
             if(!otp) {
                 return res.status(400).json({ success: false, message: 'Body parameter otp was not provided' });
             }
-            if(!ref_id) {
+            if(!reference_id) {
                 return res.status(400).json({ success: false, message: 'Body parameter ref_id was not provided' });
             }
 
@@ -75,7 +74,12 @@ export default class AadhaarController {
                 'x-api-version': process.env.SANDBOX_API_VERSION
             };
 
-            const response = await axios.post(endpoint, req.body, {
+            const response = await axios.post(endpoint, 
+              {
+                otp,
+                reference_id,
+                "@entity": "in.co.sandbox.kyc.aadhaar.okyc.request"
+              }, {
                 headers,
             });
 
@@ -85,8 +89,8 @@ export default class AadhaarController {
 
             return res.status(200).send({ success: true, message: `OTP: ${otp} verify successfully!` });
         } catch(e) {
-            // console.log(e);
-            return res.status(500).json({ success: false, message: 'Something went wrong ' });
+            console.log(e);
+            // return res.status(500).json({ success: false, message: 'Something went wrong ' });
         }
     }
    

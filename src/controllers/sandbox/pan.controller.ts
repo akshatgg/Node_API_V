@@ -6,7 +6,7 @@ export default class PanController {
 
     static async getAdvancePanDetails(req: Request, res: Response) {
         try {
-            const { pan, name_as_per_pan, date_of_birth, consent, reason } = req.body;
+            const { pan, name_as_per_pan, date_of_birth } = req.body;
     
             // Validate Required Parameters
             if (!pan || !/^[A-Z]{3}[PCFTGHLABJ]{1}[A-Z]{1}[0-9]{4}[A-Z]{1}$/.test(pan)) {
@@ -27,20 +27,6 @@ export default class PanController {
                 return res.status(400).json({
                     success: false,
                     message: "Date of Birth is required in DD/MM/YYYY format."
-                });
-            }
-    
-            if (!consent || !['Y', 'y'].includes(consent)) {
-                return res.status(400).json({
-                    success: false,
-                    message: "Consent is required and must be 'Y' or 'y'."
-                });
-            }
-    
-            if (!reason || reason.length < 20) {
-                return res.status(400).json({
-                    success: false,
-                    message: "Reason is required and must be at least 20 characters long."
                 });
             }
     
@@ -65,8 +51,8 @@ export default class PanController {
                     pan,
                     name_as_per_pan,
                     date_of_birth,
-                    consent,
-                    reason
+                    consent :"y",
+                    reason :"For KYC of User"
                 },
                 { headers }
             );
