@@ -50,7 +50,7 @@ export default class AadhaarController {
           console.error("Error generating Aadhaar OTP:", e);
           return res
             .status(500)
-            .json({ success: false, message: "Something went wrong", error: e.message });
+            .json({ success: false, message: "Something went wrong" });
         }
       }
     
@@ -141,7 +141,7 @@ export default class AadhaarController {
           console.error("Error verifying Aadhaar OTP:", e);
           return res
             .status(500)
-            .json({ success: false, message: "Something went wrong", error: e.message });
+            .json({ success: false, message: "Something went wrong"});
         }
       }
 }
