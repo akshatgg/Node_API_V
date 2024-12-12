@@ -285,7 +285,7 @@ class InvoiceController {
   static async update(req: Request, res: Response) {
     try {
       const { id: userId } = req.user!;
-
+      console.log(userId)
       const {
         invoiceNumber,
         gstNumber,
@@ -532,7 +532,24 @@ class InvoiceController {
   static async createItem(req: Request, res: Response) {
     try {
       const { id: userId } = req.user!;
-
+  
+      // Check if inventory is enabled for the user
+      const user = await prisma.user.findFirst({ where: { id: userId } });
+  
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "User does not exist",
+        });
+      }
+  
+      if (!user.inventory) {
+        return res.status(403).json({
+          success: false,
+          message: "Inventory is not enabled for this user. Cannot create items.",
+        });
+      }
+  
       // Create the item
       const {
         itemName,
@@ -551,7 +568,7 @@ class InvoiceController {
         categoryId,
         supplierId,
       } = req.body;
-
+  
       const item: Item = await prisma.item.create({
         data: {
           itemName,
@@ -572,7 +589,6 @@ class InvoiceController {
           supplierId,
         },
       });
-
       return res.status(201).json({ success: true, item });
     } catch (error) {
       console.log(error);

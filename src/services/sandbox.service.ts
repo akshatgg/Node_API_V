@@ -2,7 +2,7 @@ import axios from "axios";
 
 export default class Sandbox {
 
-    static BASE_URL = 'https://api.sandbox.co.in'
+    static BASE_URL = 'https://api.sandbox.co.in';
 
     static async refreshAccessToken(accessToken: string) {
         const headers = {
@@ -31,7 +31,7 @@ export default class Sandbox {
         const res = await axios.post(`${Sandbox.BASE_URL}/authenticate`, {}, { headers });
 
         const { access_token } = res.data;
-
+        console.log(access_token)
         return access_token;
     }
 

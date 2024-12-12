@@ -6,7 +6,7 @@ export default function SuperadminCheck(
   res: Response,
   next: NextFunction
 ) {
-  const token = TokenService.getTokenFromAuthHeader(req.headers.authorization);
+  const token = TokenService.getTokenFromAuthHeader(req);
 
   if (!token) {
     return res
@@ -24,8 +24,8 @@ export default function SuperadminCheck(
   }
 
   const user = TokenService.decodeToken(token);
-
-  const superuser = user.userType === "superadmin";
+  console.log(user);
+  const superuser = user.Usertype === "superadmin";
 
   if (!superuser) {
     return res.status(401).send({

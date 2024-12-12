@@ -6,7 +6,7 @@ export default class TanController {
 
     static async searchByTanNo(req: Request, res: Response) {
         try {
-            const { tan } = req.query;
+            const { tan } = req.body;
 
             if (!tan) {
                 return res.status(400).json({ success: false, message: 'Enter a valid TAN Number' });
