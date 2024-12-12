@@ -1,4 +1,3 @@
-import { CategoryType } from './apiservice.controller';
 import { prisma } from "..";
 import { Request, Response } from "express";
 
@@ -280,7 +279,7 @@ export default class ApiServiceController {
       }
       static subscribeToSingleApi = async (req: Request, res: Response) => {
         const userId = req.user?.id; // Assuming userId is stored in req.user
-        const { apiServiceId } = req.body;
+        const { apiServiceId,totalAmount } = req.body;
       
         try {
           // Validate input
@@ -311,6 +310,7 @@ export default class ApiServiceController {
             });
           }
       
+          console.log('Services in user cart:', cart.services.map(service => service.id));
           // Check if the API service is in the cart
           const apiServiceInCart = cart.services.some(service => service.id === apiServiceId);
       
@@ -329,7 +329,7 @@ export default class ApiServiceController {
               services: {
                 connect: { id: apiServiceId }, // Connect the selected service
               },
-              // Additional subscription details can be added here
+              amountForServices: totalAmount,
             },
           });
       
@@ -345,7 +345,7 @@ export default class ApiServiceController {
       
           return res.status(200).json({
             success: true,
-            message: 'Subscribed to the API service successfully, and the service has been removed from your cart.',
+            message: 'Subscribed to the API service successfully.',
             subscription,
           });
       
