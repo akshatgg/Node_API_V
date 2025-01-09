@@ -37,9 +37,9 @@ import orcRoutes from "./ocr.routes";
 import registerServicesRouter from "./registerServices.routes";
 import pdfRouter from "./pdfhandler.routes";
 import apirouter from "./apiservice.routes";
-// import strictLimiter from "../middlewares/redis-adder"   // this is redis for saving data in real time to limit api calls of sandbox api
+import strictLimiter from "../middlewares/redis-adder"   // this is redis for saving data in real time to limit api calls of sandbox api
 import downloadrouter from "./download.routes";
-// import verifyToken from "../middlewares/verify-token";
+import verifyToken from "../middlewares/verify-token";
 
 const router = Router();
 
@@ -49,15 +49,15 @@ router.use("/business", businessProfileRouter);
 
 router.use("/invoice", invoiceRouter);
 
-router.use("/cms", cmsRouter);
+router.use("/cms",verifyToken,strictLimiter,cmsRouter);
 
 router.use("/pincode", pincodeRouter);
 
 router.use("/postOffice", postOfficeRouter);
 
-router.use("/pan", panRouter);
+router.use("/pan",verifyToken,strictLimiter,panRouter);
 
-router.use("/gst", gstRouter);
+router.use("/gst",verifyToken,strictLimiter,gstRouter);
 
 router.use("/accountancy", accountancyRouter);
 
@@ -73,13 +73,13 @@ router.use("/library", libraryRouter);
 
 router.use("/blog", blogRouter);
 
-router.use("/mca", mcaRouter);
+router.use("/mca",verifyToken,strictLimiter, mcaRouter);
 
-router.use("/tan", tanRouter);
+router.use("/tan",verifyToken,strictLimiter, tanRouter);
 
 router.use("/bank", bankRouter);
 
-router.use("/aadhaar", aadhaarRouter);
+router.use("/aadhaar",verifyToken,strictLimiter,aadhaarRouter);
 
 router.use("/calculator", calculatorRouter);
 
@@ -108,7 +108,7 @@ router.use("/billpayable", billpayablerouter);
 
 router.use("/billrecieve", billrecievablerouter);
 
-router.use("/gstr1", gstr1Router);
+router.use("/gstr1",verifyToken,strictLimiter,gstr1Router);
 
 router.use("/ocr", orcRoutes);
 
