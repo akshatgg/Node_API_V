@@ -19,6 +19,8 @@ accountancyRouter.get('/party/:partyId', verifyToken, LedgerController.getLedger
 
 accountancyRouter.get('/all', verifyToken, LedgerController.getLedgers);
 
+// accountancyRouter.get("/search", verifyToken, LedgerController.searchLedgers);
+
 // accountancyRouter.use('/ledger', ledgerRouter);
 
 export default accountancyRouter;

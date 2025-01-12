@@ -208,7 +208,7 @@ enum LedgerType {
   indirectIncome
   fixedAssets
   currentAssets
-  loansAndLiabilities
+  loansAndLiabilitieslw
   accountsReceivable
   accountsPayable
 }
@@ -223,8 +223,8 @@ model Ledger {
   transactions   Transaction[]
   party          Party?        @relation(fields: [partyId], references: [id])
   partyId        String?
-  year           Int           @default(2023)
-  month          Int           @default(0)
+  year           Int
+  month          Int
   ledgerType     LedgerType
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @default(now())

@@ -31,7 +31,7 @@ client.connect().catch((err) => {
 // Rate-limiting middleware
 const strictLimiter = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const user = req.user; // Assumes authentication middleware populates `req.user`
+    const user = req.user;
     const { pan, aadhar, tan, gst,ifsc } = req.body;
 
     if (!req.url) {

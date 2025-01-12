@@ -8,13 +8,20 @@ export class LedgerController {
 
             if (!req.user) {
                 return res.status(400).json({ success: false, message: "User information missing in request." });
-            }    
+            }
             const { id: userId } = req.user!;
 
             const { ledgerName, ledgerType, openingBalance } = req.body;
-
+            prisma.ledger.findMany({where:{ledgerName:ledgerName}}).then((data)=>{
+                if(data.length>0){
+                    return res.status(400).json({ success: false, message: "Ledger Name already exists" });
+                }
+            })
+            console.log("ledgerName :", ledgerName)
+            const currentYear = new Date().getFullYear();
+            const currentMonth = new Date().getMonth();
             const ledger = await prisma.ledger.create({
-                data: { ledgerName, ledgerType, openingBalance, userId, },
+                data: { ledgerName, ledgerType, openingBalance, userId,year:currentYear,month:currentMonth},
             });
 
             return res.json(ledger);
@@ -27,19 +34,19 @@ export class LedgerController {
     static async updateLedger(req: Request, res: Response) {
         try {
           const ledgerId = req.params.id;
-    
+
           
           if (!ledgerId) {
             return res.status(400).json({ success: false, message: "Ledger ID is missing in the request." });
           }
-    
+
           const { ledgerName, ledgerType, openingBalance } = req.body;
-    
+
           const updatedLedger = await prisma.ledger.update({
             where: { id: ledgerId },
             data: { ledgerName, ledgerType, openingBalance },
           });
-    
+
           return res.json(updatedLedger);
         } catch (error) {
           console.error(error);
@@ -50,17 +57,17 @@ export class LedgerController {
       static async deleteLedger(req: Request, res: Response) {
         try {
           const ledgerId = req.params.id;
-    
+
           if (!ledgerId) {
             return res.status(400).json({ success: false, message: "Ledger ID is missing in the request." });
           }
 
           console.log("id :", ledgerId)
-    
+
           const deletedLedger = await prisma.ledger.delete({
             where: { id: ledgerId },
           });
-    
+
           return res.json({ success: true, deletedLedger, message: "Ledger deleted successfully" });
         } catch (error) {
           console.error(error);
@@ -130,8 +137,135 @@ export class LedgerController {
             return res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
-}
+    static async search(req:Request,res:Response){
+        try {
+            const { id: userId } = req.user!;
+            const { search } = req.query;
+            const ledgers = await prisma.ledger.findMany({
+                where: {
+                    userId,
+                    OR: [
+                        {
+                            ledgerName: {
+                                contains: search as string,
+                                mode: "insensitive",
+                            },
+                        },
+                        {
+                            ledgerType: {
+                                contains: search as string,
+                                mode: "insensitive",
+                            },
+                        },
+                    ],
+                },
+            });
+            return res.status(200).json({ success: true, ledgers });
+        } catch (error) {
+            return res.status(500).json({ success: false, message: "Error fetching ledgers" });
+        }
+    }
+    static async getCustomerCount(req: Request, res: Response) {
+        try {
+            const { id: userId} = req.user!;
+            const {ledgertype,year,month} = req.body;
+            const partyIds = await prisma.ledger.findMany({
+                where: { userId ,ledgerType:ledgertype,year:year,month:month},
+                select: { partyId: true }
+            });
 
+            const uniquePartyIds = [...new Set(partyIds.map(p => p.partyId))];
+            const count = uniquePartyIds.length;
+
+            return res.status(200).json({ success: true, unique:uniquePartyIds,count:count });
+        } catch (error) {
+            return res.status(500).json({ success: false, message: "Error fetching customer count" });
+        }
+    }
+    static async getinactivepartyCount(req: Request, res: Response) {
+        try {
+            const { id: userId } = req.user!;
+            const { ledgertype, year, month } = req.body;
+            // Step 1: Get all unique partyIds based on filters
+            const partyIds = await prisma.ledger.findMany({
+                where: { userId, ledgerType: ledgertype, year: year, month: month },
+                select: { partyId: true },
+            });
+            const uniquePartyIds = [...new Set(partyIds.map(p => p.partyId))];
+            // Step 2: Get the date 1 year ago
+            const oneYearAgo = new Date();
+            oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+            // Step 3: Find inactive customers
+            const inactiveCustomers = await prisma.party.findMany({
+                where: {
+                    id: { in: uniquePartyIds },
+                    transactions: {
+                        none: {
+                            date: {
+                                gte: oneYearAgo, // No transactions in the past year
+                            },
+                        },
+                    },
+                },
+                select: { id: true, name: true }, // Select necessary fields
+            });
+            // Step 4: Return the result
+            const count = inactiveCustomers.length;
+            return res.status(200).json({
+                success: true,
+                inactiveCustomers,
+                count,
+            });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ success: false, message: "Error fetching customer count" });
+        }
+    }
+    static async getfavouraiteparty(req: Request, res: Response) {
+        //get parties with highest transactions in the last 3 months
+        try {
+            const { id: userId } = req.user!;
+            const { ledgertype, year, month } = req.body;
+    
+            // Step 1: Get all unique partyIds based on filters
+            const partyIds = await prisma.ledger.findMany({
+                where: { userId, ledgerType: ledgertype, year: year, month: month },
+                select: { partyId: true },
+            });
+    
+            const uniquePartyIds = [...new Set(partyIds.map(p => p.partyId))];
+    
+            // Step 2: Get the date 3 months ago
+            const threeMonthsAgo = new Date();
+            threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+    
+            // Step 3: Find inactive customers
+            const activeCustomers = await prisma.party.findMany({
+                where: {
+                    id: { in: uniquePartyIds },
+                    transactions: {
+                        some: {
+                            date: {
+                                gte: threeMonthsAgo, // No transactions in the past year
+                            },
+                        },
+                    },
+                },
+                select: { id: true, name: true }, // Select necessary fields
+            });
+            // Step 4: Return the result
+            const count = activeCustomers.length;
+            return res.status(200).json({
+                success: true,
+                activeCustomers,
+                count,
+            });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ success: false, message: "Error fetching customer count" });
+        }
+    }
+}
 export class JournalEntryController {
     static async createJournalEntry(req: Request, res: Response) {
         try {
@@ -140,7 +274,7 @@ export class JournalEntryController {
             const { entryDate, description, transactions } = req.body;
 
             const journalEntry = await prisma.journalEntry.create({
-                data: { 
+                data: {
                     entryDate,
                     description,
                     userId,
@@ -161,7 +295,6 @@ export class JournalEntryController {
     static async getJournalEntries(req: Request, res: Response) {
         try {
             const { id: userId } = req.user!;
-
             const journalEntries = await prisma.journalEntry.findMany({
                 where: {
                     userId,
@@ -186,10 +319,27 @@ export class TransactionController {
                     ledgerId,
                 }
             });
-
             return res.status(200).json({ success: true, transactions });
         } catch (error) {
             return res.status(500).json({ success: false, message: "Error fetching transactions" });
+        }
+    }
+    static async daybook(req: Request, res: Response) {
+        try {
+            const { id: userId } = req.user!;
+            const { date } = req.query;
+            const daybook = await prisma.transaction.findMany({
+                where: {
+                    userId,
+                    date: new Date(date as string),
+                },
+                include: {
+                    ledger: true,
+                },
+            });
+            return res.status(200).json({ success: true, daybook });
+        } catch (error) {
+            return res.status(500).json({ success: false, message: "Error fetching daybook" });
         }
     }
 }

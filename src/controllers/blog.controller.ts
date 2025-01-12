@@ -8,6 +8,7 @@ export default class BlogController {
       console.log(req.body)
       const { title, category, contentHeading, contentDescription } = req.body;
       const localFilePath = req.file?.path;
+      console.log(req.file)
       const cloudinaryResult = await uploadToCloudinary(localFilePath, "image", req, req.file);
       const imageUrl = cloudinaryResult.secure_url
       if (!title || !contentHeading || !imageUrl) {
