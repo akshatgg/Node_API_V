@@ -36,6 +36,7 @@ import gstr1Router from "./gstr1.routes";
 import orcRoutes from "./ocr.routes";
 import registerServicesRouter from "./registerServices.routes";
 import pdfRouter from "./pdfhandler.routes";
+import gstRatesRouter from "./gstrates.routes";
 import apirouter from "./apiservice.routes";
 import strictLimiter from "../middlewares/redis-adder"   // this is redis for saving data in real time to limit api calls of sandbox api
 import downloadrouter from "./download.routes";
@@ -48,6 +49,8 @@ router.use("/user", userRouter);
 router.use("/business", businessProfileRouter);
 
 router.use("/invoice", invoiceRouter);
+
+router.use("/gstrates", gstRatesRouter);
 
 router.use("/cms",verifyToken,strictLimiter,cmsRouter);
 

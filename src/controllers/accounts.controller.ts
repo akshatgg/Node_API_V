@@ -5,16 +5,16 @@ export class Accountscontroller {
 
     static async Payablebill(req: Request, res: Response) {
     try {
-    
+
     const { supplierName, supplierAddress, contact, billDate ,
       dueDate , billAmount ,billNumber ,billDiscription,   paymentMethod ,transactionId , paymentDate ,
       paymentAmount ,tax ,comment,
       invoiceNumber } =req.body;
-    
+
       if (!supplierName || !supplierAddress || !contact || !invoiceNumber || !billNumber || !paymentAmount ) {
         return res.status(400).json({ success: false, message: 'Missing required fields.' });
       }
-    
+
       const billpayable = await prisma.billpayable.create({
         data: {
             supplierName,
@@ -30,8 +30,8 @@ export class Accountscontroller {
             paymentDate ,
             paymentAmount ,
              tax ,
-            comment ,       
-            invoiceNumber  
+            comment ,
+            invoiceNumber
         },
     });
     
@@ -58,15 +58,14 @@ export class Accountscontroller {
             if (!id) {
                 return res.status(400).json({ success: true, message: ' ID is required for this operation' });
             }
-    
 
             return res.status(200).json({ success: true, data: onebill });
-            
+
         } catch (error:any) {
             return res.status(500).json({
                 success: false,
                 message: 'Error In creating BillPayable',
-             });   
+             });
         }
     }
 
@@ -80,12 +79,12 @@ export class Accountscontroller {
             }
 
             return res.status(200).json({ success: true, data: allbill });
-            
+
         } catch (error:any) {
             return res.status(500).json({
                 success: false,
                 message: 'Error In creating BillPayable',
-             });   
+             });
         }
     }
 
@@ -98,7 +97,7 @@ export class Accountscontroller {
                 dueDate , billAmount ,billNumber ,billDiscription,   paymentMethod ,transactionId , paymentDate ,
                 paymentAmount ,tax ,comment,
                 invoiceNumber } =req.body;
-              
+
                 if (!supplierName || !supplierAddress || !contact || !invoiceNumber || !billNumber || !paymentAmount ) {
                   return res.status(400).json({ success: false, message: 'Missing required fields.' });
                 }
@@ -112,7 +111,6 @@ export class Accountscontroller {
                 if(!checkifnotexist){
                   return res.status(400).json({ success: true, message: 'bill post not found or not created' });
                 }
-        
 
             const updatebill = await prisma.billpayable.update({
                 where: { id:+id },
@@ -126,12 +124,12 @@ export class Accountscontroller {
                      billNumber  ,
                     billDiscription,
                      paymentMethod ,
-                    transactionId , 
+                    transactionId ,
                     paymentDate ,
                     paymentAmount ,
                      tax ,
-                    comment ,       
-                    invoiceNumber  
+                    comment ,
+                    invoiceNumber
                 },
             })
 
@@ -140,20 +138,20 @@ export class Accountscontroller {
             }
 
             return res.status(200).json({ success: true, data: updatebill });
-            
+
         } catch (error:any) {
             return res.status(500).json({
                 success: false,
                 message: 'Error In creating BillPayable',
-             });   
+             });
         }
     }
 
     static async deletepayablebill (req: Request, res: Response){
-     
+
       try {
           const { id } = req.params;
-  
+
           if (!id) {
               return res.status(400).json({ success: true, message: ' ID is required for this operation' });
           }
@@ -163,18 +161,13 @@ export class Accountscontroller {
           if(!checkifnotexist){
             return res.status(400).json({ success: true, message: 'bill post not found or not created' });
           }
-  
-  
+
           const deletebill=await prisma.billpayable.delete({
               where: { id:+id },
           });
 
-         
-        
-  
           return res.status(200).json({ success: true, message: 'Post deleted' });
-     
-     
+
       } catch (error) {
         return res.status(500).json({
             success: false,

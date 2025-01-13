@@ -11,10 +11,10 @@ config({
 // Create Redis client
 const client = createClient({
   username: 'default',
-  password: 'hq8nHZO7fD6Hlh44CUozz4ZcCISibFUo',
+  password: 'ZCEsBNmjnlDhQPHswpFh0iPTgy1oXYs6LLvXliPetGHjiYHVnk0w3XGthskAdfdD',
   socket: {
-    host: 'redis-11521.c301.ap-south-1-1.ec2.redns.redis-cloud.com',
-    port: 11521,
+    host: '122.168.138.24',
+    port: 6969,
   },
 });
 
@@ -31,7 +31,7 @@ client.connect().catch((err) => {
 // Rate-limiting middleware
 const strictLimiter = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const user = req.user;
+    const user = req.user; // Assumes authentication middleware populates `req.user`
     const { pan, aadhar, tan, gst,ifsc } = req.body;
 
     if (!req.url) {

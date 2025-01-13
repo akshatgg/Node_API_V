@@ -96,10 +96,9 @@ export default class HsnAndSacController {
       
             // Read the content of hsncode.json
             const saccodeData = JSON.parse(fs.readFileSync(HsnAndSacController.sacfile, 'utf-8'));
-      
             // Find the object in the array based on the provided HSN code
             const foundObject = saccodeData.find((item: SACCode) => item.SACCode === saccode);
-      
+
             if (foundObject) {
               // If the object is found, return it in the response
               return res.status(200).json({
@@ -120,7 +119,6 @@ export default class HsnAndSacController {
               message: 'Something went wrong.'
             });
           }
-        
     }
 
 
