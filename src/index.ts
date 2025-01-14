@@ -18,7 +18,8 @@ const PORT = process.env.PORT || 8080;
 
 export const prisma = new PrismaClient();
 const app = express();
-
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 // Handle CORS
 app.use(cors(
   {

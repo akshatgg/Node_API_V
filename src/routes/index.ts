@@ -41,6 +41,7 @@ import apirouter from "./apiservice.routes";
 import strictLimiter from "../middlewares/redis-adder"   // this is redis for saving data in real time to limit api calls of sandbox api
 import downloadrouter from "./download.routes";
 import verifyToken from "../middlewares/verify-token";
+import razorpayRouter from "./razorpay.routes";
 
 const router = Router();
 
@@ -59,6 +60,8 @@ router.use("/pincode", pincodeRouter);
 router.use("/postOffice", postOfficeRouter);
 
 router.use("/pan",verifyToken,strictLimiter,panRouter);
+
+router.use("/razorpay",verifyToken,razorpayRouter);
 
 router.use("/gst",verifyToken,strictLimiter,gstRouter);
 

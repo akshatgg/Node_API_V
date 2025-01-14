@@ -55,6 +55,7 @@
     "pdf-lib": "^1.17.1",
     "pdf-merger-js": "^5.1.2",
     "pdf-parse": "^1.1.1",
+    "razorpay": "^2.9.5",
     "redis": "^4.7.0",
     "sharp": "^0.33.5",
     "tesseract.js": "^5.1.0",
