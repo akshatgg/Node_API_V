@@ -42,6 +42,9 @@ import strictLimiter from "../middlewares/redis-adder"   // this is redis for sa
 import downloadrouter from "./download.routes";
 import verifyToken from "../middlewares/verify-token";
 import razorpayRouter from "./razorpay.routes";
+import EinvoiceController from "../controllers/sandbox/einvoice.controller";
+import einvoiceRouter from "./Einvoice.routes";
+import ewaybill from "./ewaybill.routes";
 
 const router = Router();
 
@@ -53,7 +56,7 @@ router.use("/invoice", invoiceRouter);
 
 router.use("/gstrates", gstRatesRouter);
 
-router.use("/cms",verifyToken,strictLimiter,cmsRouter);
+router.use("/cms",cmsRouter);
 
 router.use("/pincode", pincodeRouter);
 
@@ -121,7 +124,13 @@ router.use("/ocr", orcRoutes);
 router.use("/pdf", pdfRouter);
 
 router.use("/apis",apirouter);
-router.use("/download",downloadrouter)
+
+router.use("/download",downloadrouter);
+
+router.use("/einvoice",einvoiceRouter);
+
+router.use("/ewaybill",ewaybill);
+
 router.get("/", (req, res) => {
   return res.send({ message: "Up and running" });
 });

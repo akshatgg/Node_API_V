@@ -910,7 +910,7 @@ export default class UserController {
           phone: phone ?? user.phone,
           avatar: avatar ?? user.avatar,
           ispanlinked: Boolean(ispanlinked) ?? user.ispanlinked,
-          inventory: inventory ?? user.inventory,
+          inventory: Boolean(inventory) ?? user.inventory,
         },
       });
       return res

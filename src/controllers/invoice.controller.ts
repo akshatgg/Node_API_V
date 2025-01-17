@@ -531,11 +531,11 @@ class InvoiceController {
 
   static async createItem(req: Request, res: Response) {
     try {
+      // Extract user ID from the authenticated request
       const { id: userId } = req.user!;
   
-      // Check if inventory is enabled for the user
+      // Check if the user exists
       const user = await prisma.user.findFirst({ where: { id: userId } });
-  
       if (!user) {
         return res.status(404).json({
           success: false,
@@ -543,6 +543,7 @@ class InvoiceController {
         });
       }
   
+      // Check if the user has inventory enabled
       if (!user.inventory) {
         return res.status(403).json({
           success: false,
@@ -550,26 +551,35 @@ class InvoiceController {
         });
       }
   
-      // Create the item
+      // Extract item details from the request body
       const {
         itemName,
         unit,
-        price,
-        openingStock,
-        closingStock,
-        purchasePrice,
-        cgst,
-        sgst,
-        igst,
-        utgst,
-        taxExempted,
-        description,
-        hsnCode,
+        price = 0, // Default values for numeric fields
+        openingStock = 0,
+        closingStock = 0,
+        purchasePrice = 0,
+        cgst = 0,
+        sgst = 0,
+        igst = 0,
+        utgst = 0,
+        taxExempted = false,
+        description = "",
+        hsnCode = "",
         categoryId,
         supplierId,
       } = req.body;
+      console.log(req.body);
+      // Validate required fields
+      if (!itemName || !unit) {
+        return res.status(400).json({
+          success: false,
+          message: "Missing required fields: itemName, unit",
+        });
+      }
   
-      const item: Item = await prisma.item.create({
+      // Create the item in the database
+      const item = await prisma.item.create({
         data: {
           itemName,
           unit,
@@ -589,12 +599,20 @@ class InvoiceController {
           supplierId,
         },
       });
-      return res.status(201).json({ success: true, item });
+  
+      // Respond with the created item
+      return res.status(201).json({
+        success: true,
+        message: "Item created successfully.",
+        item,
+      });
     } catch (error) {
-      console.log(error);
-      return res
-        .status(500)
-        .json({ success: false, message: "Internal server error" });
+      console.error("Error creating item:", error);
+      // Handle specific error scenarios if necessary
+      return res.status(500).json({
+        success: false,
+        message: "Internal server error",
+      });
     }
   }
 

@@ -2,7 +2,7 @@ import axios from "axios";
 import { Request, Response } from "express";
 import Sandbox from "../../services/sandbox.service";
 
-export default class ewaybill{
+export default class ewaybillcontroller{
     //consingoer
     static async generateEwaybill(req: Request, res: Response){
         try {
@@ -232,6 +232,7 @@ export default class ewaybill{
             });
         }
 }
+//transporter
     static async ewaybillsbydateandstate(req:Request,res:Response){
         try{
             const {generated_date, generator_state_code,assigned_date} = req.body;
@@ -253,11 +254,168 @@ export default class ewaybill{
             };
 
             // Make the API request
-            const { data } = await axios.post(endpoint, requestData, { headers });
+            const { data } = await axios.post(endpoint, req.body, { headers });
 
             return res.status(200).json({ success: true, data });
-        }catch{
+        }catch(e){
+            console.error('Error in ewaybillsbydateandstate:', e);
+            return res.status(500).json({ success: false, message: 'Something went wrong', error: e.message });
+        }
+    }
+    static async listewaybillbygenerator(req:Request,res:Response){
+        try{
+            const {generated_date, generator_gstin} = req.body;
 
+            // Validate required parameter
+            if (!generated_date || !generator_gstin) {
+                return res.status(400).json({ success: false, message: "Body params missing: 'generateddate' and 'gstin' are required" });
+            }
+
+            const endpoint = `${Sandbox.BASE_URL}/gst/compliance/e-way-bill/transporter/bills/list?generateddate=${generated_date}`;
+
+            const token = await Sandbox.generateAccessToken();
+
+            const headers = {
+                'Authorization': token,
+                'accept': 'application/json',
+                'x-api-key': process.env.SANDBOX_KEY,
+                'x-api-version': process.env.SANDBOX_API_VERSION,
+            };
+
+            // Make the API request
+            const { data } = await axios.post(endpoint, generator_gstin, { headers });
+
+            return res.status(200).json({ success: true, data });
+        }catch(e){
+            console.error('Error in listewaybillbygenerator:', e);
+            return res.status(500).json({ success: false, message: 'Something went wrong', error: e.message });
+        }
+    }
+    static async updatevehicledetails(req:Request,res:Response){
+        try{
+            const {
+                ewbNo,
+                vehicleNo,
+                fromPlace,
+                fromState,
+                reasonCode,
+                reasonRem,
+                transDocNo,
+                transDocDate,
+                transMode,
+                vehicleType
+            } = req.body;
+
+            // Validate required parameters
+            if (!ewbNo || !vehicleNo || !fromPlace || !fromState || !reasonCode || !reasonRem || !transDocNo || !transDocDate || !transMode || !vehicleType) {
+                return res.status(400).json({
+                    success: false,
+                    message: "please fill all the details"
+                });
+            }
+
+            const endpoint = `${Sandbox.BASE_URL}/gst/compliance/e-way-bill/transporter/bill/${ewbNo}/vehicle`;
+
+            const token = await Sandbox.generateAccessToken();
+
+            const headers = {
+                'Authorization': token,
+                'accept': 'application/json',
+                'x-api-key': process.env.SANDBOX_KEY,
+                'x-api-version': process.env.SANDBOX_API_VERSION,
+            };
+
+            // Make the API request
+            const { data } = await axios.put(endpoint, req.body, { headers });
+
+            return res.status(200).json({ success: true, data });
+        }catch(e){
+            console.error('Error in updatevehicledetails:', e);
+            return res.status(500).json({
+                success: false,
+                message: 'Something went wrong',
+                error: e.message,
+            });
+        }
+    }
+    static async extendewaybillvalidity(req: Request, res: Response): Promise<Response> {
+        try {
+            const { data: requestBody } = req.body;
+
+            // Validate required parameters
+            if (!requestBody?.ewbNo) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Body params missing: 'ewbNo'",
+                });
+            }
+
+            const endpoint = `${Sandbox.BASE_URL}/gst/compliance/e-way-bill/transporter/bill/${requestBody.ewbNo}/extend`;
+
+            // Generate access token
+            const token = await Sandbox.generateAccessToken();
+
+            const headers = {
+                Authorization: token,
+                Accept: 'application/json',
+                'x-api-key': process.env.SANDBOX_KEY!,
+                'x-api-version': process.env.SANDBOX_API_VERSION!,
+            };
+
+            // Make the API request
+            const response = await axios.post(endpoint, { data: requestBody }, { headers });
+
+            return res.status(200).json({
+                success: true,
+                data: response.data,
+            });
+        } catch (e : any) {
+            console.error('Error in extendewaybillvalidity:', e);
+            return res.status(500).json({
+                success: false,
+                message: 'Something went wrong',
+                error: e.message,
+            });
+        }
+    }
+    static async updatetransporterdetails(req: Request, res: Response): Promise<Response> {
+        try {
+            const { data: requestBody } = req.body;
+
+            // Validate required parameters
+            if (!requestBody?.ewbNo) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Body params missing: 'ewbNo'",
+                });
+            }
+
+            const endpoint = `${Sandbox.BASE_URL}/gst/compliance/e-way-bill/transporter/bill/${requestBody.ewbNo}/transporter`;
+
+            // Generate access token
+            const token = await Sandbox.generateAccessToken();
+
+            const headers = {
+                Authorization: token,
+                Accept: 'application/json',
+                'x-api-key': process.env.SANDBOX_KEY!,
+                'x-api-version': process.env.SANDBOX_API_VERSION!,
+            };
+
+            // Make the API request
+            const response = await axios.put(endpoint, { data: requestBody }, { headers });
+
+            return res.status(200).json({
+                success: true,
+                data: response.data,
+            });
+        } catch (e : any) {
+            console.error('Error in updatetransporterdetails:', e);
+            return res.status(500).json({
+                success: false,
+                message: 'Something went wrong',
+                error: e.message,
+            });
         }
     }
 }

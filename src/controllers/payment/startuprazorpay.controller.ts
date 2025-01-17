@@ -3,7 +3,6 @@ import Razorpay from "razorpay";
 import crypto from "crypto";
 import { Request, Response } from "express";
 import { prisma } from "../..";
-import { config } from 'dotenv';
 import path from "path";
 
 config(

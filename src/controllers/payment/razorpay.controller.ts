@@ -76,7 +76,7 @@ export default class RazorpayService {
           await prisma.payment.create({
             data: {
               razorpay_order_id: order.id,
-              razorpay_payment_id: null,
+              razorpay_payment_id:null ,
               status: "created",
               userId,
               orderId: 1, // Replace with appropriate logic for generating order ID
@@ -112,7 +112,7 @@ export default class RazorpayService {
       const payload = `${razorpay_order_id}|${razorpay_payment_id}`;
 
       // Compute HMAC SHA256 digest
-      const shasum = crypto.createHmac("sha256", secret);
+      const shasum = crypto.createHmac("sha256", secret||"");
       shasum.update(payload);
       const digest = shasum.digest("hex");
 
@@ -161,7 +161,7 @@ export default class RazorpayService {
       // Extract userId and serviceIds from the order notes
       const userId = order.notes?.userId;
       const serviceIds = order.notes?.serviceIds
-        ? JSON.parse(order.notes.serviceIds)
+        ? JSON.parse(order.notes.serviceIds as string)
         : [];
   
       if (!userId || !serviceIds.length) {

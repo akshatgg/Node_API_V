@@ -26,7 +26,7 @@ export class Accountscontroller {
              billNumber  ,
             billDiscription,
              paymentMethod ,
-            transactionId , 
+            transactionId ,
             paymentDate ,
             paymentAmount ,
              tax ,
@@ -61,7 +61,7 @@ export class Accountscontroller {
 
             return res.status(200).json({ success: true, data: onebill });
 
-        } catch (error:any) {
+        } catch (error) {
             return res.status(500).json({
                 success: false,
                 message: 'Error In creating BillPayable',
@@ -80,7 +80,7 @@ export class Accountscontroller {
 
             return res.status(200).json({ success: true, data: allbill });
 
-        } catch (error:any) {
+        } catch (error) {
             return res.status(500).json({
                 success: false,
                 message: 'Error In creating BillPayable',
@@ -139,7 +139,7 @@ export class Accountscontroller {
 
             return res.status(200).json({ success: true, data: updatebill });
 
-        } catch (error:any) {
+        } catch (error) {
             return res.status(500).json({
                 success: false,
                 message: 'Error In creating BillPayable',
@@ -162,7 +162,7 @@ export class Accountscontroller {
             return res.status(400).json({ success: true, message: 'bill post not found or not created' });
           }
 
-          const deletebill=await prisma.billpayable.delete({
+        await prisma.billpayable.delete({
               where: { id:+id },
           });
 
@@ -234,7 +234,7 @@ export class Accountscontroller {
 
             return res.status(200).json({ success: true, data: onebill });
             
-        } catch (error:any) {
+        } catch (error) {
             return res.status(500).json({
                 success: false,
                 message: 'Error In creating BillPayable',
@@ -253,7 +253,7 @@ export class Accountscontroller {
 
             return res.status(200).json({ success: true, data: allbill });
             
-        } catch (error:any) {
+        } catch (error) {
             return res.status(500).json({
                 success: false,
                 message: 'Error In creating Bill Recivaleable',
@@ -306,7 +306,7 @@ export class Accountscontroller {
 
             return res.status(200).json({ success: true, data: updatebill });
             
-        } catch (error:any) {
+        } catch (error) {
             return res.status(500).json({
                 success: false,
                 message: 'Error In creating Bill Recivale',
@@ -330,7 +330,7 @@ export class Accountscontroller {
             }
     
     
-            const deletebill=await prisma.billrecieve.delete({
+            await prisma.billrecieve.delete({
                 where: { id:+id },
             });
   
