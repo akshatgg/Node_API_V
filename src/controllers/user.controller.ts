@@ -11,8 +11,8 @@ import EmailService from "../services/email.service";
 import TokenService from "../services/token.service";
 import { UserGender, UserType } from "@prisma/client";
 import { ZodError, z } from "zod";
-import axios from "axios";
 import { uploadToCloudinary } from "../config/cloudinaryUploader";
+import MobileService from "../services/mobile.service";
 
 const UserSchema = z.object({
   firstName: z
@@ -56,7 +56,7 @@ export default class UserController {
     return hash;
   }
 
-  static async sendOtp(email: string, userId: number) {
+  static async sendOtp(email: string, userId: number,mobile_number:number) {
     const otp = generateOTP(); // Assume generateOTP is implemented and returns a string
     console.log(otp);
   
@@ -83,7 +83,7 @@ export default class UserController {
   
     // Send email with OTP
     await EmailService.sendMail(email, email_subject, email_message);
-  
+    await MobileService.sendotp(mobile_number, otp);
     // Return OTP key (for logging/debugging purposes)
     return otp_key;
   }
@@ -137,7 +137,7 @@ export default class UserController {
       });
   
       // Generate and send OTP
-      const otp_key = await UserController.sendOtp(email, user.id);
+      const otp_key = await UserController.sendOtp(email, user.id,Number(user.phone));
   
       return res.status(200).send({
         success: true,
@@ -229,7 +229,7 @@ export default class UserController {
       });
     }
 
-    const otp_key = await UserController.sendOtp(email, user.id);
+    const otp_key = await UserController.sendOtp(email, user.id,Number(user.phone));
     console.log(otp_key)
 
     res.status(200).send({
@@ -433,7 +433,7 @@ export default class UserController {
         },
       });
 
-      const otp_key = await UserController.sendOtp(email, user.id);
+      const otp_key = await UserController.sendOtp(email, user.id,Number(user.phone));
 
       return res.status(200).send({
         success: true,
@@ -600,7 +600,7 @@ export default class UserController {
         },
       });
 
-      const otp_key = await UserController.sendOtp(email, user.id);
+      const otp_key = await UserController.sendOtp(email, user.id,Number(user.phone));
 
       return res.status(200).send({
         success: true,
@@ -667,7 +667,7 @@ export default class UserController {
         });
       }
 
-      const otp_key = await UserController.sendOtp(email, user.id);
+      const otp_key = await UserController.sendOtp(email, user.id,Number(user.phone));
 
       return res.status(200).send({
         success: true,
@@ -782,8 +782,12 @@ export default class UserController {
       );
 
       const { id, email } = TokenService.decodeToken(token!);
+      const user = await prisma.user.findFirst({
+        where: { id },
+      });
 
-      const otp_key = await UserController.sendOtp(email, id);
+
+      const otp_key = await UserController.sendOtp(email,id,Number(user?.phone));
 
       return res.status(200).send({
         success: true,
@@ -906,7 +910,7 @@ export default class UserController {
           phone: phone ?? user.phone,
           avatar: avatar ?? user.avatar,
           ispanlinked: Boolean(ispanlinked) ?? user.ispanlinked,
-          inventory: inventory ?? user.inventory,
+          inventory: Boolean(inventory) ?? user.inventory,
         },
       });
       return res
@@ -1256,5 +1260,8 @@ export default class UserController {
         .status(500)
         .json({ success: false, message: "Internal server error" });
     }
+  }
+  static async verifyotpbyphone(req: Request, res: Response) {
+    
   }
 }

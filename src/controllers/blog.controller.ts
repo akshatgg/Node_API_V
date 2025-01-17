@@ -1,4 +1,3 @@
-import { deleteImageByUrl, uploadToCloudinary } from "../config/cloudinaryUploader";
 import { prisma } from "../index";
 import { Request, Response } from "express";
 
@@ -7,10 +6,11 @@ export default class BlogController {
     try {
       console.log(req.body)
       const { title, category, contentHeading, contentDescription } = req.body;
-      const localFilePath = req.file?.path;
-      const cloudinaryResult = await uploadToCloudinary(localFilePath, "image", req, req.file);
-      const imageUrl = cloudinaryResult.secure_url
-      if (!title || !contentHeading || !imageUrl) {
+      // const localFilePath = req.file?.path;
+      // console.log(req.file)
+      // const cloudinaryResult = await uploadToCloudinary(localFilePath, "image", req, req.file);
+      // const imageUrl = cloudinaryResult.secure_url
+      if (!title || !contentHeading) {
         return res
           .status(400)
           .json({ success: true, message: "Required body params are missing" });
@@ -25,7 +25,6 @@ export default class BlogController {
           category,
           contentHeading,
           contentDescription,
-          imageUrl: imageUrl,
         },
       });
 
@@ -88,69 +87,54 @@ export default class BlogController {
     }
   }
 
-static async updatePost(req: Request, res: Response): Promise<Response> {
-  try {
-    const { title, contentHeading, category, contentDescription } = req.body;
-    const imageUrl: string = req.file?.path as string;
-    console.log("🚀 ~ BlogController ~ updatePost ~ imageUrl:", imageUrl);
+  static async updatePost(req: Request, res: Response): Promise<Response> {
+    try {
+      const { title, contentHeading, category, contentDescription } = req.body;
+      const { id } = req.params;
 
-    const { id } = req.params;
+      if (!id) {
+        return res.status(400).json({
+          success: false,
+          message: "Post ID is required for this operation",
+        });
+      }
 
-    if (!id) {
-      return res.status(400).json({
-        success: false,
-        message: "Post ID is required for this operation",
+      const user = req.user!;
+
+      // Find the post belonging to the user
+      const post = await prisma.post.findFirst({
+        where: { id, userId: user.id },
       });
-    }
 
-    const user = req.user!;
+      if (!post) {
+        return res.status(404).json({
+          success: false,
+          message: "Post not found",
+        });
+      }
 
-    // Find the post belonging to the user
-    const post = await prisma.post.findFirst({
-      where: { id, userId: user.id },
-    });
+      // Build the update data object dynamically
+      const updateData: any = {};
+      if (title) updateData.title = title;
+      if (contentHeading) updateData.contentHeading = contentHeading;
+      if (category) updateData.category = category;
+      if (contentDescription) updateData.contentDescription = contentDescription;
 
-    if (!post) {
-      return res.status(404).json({
-        success: false,
-        message: "Post not found",
+      const updatedPost = await prisma.post.update({
+        where: { id },
+        data: updateData,
       });
-    }
 
-    const oldImage = post.imageUrl;
-
-    // Delete old image if a new image is uploaded
-    if (imageUrl && oldImage) {
-      await deleteImageByUrl([oldImage]);
-    }
-
-    // Build the update data object dynamically
-    const updateData: any = {};
-    if (title) updateData.title = title;
-    if (contentHeading) updateData.contentHeading = contentHeading;
-    if (category) updateData.category = category;
-    if (contentDescription) updateData.contentDescription = contentDescription;
-    if (imageUrl) {
-      updateData.imageUrl = imageUrl;
-    } else if (oldImage) {
-      updateData.imageUrl = oldImage;
-    }
-
-    const updatedPost = await prisma.post.update({
-      where: { id },
-      data: updateData,
-    });
-
-    return res.status(200).json({
-      success: true,
-      data: updatedPost,
-    });
-  } catch (error) {
-    console.error("🚀 ~ BlogController ~ updatePost ~ error:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Something went wrong",
-    });
+      return res.status(200).json({
+        success: true,
+        data: updatedPost,
+      });
+    } catch (error) {
+      console.error("🚀 ~ BlogController ~ updatePost ~ error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Something went wrong",
+      });
     }
   }
 

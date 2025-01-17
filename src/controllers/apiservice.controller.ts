@@ -357,72 +357,62 @@ export default class ApiServiceController {
           });
         }
       };
-      static subscribeToAllApis = async (req: Request, res: Response) => {
-        const userId = req.user?.id; // Assuming userId is stored in req.user
-        const { totalAmount } = req.body; // Assuming totalAmount is passed in the request body
-      
+      static subscribeToAllApis = async (userId: number, serviceIds: string[]) => {
         try {
-          // Validate userId and totalAmount
-          if (!userId) {
-            return res.status(400).json({
-              success: false,
-              message: 'User ID is required.',
-            });
+          // Validate input
+          if (!userId || !serviceIds || serviceIds.length === 0) {
+            throw new Error("User ID and service IDs are required.");
           }
       
-          if (!totalAmount) {
-            return res.status(400).json({
-              success: false,
-              message: 'Total amount for services is required.',
-            });
-          }
-      
-          // Retrieve the user's cart with associated services
-          const cart = await prisma.cart.findUnique({
-            where: { userId },
-            include: { services: true },
+          // Fetch service details to calculate the total amount
+          const services = await prisma.service.findMany({
+            where: {
+              id: { in: serviceIds },
+            },
+            select: {
+              id: true,
+              price: true, // Assuming each service has a 'price' field
+            },
           });
       
-          if (!cart) {
-            return res.status(404).json({
-              success: false,
-              message: 'Cart not found for the user.',
-            });
+          if (services.length === 0) {
+            throw new Error("No valid services found for the provided IDs.");
           }
       
-          // Create the subscription by connecting all services in the cart
+          // Calculate the total amount
+          const totalAmount = services.reduce((sum, service) => sum + service.price, 0);
+      
+          // Create the subscription and associate services with the user
           const subscription = await prisma.subscriptions.create({
             data: {
               userId,
               services: {
-                connect: cart.services.map(service => ({ id: service.id })), // Connect all services
+                connect: services.map((service) => ({ id: service.id })), // Connect selected services
               },
               amountForServices: totalAmount,
             },
           });
       
-          // Empty the cart after successful subscription
+          // Remove services from the user's cart
           await prisma.cart.update({
             where: { userId },
             data: {
               services: {
-                disconnect: cart.services.map(service => ({ id: service.id })), // Remove all services
+                disconnect: services.map((service) => ({ id: service.id })), // Unlink services from cart
               },
             },
           });
       
-          return res.status(200).json({
-            success: true,
-            message: 'Subscribed to all APIs in the cart successfully.',
-            subscription,
-          });
+          console.log("User subscribed to all services successfully:", subscription);
       
+          return {
+            success: true,
+            message: "Subscribed to all APIs successfully.",
+            subscription,
+          };
         } catch (error) {
-          console.error('Error subscribing to all APIs:', error);
-          return res.status(500).json({
-            success: false,
-            message: 'Internal Server Error',
-          });
+          console.error("Error subscribing to all APIs:", error);
+          throw error; // Re-throw to be handled at the controller level
         }
       };
 

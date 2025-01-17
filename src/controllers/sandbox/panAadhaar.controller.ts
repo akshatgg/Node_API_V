@@ -59,10 +59,7 @@ export default class PanAadhaarController {
             // Return successful response with data
             return res.status(200).send({
                 success: true,
-                data,
-                entity: defaultEntity,
-                consent: defaultConsent,
-                reason: defaultReason
+                data
             });
         } catch (e) {
             console.log(e);

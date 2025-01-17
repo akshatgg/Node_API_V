@@ -117,6 +117,8 @@ model BusinessProfile {
   gstin                  String?
   statecode              String?
   street                 String?
+  state                  String?
+  pincode                String?
   city                   String?
   dst                    String?
   stcd                   String? // State
@@ -208,7 +210,7 @@ enum LedgerType {
   indirectIncome
   fixedAssets
   currentAssets
-  loansAndLiabilities
+  loansAndLiabilitieslw
   accountsReceivable
   accountsPayable
 }
@@ -223,8 +225,8 @@ model Ledger {
   transactions   Transaction[]
   party          Party?        @relation(fields: [partyId], references: [id])
   partyId        String?
-  year           Int           @default(2023)
-  month          Int           @default(0)
+  year           Int
+  month          Int
   ledgerType     LedgerType
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @default(now())
@@ -488,7 +490,7 @@ model Post {
   contentHeading     String
   contentDescription String   @db.Text
   category           String
-  imageUrl           String
+  imageUrl           String?
   user               User     @relation(fields: [userId], references: [id])
   createdAt          DateTime @default(now())
   updatedAt          DateTime @default(now())
