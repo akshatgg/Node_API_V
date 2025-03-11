@@ -13,8 +13,8 @@ const client = createClient({
   username: 'default',
   password: 'ZCEsBNmjnlDhQPHswpFh0iPTgy1oXYs6LLvXliPetGHjiYHVnk0w3XGthskAdfdD',
   socket: {
-    host: '122.168.138.24',
-    port: 6969,
+    host: '172.30.72.250',
+    port: 6379,
   },
 });
 

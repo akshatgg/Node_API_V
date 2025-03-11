@@ -302,6 +302,8 @@ export default class UserController {
       });
     }
   }
+
+  
   static async changeusertype(req: Request, res: Response) {
     try {
       const { email, type } = UserTypeSchema.parse(req.body);

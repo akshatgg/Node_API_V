@@ -7,25 +7,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum UserType {
-  admin
-  normal
-  agent
-  superadmin
-}
-
-enum UserGender {
-  male
-  female
-  other
-}
-
 model User {
   id               Int                @id @default(autoincrement())
   createdAt        DateTime           @default(now())
   email            String             @unique
   password         String
-  userProfile      UserProfile?
   firstName        String
   middleName       String?
   lastName         String?
@@ -40,30 +26,19 @@ model User {
   avatar           String?
   adminId          Int?
   superadminId     Int?
-  ispanlinked      Boolean            @default(false)
   verified         Boolean            @default(false)
   userType         UserType           @default(normal)
-  otps             Otp[]
-  businessProfile  BusinessProfile?
+  ispanlinked      Boolean            @default(false)
   inventory        Boolean            @default(false)
-  invoices         Invoice[]
-  categories       Category[]
-  items            Item[]
-  parties          Party[]
-  payments         Payment[]
-  orders           Order[]
-  posts            Post[]
   accounts         Account[]
-  bankAccounts     BankDetails[]
-  loans            LoanApplication[]
-  documents        UploadedDocument[]
-  insurances       Insurance[]
-  registerStartup  RegisterStartup[]
-  journalEntries   JournalEntry[]
-  legders          Ledger[]
-  transactions     Transaction[]
   agentId          Agent?
+  bankAccounts     BankDetails[]
+  businessProfile  BusinessProfile?
+  Cart             Cart?
+  categories       Category[]
   clientAccounts   Client[]
+  gstr1_11_A2B     Gstr1_11A2A2[]
+  gstr1_11_B1B2    Gstr1_11B1B2[]
   gstr1            Gstr1_4A[]
   gstr1_5A         Gstr1_5A[]
   gstr1_6A         Gstr1_6A[]
@@ -71,22 +46,34 @@ model User {
   gstr1_8ABCD      Gstr1_8ABCD[]
   gstr1_9B         Gstr1_9B[]
   gstr1_9B_un      Gstr1_9B_un[]
-  gstr1_11_A2B     Gstr1_11A2A2[]
-  gstr1_11_B1B2    Gstr1_11B1B2[]
-  gstr1_12HSN      gstr1_12HSN[]
-  Cart             Cart?
-  Subscriptions    Subscriptions[]
+  insurances       Insurance[]
+  invoices         Invoice[]
+  items            Item[]
+  journalEntries   JournalEntry[]
+  legders          Ledger[]
+  loans            LoanApplication[]
+  orders           Order[]
+  otps             Otp[]
+  parties          Party[]
+  payments         Payment[]
+  posts            Post[]
   RegisterServices RegisterServices[]
+  registerStartup  RegisterStartup[]
+  Subscriptions    Subscriptions[]
+  transactions     Transaction[]
+  documents        UploadedDocument[]
+  userProfile      UserProfile?
+  gstr1_12HSN      gstr1_12HSN[]
 }
 
 model Otp {
   id         Int      @id @default(autoincrement())
   createdAt  DateTime @default(now())
   otp        String
-  deletedate DateTime
   userId     Int
-  user       User     @relation(fields: [userId], references: [id])
   used       Boolean  @default(false)
+  deletedate DateTime
+  user       User     @relation(fields: [userId], references: [id])
 }
 
 model UserProfile {
@@ -117,18 +104,15 @@ model BusinessProfile {
   gstin                  String?
   statecode              String?
   street                 String?
-  state                  String?
-  pincode                String?
   city                   String?
   dst                    String?
-  stcd                   String? // State
+  stcd                   String?
   landmark               String?
   bankName               String?
   bankAccountNo          String?
   bankIfsc               String?
   bankBranch             String?
   userId                 Int      @unique
-  user                   User     @relation(fields: [userId], references: [id])
   createdAt              DateTime @default(now())
   updatedAt              DateTime @default(now())
   isAddressVerified      Boolean?
@@ -136,60 +120,42 @@ model BusinessProfile {
   isGstinVerified        Boolean?
   isPanVerified          Boolean?
   isStateVerified        Boolean?
+  pincode                String?
+  state                  String?
+  user                   User     @relation(fields: [userId], references: [id])
 }
 
 model Cart {
   id                   String             @id @default(uuid())
   userId               Int                @unique
-  user                 User               @relation(fields: [userId], references: [id])
-  registrationServices RegisterServices[]
-  registrationStartup  RegisterStartup[]
-  services             ApiService[]
   createdAt            DateTime           @default(now())
   updatedAt            DateTime           @default(now())
+  user                 User               @relation(fields: [userId], references: [id])
+  services             ApiService[]       @relation("ApiServiceToCart")
+  registrationServices RegisterServices[] @relation("CartToRegisterServices")
+  registrationStartup  RegisterStartup[]  @relation("CartToRegisterStartup")
 }
 
 model ApiService {
   id           String          @id @default(uuid())
   title        String
   category     String
-  overview     String          @db.Text
+  overview     String
   price        Float
   upcoming     Boolean
   endpoint     Json?
   bodyParams   Json?
   response     Json?
   responseJSON Json?
-  carts        Cart[]
-  subscription Subscriptions[]
   createdAt    DateTime        @default(now())
   updatedAt    DateTime        @default(now())
-}
-
-enum SubscriptionStatus {
-  initiated
-  pending
-  success
-  failure
-  usercancelled
-  dropped
-  bounced
-}
-
-enum SubscriptionsDuration {
-  monthly
-  quarterly
-  halfYealy
-  yearly
+  carts        Cart[]          @relation("ApiServiceToCart")
+  subscription Subscriptions[] @relation("ApiServiceToSubscriptions")
 }
 
 model Subscriptions {
   id                   String                @id @default(uuid())
   userId               Int
-  user                 User                  @relation(fields: [userId], references: [id])
-  registrationServices RegisterServices[]
-  registrationStartup  RegisterStartup[]
-  services             ApiService[]
   amountForServices    Float
   txnid                String?               @unique @default(uuid())
   pid                  String?
@@ -197,22 +163,10 @@ model Subscriptions {
   status               SubscriptionStatus    @default(pending)
   createdAt            DateTime              @default(now())
   updatedAt            DateTime              @default(now())
-}
-
-enum LedgerType {
-  bank
-  cash
-  purchase
-  sales
-  directExpense
-  indirectExpense
-  directIncome
-  indirectIncome
-  fixedAssets
-  currentAssets
-  loansAndLiabilitieslw
-  accountsReceivable
-  accountsPayable
+  user                 User                  @relation(fields: [userId], references: [id])
+  services             ApiService[]          @relation("ApiServiceToSubscriptions")
+  registrationServices RegisterServices[]    @relation("RegisterServicesToSubscriptions")
+  registrationStartup  RegisterStartup[]     @relation("RegisterStartupToSubscriptions")
 }
 
 model Ledger {
@@ -221,15 +175,15 @@ model Ledger {
   openingBalance Decimal       @default(0.0)
   balance        Decimal       @default(0.0)
   userId         Int
-  user           User          @relation(fields: [userId], references: [id])
-  transactions   Transaction[]
-  party          Party?        @relation(fields: [partyId], references: [id])
   partyId        String?
   year           Int
   month          Int
   ledgerType     LedgerType
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @default(now())
+  party          Party?        @relation(fields: [partyId], references: [id])
+  user           User          @relation(fields: [userId], references: [id])
+  transactions   Transaction[]
 }
 
 model JournalEntry {
@@ -241,26 +195,16 @@ model JournalEntry {
   transactions Transaction[]
 }
 
-enum TransactionType {
-  credit
-  debit
-}
-
 model Transaction {
   id              String          @id @default(uuid())
   ledgerId        String
-  ledger          Ledger          @relation(fields: [ledgerId], references: [id])
   journalEntryId  String
-  journalEntry    JournalEntry    @relation(fields: [journalEntryId], references: [id])
   amount          Decimal
   transactionType TransactionType
   userId          Int
+  journalEntry    JournalEntry    @relation(fields: [journalEntryId], references: [id])
+  ledger          Ledger          @relation(fields: [ledgerId], references: [id])
   user            User            @relation(fields: [userId], references: [id])
-}
-
-enum PartyType {
-  customer
-  supplier
 }
 
 model Party {
@@ -278,13 +222,13 @@ model Party {
   bankAccountNumber String?
   bankIfsc          String?
   bankBranch        String?
-  invoices          Invoice[]
-  items             Item[]
   userId            Int
-  user              User      @relation(fields: [userId], references: [id])
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @default(now())
+  invoices          Invoice[]
+  items             Item[]
   ledgers           Ledger[]
+  user              User      @relation(fields: [userId], references: [id])
 }
 
 model Category {
@@ -293,30 +237,6 @@ model Category {
   userId       Int
   user         User   @relation(fields: [userId], references: [id])
   items        Item[]
-}
-
-enum ItemUnit {
-  pieces
-  grams
-  kilograms
-  liters
-  milliliters
-  meters
-  centimeters
-  inches
-  feet
-  squareMeters
-  squareFeet
-  cubicMeters
-  cubicFeet
-  dozen
-  pack
-  carton
-  box
-  roll
-  bundle
-  pair
-  set
 }
 
 model Item {
@@ -335,34 +255,14 @@ model Item {
   description   String?
   hsnCode       String?
   categoryId    String?
-  category      Category?     @relation(fields: [categoryId], references: [id])
   supplierId    String?
-  supplier      Party?        @relation(fields: [supplierId], references: [id])
-  invoiceItems  InvoiceItem[]
   userId        Int
-  user          User          @relation(fields: [userId], references: [id])
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @default(now())
-}
-
-enum InvoiceType {
-  sales
-  purchase
-  sales_return
-  purchase_return
-}
-
-enum ModeOfPayment {
-  cash
-  bank
-  upi
-  credit
-}
-
-enum InvoiceStatus {
-  unpaid
-  paid
-  overdue
+  invoiceItems  InvoiceItem[]
+  category      Category?     @relation(fields: [categoryId], references: [id])
+  supplier      Party?        @relation(fields: [supplierId], references: [id])
+  user          User          @relation(fields: [userId], references: [id])
 }
 
 model Invoice {
@@ -384,15 +284,15 @@ model Invoice {
   modeOfPayment ModeOfPayment
   credit        Boolean
   userId        Int
-  user          User          @relation(fields: [userId], references: [id])
   partyId       String
   gstNumber     String?
-  party         Party         @relation(fields: [partyId], references: [id])
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @default(now())
-  invoiceItems  InvoiceItem[]
-  accounts      Account[]
   status        InvoiceStatus
+  party         Party         @relation(fields: [partyId], references: [id])
+  user          User          @relation(fields: [userId], references: [id])
+  invoiceItems  InvoiceItem[]
+  accounts      Account[]     @relation("AccountToInvoice")
 }
 
 model InvoiceItem {
@@ -401,9 +301,9 @@ model InvoiceItem {
   quantity   Int
   discount   Decimal @default(0.0)
   taxPercent Decimal @default(0.0)
-  item       Item?   @relation(fields: [itemId], references: [id], onDelete: SetNull)
   invoiceId  String
   invoice    Invoice @relation(fields: [invoiceId], references: [id])
+  item       Item?   @relation(fields: [itemId], references: [id])
 }
 
 model Service {
@@ -419,16 +319,6 @@ model Service {
   updatedAt   DateTime @default(now())
 }
 
-enum OrderStatus {
-  initiated
-  pending
-  success
-  failure
-  usercancelled
-  dropped
-  bounced
-}
-
 model Order {
   id            Int         @id @default(autoincrement())
   services      Json
@@ -438,13 +328,7 @@ model Order {
   orderTotal    Decimal
   stateOfSupply String
   userId        Int
-  user          User        @relation(references: [id], fields: [userId])
-}
-
-enum PaymentStatus {
-  created
-  success
-  failed
+  user          User        @relation(fields: [userId], references: [id])
 }
 
 model Payment {
@@ -453,8 +337,8 @@ model Payment {
   razorpay_payment_id String
   status              PaymentStatus @default(created)
   userId              Int
-  user                User          @relation(fields: [userId], references: [id])
   orderId             Int
+  user                User          @relation(fields: [userId], references: [id])
 }
 
 model Library {
@@ -488,12 +372,12 @@ model Post {
   userId             Int
   title              String
   contentHeading     String
-  contentDescription String   @db.Text
+  contentDescription String
   category           String
   imageUrl           String?
-  user               User     @relation(fields: [userId], references: [id])
   createdAt          DateTime @default(now())
   updatedAt          DateTime @default(now())
+  user               User     @relation(fields: [userId], references: [id])
 }
 
 model Account {
@@ -506,7 +390,7 @@ model Account {
   date          DateTime  @default(now())
   userId        Int
   user          User      @relation(fields: [userId], references: [id])
-  invoices      Invoice[]
+  invoices      Invoice[] @relation("AccountToInvoice")
 }
 
 model Career {
@@ -521,20 +405,6 @@ model Career {
   cv        String
   createdAt DateTime   @default(now())
   updatedAt DateTime   @default(now())
-}
-
-enum paymentStatus {
-  paid
-  unpaid
-  overdue
-}
-
-enum paymentMethod {
-  cash
-  creditcard
-  upi
-  netbanking
-  cheque
 }
 
 model Billrecieve {
@@ -573,22 +443,16 @@ model Billpayable {
   invoiceNumber   String?
 }
 
-enum DocumentType {
-  pdf
-  image
-  other
-}
-
 model UploadedDocument {
   id            String           @id @default(uuid())
   userId        Int
-  user          User             @relation(fields: [userId], references: [id])
   fileName      String
-  docs          LoanDocument[]
   applicationId String?
-  application   LoanApplication? @relation(fields: [applicationId], references: [id])
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @default(now())
+  application   LoanApplication? @relation(fields: [applicationId], references: [id])
+  user          User             @relation(fields: [userId], references: [id])
+  docs          LoanDocument[]   @relation("LoanDocumentToUploadedDocument")
 }
 
 model LoanDocument {
@@ -598,19 +462,10 @@ model LoanDocument {
   mandatory   Boolean            @default(false)
   type        DocumentType
   description String?
-  documents   UploadedDocument[]
-  loans       Loan[]
   createdAt   DateTime           @default(now())
   updatedAt   DateTime           @default(now())
-}
-
-enum LoanType {
-  personal
-  education
-  home
-  business
-  car
-  property
+  documents   UploadedDocument[] @relation("LoanDocumentToUploadedDocument")
+  loans       Loan[]             @relation("LoanToLoanDocument")
 }
 
 model Loan {
@@ -619,33 +474,18 @@ model Loan {
   name         String
   shortName    String?
   description  String?
-  documents    LoanDocument[]
   maxAmount    Decimal?
   minAmount    Decimal?
   interest     Decimal
-  applications LoanApplication[]
   createdAt    DateTime          @default(now())
   updatedAt    DateTime          @default(now())
-}
-
-enum Nationality {
-  resident
-  nri
-  foreign
-}
-
-enum LoanStatus {
-  pending
-  processing
-  review
-  accepted
-  rejected
+  applications LoanApplication[]
+  documents    LoanDocument[]    @relation("LoanToLoanDocument")
 }
 
 model LoanApplication {
   id               String             @id @default(uuid())
   loanId           String
-  loan             Loan               @relation(fields: [loanId], references: [id])
   loanAmount       Decimal
   loanStatus       LoanStatus         @default(pending)
   applicantName    String
@@ -655,29 +495,20 @@ model LoanApplication {
   nationality      Nationality
   description      String
   salaried         Boolean
-  documents        UploadedDocument[]
   bankAccountId    String
-  bankDetails      BankDetails        @relation(fields: [bankAccountId], references: [id])
   phone            String?
   email            String?
   address          String?
   permanentAddress String
   userId           Int
-  user             User               @relation(fields: [userId], references: [id])
   agentId          String?
-  agent            Agent?             @relation(fields: [agentId], references: [id])
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @default(now())
-}
-
-enum BankAccountType {
-  savings
-  current
-  nri
-  fcnr
-  rd
-  fd
-  salary
+  agent            Agent?             @relation(fields: [agentId], references: [id])
+  bankDetails      BankDetails        @relation(fields: [bankAccountId], references: [id])
+  loan             Loan               @relation(fields: [loanId], references: [id])
+  user             User               @relation(fields: [userId], references: [id])
+  documents        UploadedDocument[]
 }
 
 model BankDetails {
@@ -688,11 +519,11 @@ model BankDetails {
   bankIfsc          String
   bankBranch        String
   bankAccountType   BankAccountType
-  loans             LoanApplication[]
   userId            Int
-  user              User              @relation(fields: [userId], references: [id])
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @default(now())
+  user              User              @relation(fields: [userId], references: [id])
+  loans             LoanApplication[]
 }
 
 model Insurance {
@@ -706,49 +537,29 @@ model Insurance {
   maritalStatus String
   gender        UserGender
   userId        Int
-  user          User       @relation(fields: [userId], references: [id])
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @default(now())
+  user          User       @relation(fields: [userId], references: [id])
 }
 
 model Client {
   id        String   @id @default(uuid())
   userId    Int
-  user      User     @relation(fields: [userId], references: [id])
   agentId   String
-  agent     Agent    @relation(fields: [agentId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
+  agent     Agent    @relation(fields: [agentId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model Agent {
   id        String            @id @default(uuid())
-  clients   Client[]
   userId    Int               @unique
-  user      User              @relation(fields: [userId], references: [id])
-  loans     LoanApplication[]
   createdAt DateTime          @default(now())
   updatedAt DateTime          @default(now())
-}
-
-//accountancy for ladger creation
-enum Under {
-  sales
-  Revenue
-}
-
-enum NAME {
-  sales
-  cash
-  Rent
-  Expense
-}
-
-enum CurrencyType {
-  INR
-  USD
-  EUR
-  RUB
+  user      User              @relation(fields: [userId], references: [id])
+  clients   Client[]
+  loans     LoanApplication[]
 }
 
 model Visitor {
@@ -757,40 +568,32 @@ model Visitor {
   createdAt DateTime @default(now())
 }
 
-enum StartupCategory {
-  registration
-  companyRegistration
-  returns
-  audits
-}
-
 model RegisterStartup {
-  id               Int                @id @default(autoincrement())
+  id               Int               @id @default(autoincrement())
   title            String
   image            String
   priceWithGst     Int?
   aboutService     String?
   userId           Int
   categories       StartupCategory
-  user             User               @relation(fields: [userId], references: [id])
-  RegisterServices RegisterServices[]
-  subscriptions    Subscriptions[]
-  cart             Cart[]
+  RegisterServices RegisterServices?
+  user             User              @relation(fields: [userId], references: [id])
+  cart             Cart[]            @relation("CartToRegisterStartup")
+  subscriptions    Subscriptions[]   @relation("RegisterStartupToSubscriptions")
 }
 
 model RegisterServices {
   id              Int             @id @default(autoincrement())
   serviceId       Int             @unique
-  registerStartup RegisterStartup @relation(fields: [serviceId], references: [id])
   userId          Int
+  aadhaarCard     String
+  panCard         String
+  gstCertificate  String
+  photo           String
+  registerStartup RegisterStartup @relation(fields: [serviceId], references: [id])
   user            User            @relation(fields: [userId], references: [id])
-
-  aadhaarCard    String
-  panCard        String
-  gstCertificate String
-  photo          String
-  cart           Cart[]
-  subscriptions  Subscriptions[]
+  cart            Cart[]          @relation("CartToRegisterServices")
+  subscriptions   Subscriptions[] @relation("RegisterServicesToSubscriptions")
 }
 
 model ContactUs {
@@ -808,12 +611,9 @@ model About {
   description String
 }
 
-// GSTR1 
-
 model Gstr1_4A {
   id                Int      @id @default(autoincrement())
   userId            Int
-  user              User     @relation(fields: [userId], references: [id])
   LegalName         String
   GSTN              String
   pos               String
@@ -835,12 +635,12 @@ model Gstr1_4A {
   status            String?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @default(now())
+  user              User     @relation(fields: [userId], references: [id])
 }
 
 model Gstr1_5A {
   id                  Int             @id @default(autoincrement())
   userId              Int
-  user                User            @relation(fields: [userId], references: [id])
   sr_no               Int             @unique
   pos                 String
   invoice_No          String
@@ -851,6 +651,7 @@ model Gstr1_5A {
   integrated_tax      String
   cess                String
   total_invoice_value String
+  user                User            @relation(fields: [userId], references: [id])
   gstr1_5A_items      Gstr1_5A_item[]
 }
 
@@ -867,7 +668,6 @@ model Gstr1_5A_item {
 model Gstr1_6A {
   id                  Int             @id @default(autoincrement())
   userId              Int
-  user                User            @relation(fields: [userId], references: [id])
   sr_no               Int             @unique
   pos                 String
   invoice_no          String
@@ -879,6 +679,7 @@ model Gstr1_6A {
   total_taxable_value String
   integarted_tax      String
   cess                String
+  user                User            @relation(fields: [userId], references: [id])
   gstr1_6A_items      Gstr1_6A_item[]
 }
 
@@ -895,7 +696,6 @@ model Gstr1_6A_item {
 model Gstr1_7B {
   id              Int    @id @default(autoincrement())
   userId          Int
-  user            User   @relation(fields: [userId], references: [id])
   gstn            String
   sr_no           Int    @unique
   pos             String
@@ -908,12 +708,12 @@ model Gstr1_7B {
   place_of_supply String
   total_taxable   String
   integrated      String
+  user            User   @relation(fields: [userId], references: [id])
 }
 
 model Gstr1_8ABCD {
   id            Int    @id @default(autoincrement())
   userId        Int
-  user          User   @relation(fields: [userId], references: [id])
   gstn          String
   sr_no         Int    @unique
   pos           String
@@ -923,12 +723,12 @@ model Gstr1_8ABCD {
   central_tax   String
   state_tax     String
   cess          String
+  user          User   @relation(fields: [userId], references: [id])
 }
 
 model Gstr1_9B {
   id                     Int    @id @default(autoincrement())
   userId                 Int
-  user                   User   @relation(fields: [userId], references: [id])
   gstn                   String
   sr_no                  Int    @unique
   recipient_name         String
@@ -944,12 +744,12 @@ model Gstr1_9B {
   state_tax_rs           String
   central_tax            String
   cess                   String
+  user                   User   @relation(fields: [userId], references: [id])
 }
 
 model Gstr1_9B_un {
   id                     Int    @id @default(autoincrement())
   userId                 Int
-  user                   User   @relation(fields: [userId], references: [id])
   sr_no                  Int    @unique
   type                   String
   debit_credit_note_no   String
@@ -963,22 +763,22 @@ model Gstr1_9B_un {
   state_tax_rs           String
   central_tax_rs         String
   cess                   String
+  user                   User   @relation(fields: [userId], references: [id])
 }
 
 model Gstr1_11A2A2 {
   id     Int    @id @default(autoincrement())
   userId Int
-  user   User   @relation(fields: [userId], references: [id])
   sr_no  Int    @unique
   pos    String
   supply String
   cess   String
+  user   User   @relation(fields: [userId], references: [id])
 }
 
 model Gstr1_11B1B2 {
   id            Int    @id @default(autoincrement())
   userId        Int
-  user          User   @relation(fields: [userId], references: [id])
   sr_no         Int    @unique
   pos           String
   taxable_value String
@@ -988,12 +788,12 @@ model Gstr1_11B1B2 {
   igst          String
   cgst          String
   sgst          String
+  user          User   @relation(fields: [userId], references: [id])
 }
 
 model gstr1_12HSN {
   id            Int    @id @default(autoincrement())
   userId        Int
-  user          User   @relation(fields: [userId], references: [id])
   sr_no         Int    @unique
   pos           String
   taxable_value String
@@ -1003,23 +803,22 @@ model gstr1_12HSN {
   igst          String
   cgst          String
   sgst          String
+  user          User   @relation(fields: [userId], references: [id])
 }
-
-// Download page tables
 
 model CountryCodeList {
   id           String        @id @default(uuid())
   assessYear   String        @unique
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @default(now())
-  countryCodes CountryCode[]
+  countryCodes CountryCode[] @relation("CountryCodeToCountryCodeList")
 }
 
 model CountryCode {
   id              String            @id @default(uuid())
   countryCode     String
   countryName     String
-  countryCodeList CountryCodeList[]
+  countryCodeList CountryCodeList[] @relation("CountryCodeToCountryCodeList")
 }
 
 model GoldAndSilver {
@@ -1033,14 +832,14 @@ model CostInflationList {
   id                 String               @id @default(uuid())
   financeAct         String
   listName           String               @unique
-  costInflationIndex CostInflationIndex[]
+  costInflationIndex CostInflationIndex[] @relation("CostInflationIndexToCostInflationList")
 }
 
 model CostInflationIndex {
   id                 String              @id @default(uuid())
   financialYear      String
   costInflationIndex Int
-  costInflationList  CostInflationList[]
+  costInflationList  CostInflationList[] @relation("CostInflationIndexToCostInflationList")
 }
 
 model PanAndITCodeByStatus {
@@ -1048,32 +847,227 @@ model PanAndITCodeByStatus {
   status                   String                     @unique
   incomeTaxCode            Int
   panCode                  String
-  PanAndITCodeByStatusList PanAndITCodeByStatusList[]
+  PanAndITCodeByStatusList PanAndITCodeByStatusList[] @relation("PanAndITCodeByStatusToPanAndITCodeByStatusList")
 }
 
 model PanAndITCodeByStatusList {
   id                   String                 @id @default(uuid())
   financialYear        String                 @unique
-  PanAndITCodeByStatus PanAndITCodeByStatus[]
+  PanAndITCodeByStatus PanAndITCodeByStatus[] @relation("PanAndITCodeByStatusToPanAndITCodeByStatusList")
 }
 
 model InterestRatesAccrued {
   id                        String                      @id @default(uuid())
   duration                  String
   rate                      Float
-  interestAccruedonNational InterestAccruedonNational[]
+  interestAccruedonNational InterestAccruedonNational[] @relation("InterestAccruedonNationalToInterestRatesAccrued")
 }
 
 model InterestAccruedonNational {
   id                            String                          @id @default(uuid())
   purchaseDuration              String
-  interestAccruedonNationalList InterestAccruedonNationalList[]
-  interestRatesAccrued          InterestRatesAccrued[]
+  interestAccruedonNationalList InterestAccruedonNationalList[] @relation("InterestAccruedonNationalToInterestAccruedonNationalList")
+  interestRatesAccrued          InterestRatesAccrued[]          @relation("InterestAccruedonNationalToInterestRatesAccrued")
 }
 
 model InterestAccruedonNationalList {
   id                        String                      @id @default(uuid())
   listNumber                String                      @unique
   financeAct                String
-  interestAccruedonNational InterestAccruedonNational[]
+  interestAccruedonNational InterestAccruedonNational[] @relation("InterestAccruedonNationalToInterestAccruedonNationalList")
+}
+
+enum UserType {
+  admin
+  normal
+  agent
+  superadmin
+}
+
+enum UserGender {
+  male
+  female
+  other
+}
+
+enum SubscriptionStatus {
+  initiated
+  pending
+  success
+  failure
+  usercancelled
+  dropped
+  bounced
+}
+
+enum SubscriptionsDuration {
+  monthly
+  quarterly
+  halfYealy
+  yearly
+}
+
+enum LedgerType {
+  bank
+  cash
+  purchase
+  sales
+  directExpense
+  indirectExpense
+  directIncome
+  indirectIncome
+  fixedAssets
+  currentAssets
+  loansAndLiabilitieslw
+  accountsReceivable
+  accountsPayable
+}
+
+enum TransactionType {
+  credit
+  debit
+}
+
+enum PartyType {
+  customer
+  supplier
+}
+
+enum ItemUnit {
+  pieces
+  grams
+  kilograms
+  liters
+  milliliters
+  meters
+  centimeters
+  inches
+  feet
+  squareMeters
+  squareFeet
+  cubicMeters
+  cubicFeet
+  dozen
+  pack
+  carton
+  box
+  roll
+  bundle
+  pair
+  set
+}
+
+enum InvoiceType {
+  sales
+  purchase
+  sales_return
+  purchase_return
+}
+
+enum ModeOfPayment {
+  cash
+  bank
+  upi
+  credit
+}
+
+enum InvoiceStatus {
+  unpaid
+  paid
+  overdue
+}
+
+enum OrderStatus {
+  initiated
+  pending
+  success
+  failure
+  usercancelled
+  dropped
+  bounced
+}
+
+enum PaymentStatus {
+  created
+  success
+  failed
+}
+
+enum paymentStatus {
+  paid
+  unpaid
+  overdue
+}
+
+enum paymentMethod {
+  cash
+  creditcard
+  upi
+  netbanking
+  cheque
+}
+
+enum DocumentType {
+  pdf
+  image
+  other
+}
+
+enum LoanType {
+  personal
+  education
+  home
+  business
+  car
+  property
+}
+
+enum Nationality {
+  resident
+  nri
+  foreign
+}
+
+enum LoanStatus {
+  pending
+  processing
+  review
+  accepted
+  rejected
+}
+
+enum BankAccountType {
+  savings
+  current
+  nri
+  fcnr
+  rd
+  fd
+  salary
+}
+
+enum Under {
+  sales
+  Revenue
+}
+
+enum NAME {
+  sales
+  cash
+  Rent
+  Expense
+}
+
+enum CurrencyType {
+  INR
+  USD
+  EUR
+  RUB
+}
+
+enum StartupCategory {
+  registration
+  companyRegistration
+  returns
+  audits
 }
