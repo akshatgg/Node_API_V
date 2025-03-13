@@ -1,9 +1,10 @@
-import PDFMerger from "pdf-merger-js";
 import { PDFDocument } from "pdf-lib";
 import fs from "fs";
 import path from "path";
 import { Request, Response } from "express";
 import archiver from "archiver";
+const PDFMerger = require("pdf-merger-js");
+
 
 export default class PdfController {
   static async mergeFiles(req: Request, res: Response): Promise<void> {
@@ -62,13 +63,15 @@ export default class PdfController {
   static async splitFiles(req: Request, res: Response): Promise<void> {
     try {
       if (!req.file) {
-        return res.status(400).json({ message: "Please upload a PDF file to split." });
+        res.status(400).json({ message: "Please upload a PDF file to split." });
+        return;
       }
 
       const startPage = parseInt(req.body.startPage || req.query.startPage as string);
       
       if (isNaN(startPage) || startPage < 1) {
-        return res.status(400).json({ message: "Please provide a valid page number to start the split." });
+        res.status(400).json({ message: "Please provide a valid page number to start the split." });
+        return;
       }
 
       const filePath = req.file.path;
@@ -78,7 +81,8 @@ export default class PdfController {
       const totalPages = pdfDoc.getPageCount();
 
       if (startPage > totalPages) {
-        return res.status(400).json({ message: "The start page is beyond the total number of pages in the PDF." });
+        res.status(400).json({ message: "The start page is beyond the total number of pages in the PDF." });
+        return; 
       }
 
       const splitPdfPaths: string[] = [];

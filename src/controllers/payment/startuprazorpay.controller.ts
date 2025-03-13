@@ -55,7 +55,7 @@ export default class RazorpayService {
           }
     
           // Calculate total amount
-          const totalAmount = services.reduce((sum, service) => sum + service.price, 0) * 100; // Convert to paise (smallest unit)
+          const totalAmount = services.reduce((sum, service) => sum + Number(service.price), 0) * 100; // Convert to paise (smallest unit)
     
           // Create Razorpay order
           const options = {
@@ -76,7 +76,7 @@ export default class RazorpayService {
           await prisma.payment.create({
             data: {
               razorpay_order_id: order.id,
-              razorpay_payment_id: null,
+              razorpay_payment_id: "",
               status: "created",
               userId,
               orderId: 1, // Replace with appropriate logic for generating order ID
@@ -97,7 +97,11 @@ export default class RazorpayService {
         }
       }
   static async razorCallback(req: Request, res: Response) {
-    const secret=process.env.rzp_secret // Replace with your Razorpay Webhook Secret
+    const secret = process.env.rzp_secret; // Replace with your Razorpay Webhook Secret
+    if (!secret) {
+      console.error("Razorpay Webhook Secret is not defined.");
+      return res.status(500).json({ error: "Internal server error" });
+    }
 
     try {
       const { razorpay_payment_id, razorpay_order_id, razorpay_signature } = req.body;
@@ -161,7 +165,7 @@ export default class RazorpayService {
       // Extract userId and serviceIds from the order notes
       const userId = order.notes?.userId;
       const serviceIds = order.notes?.serviceIds
-        ? JSON.parse(order.notes.serviceIds)
+        ? JSON.parse(order.notes.serviceIds as string)
         : [];
   
       if (!userId || !serviceIds.length) {
@@ -176,7 +180,7 @@ export default class RazorpayService {
       // Update payment status in the database
       await prisma.payment.update({
         where: {
-          razorpay_order_id: orderId,
+          id: orderId,
         },
         data: {
           status: "success",
@@ -184,7 +188,8 @@ export default class RazorpayService {
       });
   
       // Subscribe the user to all services
-      const response = await ApiServiceController.subscribeToAllApis(userId, serviceIds);
+      const numericUserId = typeof userId === 'string' ? parseInt(userId, 10) : userId;
+      const response = await ApiServiceController.subscribeUserToApis(numericUserId, serviceIds);
   
       return res.status(200).json({
         success: true,
@@ -198,7 +203,7 @@ export default class RazorpayService {
       return res.status(500).json({
         success: false,
         message: "Internal Server Error",
-        error: error.message,
+        error: (error as any).message,
       });
     }
   }

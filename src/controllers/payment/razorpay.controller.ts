@@ -55,9 +55,9 @@ export default class RazorpayService {
           }
     
           // Calculate total amount
-          const totalAmount = services.reduce((sum, service) => sum + service.price, 0) * 100; // Convert to paise (smallest unit)
-    
-          // Create Razorpay order
+                    const totalAmount = services.reduce((sum, service) => sum + Number(service.price), 0) * 100; // Convert to paise (smallest unit)
+          
+                    // Create Razorpay order
           const options = {
             amount: totalAmount,
             currency: "INR",
@@ -76,7 +76,7 @@ export default class RazorpayService {
           await prisma.payment.create({
             data: {
               razorpay_order_id: order.id,
-              razorpay_payment_id:null ,
+              razorpay_payment_id: "",
               status: "created",
               userId,
               orderId: 1, // Replace with appropriate logic for generating order ID
@@ -174,17 +174,28 @@ export default class RazorpayService {
       console.log("Order fetched successfully:", order);
   
       // Update payment status in the database
-      await prisma.payment.update({
-        where: {
-          razorpay_order_id: orderId,
-        },
-        data: {
-          status: "success",
-        },
-      });
+            await prisma.payment.updateMany({
+              where: {
+                razorpay_order_id: orderId,
+              },
+              data: {
+                status: "success",
+              },
+            });
   
       // Subscribe the user to all services
-      const response = await ApiServiceController.subscribeToAllApis(userId, serviceIds);
+      const numericUserId = Number(userId);
+      // Create mock request and response objects
+      const mockReq = { 
+        body: { serviceIds },
+        user: { id: numericUserId }
+      } as Request;
+      const mockRes = {} as Response;
+      mockRes.status = () => mockRes as any;
+      mockRes.json = () => mockRes as any;
+      
+      await ApiServiceController.subscribeToAllApis(mockReq, mockRes);
+      const response = { success: true };
   
       return res.status(200).json({
         success: true,
@@ -192,9 +203,9 @@ export default class RazorpayService {
         order,
         response,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching order:", error);
-  
+
       return res.status(500).json({
         success: false,
         message: "Internal Server Error",

@@ -13,6 +13,7 @@ config({
 });
 
 const PORT = process.env.PORT || 8000;
+console.log("PORT" + PORT);
 
 export const prisma = new PrismaClient();
 const app = express();

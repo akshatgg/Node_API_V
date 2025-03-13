@@ -10,8 +10,8 @@ config({
 
 // Create Redis client
 const client = createClient({
-  username: 'default',
-  password: 'ZCEsBNmjnlDhQPHswpFh0iPTgy1oXYs6LLvXliPetGHjiYHVnk0w3XGthskAdfdD',
+  username: '',
+  password: '',
   socket: {
     host: '172.30.72.250',
     port: 6379,

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "..";
-import { Ledger } from "@prisma/client";
+import { Ledger, LedgerType } from "@prisma/client";
 
 export class LedgerController {
     static async createLedger(req: Request, res: Response) {
@@ -152,10 +152,7 @@ export class LedgerController {
                             },
                         },
                         {
-                            ledgerType: {
-                                contains: search as string,
-                                mode: "insensitive",
-                            },
+                            ledgerType: search as LedgerType,
                         },
                     ],
                 },
@@ -182,34 +179,45 @@ export class LedgerController {
             return res.status(500).json({ success: false, message: "Error fetching customer count" });
         }
     }
-    static async getinactivepartyCount(req: Request, res: Response) {
+    static async getInactivePartyCount(req: Request, res: Response) {
         try {
             const { id: userId } = req.user!;
             const { ledgertype, year, month } = req.body;
-            // Step 1: Get all unique partyIds based on filters
+
+            // Step 1: Get all unique party IDs based on filters
             const partyIds = await prisma.ledger.findMany({
                 where: { userId, ledgerType: ledgertype, year: year, month: month },
                 select: { partyId: true },
             });
             const uniquePartyIds = [...new Set(partyIds.map(p => p.partyId))];
+
             // Step 2: Get the date 1 year ago
             const oneYearAgo = new Date();
             oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-            // Step 3: Find inactive customers
-            const inactiveCustomers = await prisma.party.findMany({
-                where: {
-                    id: { in: uniquePartyIds },
-                    transactions: {
-                        none: {
-                            date: {
-                                gte: oneYearAgo, // No transactions in the past year
-                            },
-                        },
-                    },
-                },
-                select: { id: true, name: true }, // Select necessary fields
+
+            // Step 3: Find active party IDs through transactions
+            const activeTransactions = await prisma.transaction.findMany({
+                where: { date: { gte: oneYearAgo } },
+                select: { ledgerId: true },
             });
-            // Step 4: Return the result
+
+            // Step 4: Map active transactions to ledgers and then to parties
+            const activeLedgerIds = activeTransactions.map(t => t.ledgerId);
+            const activeParties = await prisma.ledger.findMany({
+                where: { id: { in: activeLedgerIds } },
+                select: { partyId: true },
+            });
+            const activePartyIds = new Set(activeParties.map(p => p.partyId));
+
+            // Step 5: Find inactive parties
+                        const inactiveCustomers = await prisma.party.findMany({
+                            where: {
+                                id: { in: uniquePartyIds.filter((pid): pid is string => pid !== null && !activePartyIds.has(pid)) },
+                            },
+                            select: { id: true, partyName: true }, // Use correct field names
+                        });
+
+            // Step 6: Return the result
             const count = inactiveCustomers.length;
             return res.status(200).json({
                 success: true,
@@ -221,38 +229,43 @@ export class LedgerController {
             return res.status(500).json({ success: false, message: "Error fetching customer count" });
         }
     }
+    
     static async getfavouraiteparty(req: Request, res: Response) {
-        //get parties with highest transactions in the last 3 months
         try {
             const { id: userId } = req.user!;
             const { ledgertype, year, month } = req.body;
-    
+
             // Step 1: Get all unique partyIds based on filters
             const partyIds = await prisma.ledger.findMany({
                 where: { userId, ledgerType: ledgertype, year: year, month: month },
                 select: { partyId: true },
             });
-    
-            const uniquePartyIds = [...new Set(partyIds.map(p => p.partyId))];
-    
+
+            const uniquePartyIds = [...new Set(
+                partyIds
+                    .map((p) => p.partyId)
+                    .filter((id): id is string => id !== null)
+            )];
+
             // Step 2: Get the date 3 months ago
             const threeMonthsAgo = new Date();
             threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
-    
-            // Step 3: Find inactive customers
+
+            // Step 3: Find active customers
             const activeCustomers = await prisma.party.findMany({
                 where: {
                     id: { in: uniquePartyIds },
-                    transactions: {
+                    ledgers: {
                         some: {
-                            date: {
-                                gte: threeMonthsAgo, // No transactions in the past year
+                            transactions: {
+                                some: { date: { gte: threeMonthsAgo } },
                             },
                         },
                     },
                 },
-                select: { id: true, name: true }, // Select necessary fields
+                select: { id: true, partyName: true }, // Use partyName instead of name
             });
+
             // Step 4: Return the result
             const count = activeCustomers.length;
             return res.status(200).json({
@@ -265,6 +278,7 @@ export class LedgerController {
             return res.status(500).json({ success: false, message: "Error fetching customer count" });
         }
     }
+    
 }
 export class JournalEntryController {
     static async createJournalEntry(req: Request, res: Response) {

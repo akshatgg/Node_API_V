@@ -13,7 +13,7 @@ model User {
   email            String             @unique
   password         String
   firstName        String
-  middleName       String?
+  middleName        String?
   lastName         String?
   fatherName       String?
   phone            String?
@@ -200,6 +200,8 @@ model Transaction {
   ledgerId        String
   journalEntryId  String
   amount          Decimal
+  //make date component by Akshat
+   date           DateTime
   transactionType TransactionType
   userId          Int
   journalEntry    JournalEntry    @relation(fields: [journalEntryId], references: [id])
@@ -229,6 +231,26 @@ model Party {
   items             Item[]
   ledgers           Ledger[]
   user              User      @relation(fields: [userId], references: [id])
+}
+
+// that whole thing is make by akshat i am talking about statusWiseIncomeTaxCode
+model StatusWiseIncomeTaxCode {
+    id     Int     @id @default(autoincrement())
+    code   String
+    status String
+}
+
+// that whole thing is make by akshat i am talking about InterestOnKVP
+model InterestOnKVP {
+  id    Int    @id @default(autoincrement())
+  year  Int
+  rate  Float
+}
+// that whole thing is make by akshat i am talking about DepreciationTable
+model DepreciationTable {
+  id          Int    @id @default(autoincrement())
+  assetType   String
+  depreciationRate Float
 }
 
 model Category {

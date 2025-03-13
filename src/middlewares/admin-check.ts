@@ -5,8 +5,8 @@ export default function adminCheck(
   res: Response,
   next: NextFunction
 ) {
-  if (!req.isAdmin && !req.isSuperadmin) {
-    console.log(req.isSuperadmin)
+  if (!req.isAdmin && !req.isSuperAdmin) {
+    console.log(req.isSuperAdmin)
     return res.status(401).send({
       success: false,
       message:

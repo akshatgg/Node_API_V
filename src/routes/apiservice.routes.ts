@@ -1,6 +1,6 @@
 import { Router } from "express";
 import verifyToken from "../middlewares/verify-token";
-import ApiServiceController from '../controllers/apiservice.controller.js';
+import ApiServiceController from '../controllers/apiservice.controller';
 import SuperadminCheck from "../middlewares/super-admin";
 
 

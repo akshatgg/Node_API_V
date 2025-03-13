@@ -25,7 +25,7 @@ export default function SuperadminCheck(
 
   const user = TokenService.decodeToken(token);
   console.log(user);
-  const superuser = user.Usertype === "superadmin";
+  const superuser = user.userType === "superadmin";
 
   if (!superuser) {
     return res.status(401).send({

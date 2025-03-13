@@ -5,6 +5,8 @@ import { Request, Response } from "express";
 import { oauth2Client } from "../config/google.config";
 import TokenService from "../services/token.service";
 import { ZodError } from "zod";
+import crypto from "crypto";
+import bcrypt from "bcrypt";
 
 config();
 
@@ -48,14 +50,17 @@ export const googleController = {
       });
   
       if (!user) {
+        const hashedPassword = await bcrypt.hash(crypto.randomBytes(16).toString("hex"), 10);
         // Create a new user if one does not exist
         user = await prisma.user.create({
           data: {
             email: userInfo.email || "",
-            firstName: firstName || "", // Use split result
-            lastName: lastName || "",  // Use split result
+            firstName: firstName || "",
+            lastName: lastName || "",
             avatar: userInfo.picture || "",
             verified: true, // Google users are considered verified
+            password: hashedPassword, // Required field (You can hash it)
+            gender: "male", // Set a default gender (or get it from user input)
           },
         });
       }

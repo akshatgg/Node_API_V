@@ -8,7 +8,7 @@ export default class PaymentsController {
             const { razorpay_order_id, razorpay_payment_id, status, orderId } = req.body;
 
             // Verify user login
-            const token = TokenService.getTokenFromAuthHeader(req.headers.authorization);
+            const token = TokenService.getTokenFromAuthHeader(req);
 
             const { id: userId } = TokenService.decodeToken(token!);
 
@@ -36,7 +36,7 @@ export default class PaymentsController {
     public static async getPayments(req: Request, res: Response): Promise<Response> {
         try {
             // Verify user login
-            const token = TokenService.getTokenFromAuthHeader(req.headers.authorization);
+            const token = TokenService.getTokenFromAuthHeader(req);
 
             const { id: userId } = TokenService.decodeToken(token!);
 
@@ -50,7 +50,7 @@ export default class PaymentsController {
     public static async getPaymentById(req: Request, res: Response): Promise<Response> {
         const { id } = req.params;
         // Verify user login
-        const token = TokenService.getTokenFromAuthHeader(req.headers.authorization);
+        const token = TokenService.getTokenFromAuthHeader(req);
 
         const { id: userId } = TokenService.decodeToken(token!);
 
@@ -73,7 +73,7 @@ export default class PaymentsController {
         
         try {
             // Verify user login
-            const token = TokenService.getTokenFromAuthHeader(req.headers.authorization);
+            const token = TokenService.getTokenFromAuthHeader(req);
 
             const { id: userId } = TokenService.decodeToken(token!);
 
@@ -103,7 +103,7 @@ export default class PaymentsController {
         const { id } = req.params;
         try {
             // Verify user login
-            const token = TokenService.getTokenFromAuthHeader(req.headers.authorization);
+            const token = TokenService.getTokenFromAuthHeader(req);
 
             const { id: userId } = TokenService.decodeToken(token!);
 

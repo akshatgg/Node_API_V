@@ -84,7 +84,7 @@ export default class ewaybillcontroller{
             return res.status(200).json({ success: true, data });
         } catch (e) {
             console.error('Error in getewaybillbydate:', e);
-            return res.status(500).json({ success: false, message: 'Something went wrong', error: e.message });
+            return res.status(500).json({ success: false, message: 'Something went wrong', error: (e as any).message });
         }
     }
     static async getewaybillbydocumentdata(req: Request, res: Response) {
@@ -111,8 +111,20 @@ export default class ewaybillcontroller{
             };
 
             // Pass query parameters to the endpoint
-            const queryParams = new URLSearchParams({ document_type, document_number }).toString();
-            const fullEndpoint = `${endpoint}?${queryParams}`;
+            const docType = Array.isArray(req.query.document_type)
+            ? req.query.document_type[0]
+            : req.query.document_type ?? "";
+          
+          const docNumber = Array.isArray(req.query.document_number)
+            ? req.query.document_number[0]
+            : req.query.document_number ?? "";
+          
+          const queryParams = new URLSearchParams({ 
+            document_type: docType as string, 
+            document_number: docNumber as string 
+          }).toString();
+           
+                       const fullEndpoint = `${endpoint}?${queryParams}`;
 
             // Make the API request
             const { data } = await axios.get(fullEndpoint, { headers });
@@ -123,7 +135,7 @@ export default class ewaybillcontroller{
             return res.status(500).json({
                 success: false,
                 message: 'Something went wrong',
-                error: e.message,
+                error: (e as any).message,
             });
         }
     }
@@ -159,7 +171,7 @@ export default class ewaybillcontroller{
             return res.status(500).json({
                 success: false,
                 message: 'Something went wrong',
-                error: e.message,
+                error: (e as any).message,
             });
         }
     }
@@ -192,7 +204,7 @@ export default class ewaybillcontroller{
         }
         catch(e){
             console.error('Error in getewaybillbydate:', e);
-            return res.status(500).json({ success: false, message: 'Something went wrong', error: e.message });
+            return res.status(500).json({ success: false, message: 'Something went wrong', error: (e as any).message });
         }
 }
     static async rejectewaybill(req: Request, res: Response) {
@@ -228,7 +240,7 @@ export default class ewaybillcontroller{
             return res.status(500).json({
                 success: false,
                 message: 'Something went wrong',
-                error: e.message,
+                error: (e as any).message,
             });
         }
 }
@@ -259,7 +271,7 @@ export default class ewaybillcontroller{
             return res.status(200).json({ success: true, data });
         }catch(e){
             console.error('Error in ewaybillsbydateandstate:', e);
-            return res.status(500).json({ success: false, message: 'Something went wrong', error: e.message });
+            return res.status(500).json({ success: false, message: 'Something went wrong', error: (e as any).message });
         }
     }
     static async listewaybillbygenerator(req:Request,res:Response){
@@ -288,7 +300,7 @@ export default class ewaybillcontroller{
             return res.status(200).json({ success: true, data });
         }catch(e){
             console.error('Error in listewaybillbygenerator:', e);
-            return res.status(500).json({ success: false, message: 'Something went wrong', error: e.message });
+            return res.status(500).json({ success: false, message: 'Something went wrong', error: (e as any).message });
         }
     }
     static async updatevehicledetails(req:Request,res:Response){
@@ -334,7 +346,7 @@ export default class ewaybillcontroller{
             return res.status(500).json({
                 success: false,
                 message: 'Something went wrong',
-                error: e.message,
+                error: (e as any).message,
             });
         }
     }
@@ -374,7 +386,7 @@ export default class ewaybillcontroller{
             return res.status(500).json({
                 success: false,
                 message: 'Something went wrong',
-                error: e.message,
+                error: (e as any).message,
             });
         }
     }

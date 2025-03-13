@@ -44,7 +44,7 @@ export default class GstController {
         return res.status(500).json({
           success: false,
           message: 'Error parsing GST rates file',
-          error: parseError.message,
+          error: (parseError as Error).message,
         });
       }
     });
@@ -80,7 +80,7 @@ export default class GstController {
         return res.status(500).json({
           success: false,
           message: 'Error parsing GST rates file',
-          error: parseError.message,
+          error: (parseError as Error).message,
         });
       }
     });

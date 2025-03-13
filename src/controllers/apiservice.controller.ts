@@ -2,6 +2,9 @@ import { prisma } from "..";
 import { Request, Response } from "express";
 
 export default class ApiServiceController {
+  static subscribeUserToApis(numericUserId: number, serviceIds: any) {
+    throw new Error('Method not implemented.');
+  }
     static getallapis = async (req: Request, res: Response) => {
         try {
             const apis = await prisma.apiService.findMany();
@@ -127,6 +130,9 @@ export default class ApiServiceController {
               data: {
                 userId,
                 services: { connect: [{ id: apiServiceId }] },
+              },
+              include: {
+                services: true,
               },
             });
           } else {
@@ -357,62 +363,50 @@ export default class ApiServiceController {
           });
         }
       };
-      static subscribeToAllApis = async (userId: number, serviceIds: string[]) => {
+      static subscribeToAllApis = async (req: Request, res: Response) => {
         try {
-          // Validate input
-          if (!userId || !serviceIds || serviceIds.length === 0) {
-            throw new Error("User ID and service IDs are required.");
+          const { userId, serviceIds } = req.body; // Extract data from request body
+    
+          if (!userId || !Array.isArray(serviceIds) || serviceIds.length === 0) {
+            return res.status(400).json({ success: false, message: "User ID and service IDs are required." });
           }
-      
-          // Fetch service details to calculate the total amount
+    
+          // Fetch service details to calculate total amount
           const services = await prisma.service.findMany({
-            where: {
-              id: { in: serviceIds },
-            },
-            select: {
-              id: true,
-              price: true, // Assuming each service has a 'price' field
-            },
+            where: { id: { in: serviceIds } },
+            select: { id: true, price: true }, // Assuming services have a 'price' field
           });
-      
+    
           if (services.length === 0) {
-            throw new Error("No valid services found for the provided IDs.");
+            return res.status(404).json({ success: false, message: "No valid services found for the provided IDs." });
           }
-      
-          // Calculate the total amount
-          const totalAmount = services.reduce((sum, service) => sum + service.price, 0);
-      
-          // Create the subscription and associate services with the user
+    
+          // Calculate total amount
+          const totalAmount = services.reduce((sum, service) => sum + Number(service.price), 0);
+    
+          // Create subscription
           const subscription = await prisma.subscriptions.create({
             data: {
               userId,
-              services: {
-                connect: services.map((service) => ({ id: service.id })), // Connect selected services
-              },
+              services: { connect: services.map((service) => ({ id: service.id })) },
               amountForServices: totalAmount,
             },
           });
-      
+    
           // Remove services from the user's cart
           await prisma.cart.update({
             where: { userId },
-            data: {
-              services: {
-                disconnect: services.map((service) => ({ id: service.id })), // Unlink services from cart
-              },
-            },
+            data: { services: { disconnect: services.map((service) => ({ id: service.id })) } },
           });
-      
-          console.log("User subscribed to all services successfully:", subscription);
-      
-          return {
+    
+          return res.status(200).json({
             success: true,
             message: "Subscribed to all APIs successfully.",
             subscription,
-          };
+          });
         } catch (error) {
           console.error("Error subscribing to all APIs:", error);
-          throw error; // Re-throw to be handled at the controller level
+          return res.status(500).json({ success: false, message: "Internal server error", error });
         }
       };
 
