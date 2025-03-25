@@ -7,26 +7,29 @@ export default class MCAController {
     static async getCompanyByCIN(req: Request, res: Response) {
         try {
             const { cin } = req.query;
-            const { id } = req.body; // Extracting `entity` and `id` from the body
+            let { id } = req.body; // Extracting `entity` and `id` from the body
     
-            const consent = "user-consent"; // Hardcoded value for consent
-            const reason = "data-verification"; // Hardcoded value for reason
+            const consent = "Y"; // Hardcoded value for consent
+            const reason = "eefef efefef efefefefe effe fefef fef ef"; // Hardcoded value for reason
     
             if (!cin) {
                 return res.status(400).json({ success: false, message: 'Query parameter CIN was not provided' });
             }
-    
+            if(id === undefined){
+                id=cin;
+            }
             if (!id) {
                 return res.status(400).json({ 
                     success: false, 
-                    message: 'Required body parameters (entity, id) are missing' 
+                    message: 'Required body parameters (id) are missing' 
                 });
             }
-    
+            
             const endpoint = `${Sandbox.BASE_URL}/mca/company/master-data/search`;
-    
+            
             const token = await Sandbox.generateAccessToken();
-    
+            // console.log(token);
+            
             const headers = {
                 'Authorization': token,
                 'accept': 'application/json',
@@ -61,16 +64,18 @@ export default class MCAController {
     static async getDirectorByDIN(req: Request, res: Response) {
         try {
             const { din } = req.query;
-            const { entity, id } = req.body; // Extracting `entity` and `id` from the body
+            let { id } = req.body; // Extracting `entity` and `id` from the body
     
-            const consent = "user-consent"; // Hardcoded value for consent
-            const reason = "data-verification"; // Hardcoded value for reason
-    
+            const consent = "Y"; // Hardcoded value for consent
+            const reason = "dwdwdwd wdw dwd dwd wdwd wdw dwdw d dwdwd wdw"; // Hardcoded value for reason
+            
             if (!din) {
                 return res.status(400).json({ success: false, message: 'Query parameter DIN was not provided' });
+            }  
+            if(id === undefined){
+                id=din;
             }
-    
-            if (!entity || !id) {
+            if ( !id) {
                 return res.status(400).json({ 
                     success: false, 
                     message: 'Required body parameters (entity, id) are missing' 
@@ -90,7 +95,7 @@ export default class MCAController {
     
             // Preparing the request body to include consent and reason along with data
             const requestBody = {
-                entity,
+                "@entity": "in.co.sandbox.kyc.mca.master_data.request",
                 id,
                 consent,
                 reason

@@ -42,7 +42,7 @@ import strictLimiter from "../middlewares/redis-adder"   // this is redis for sa
 import downloadrouter from "./download.routes";
 import verifyToken from "../middlewares/verify-token";
 import razorpayRouter from "./razorpay.routes";
-import EinvoiceController from "../controllers/sandbox/einvoice.controller";
+// import EinvoiceController from "../controllers/sandbox/einvoice.controller";
 import einvoiceRouter from "./Einvoice.routes";
 import ewaybill from "./ewaybill.routes";
 
@@ -82,7 +82,7 @@ router.use("/library", libraryRouter);
 
 router.use("/blog", blogRouter);
 
-router.use("/mca",verifyToken,strictLimiter, mcaRouter);
+router.use("/mca",verifyToken, mcaRouter);
 
 router.use("/tan",verifyToken,strictLimiter, tanRouter);
 

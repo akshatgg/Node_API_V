@@ -20,6 +20,8 @@ export default class TokenService {
             id: user.id,
             Usertype:user.userType
         };
+        // const secretKey = process.env.JWT_KEY;
+// console.log("JWT Secret Key for Signing:", secretKey);
         const token = jwt.sign(tokenPayload, process.env.JWT_KEY as string, {
             issuer: "iTaxEasy",
             expiresIn: "24h"
@@ -35,6 +37,8 @@ export default class TokenService {
     }
 
     static verifyToken(token: string) {
+        // const secretKey = process.env.JWT_KEY;
+// console.log("JWT Secret Key for Verification:", secretKey); 
         const verified = jwt.verify(token, process.env.JWT_KEY as string);
 
         return verified;
