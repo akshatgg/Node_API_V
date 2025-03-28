@@ -48,6 +48,7 @@ export default class GSTController {
                 headers: {
                     Accept: 'application/json',
                     Authorization: token,
+                    'x-accept-cache': 'true',
                     'x-api-key': process.env.SANDBOX_KEY,
                     'x-api-version': process.env.SANDBOX_API_VERSION,
                 },
@@ -69,7 +70,7 @@ export default class GSTController {
 
             return res.status(200).json({
                 success: true,
-                data: response.data,
+                data: response.data,    
             });
         } catch (error: any) {
             console.error('Error:', error);
@@ -114,6 +115,7 @@ export default class GSTController {
                 headers: {
                     Authorization: token,
                     Accept: 'application/json',
+                    'x-accept-cache': 'true',
                     'x-api-key': process.env.SANDBOX_KEY,
                     'x-api-version': process.env.SANDBOX_API_VERSION,
                 },
@@ -180,6 +182,7 @@ export default class GSTController {
             const headers = {
                 Authorization: token,
                 Accept: 'application/json',
+                'x-accept-cache': 'true',
                 'x-api-key': process.env.SANDBOX_KEY,
                 'x-api-version': process.env.SANDBOX_API_VERSION,
             };

@@ -68,6 +68,8 @@ router.use("/razorpay",verifyToken,razorpayRouter);
 
 router.use("/gst",verifyToken,strictLimiter,gstRouter);
 
+// router.use("/gst",gstRouter);
+ 
 router.use("/accountancy", accountancyRouter);
 
 router.use("/services", servicesRouter);

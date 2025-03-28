@@ -32,7 +32,7 @@ client.connect().catch((err) => {
 const strictLimiter = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = req.user; // Assumes authentication middleware populates `req.user`
-    const { pan, aadhar, tan, gst,ifsc } = req.body;
+    const { pan, aadhaar, tan, gstin,ifsc,gst,aadhar,gstn,gstr} = req.body;
 
     if (!req.url) {
       return res.status(400).json({ message: 'URL is missing.' });
@@ -49,18 +49,34 @@ const strictLimiter = async (req: Request, res: Response, next: NextFunction) =>
     if (pan) {
       identifierType = 'PAN';
       identifierValue = pan;
-    } else if (aadhar) {
+    } 
+    else if(gstr){
+      identifierType = 'GSTR';
+      identifierValue = gstr;
+    }else if (aadhaar) {
+      identifierType = 'AADHAAR';
+      identifierValue = aadhaar;
+    }
+    else if(aadhar){
       identifierType = 'AADHAR';
       identifierValue = aadhar;
     } else if (tan) {
       identifierType = 'TAN';
       identifierValue = tan;
-    } else if (gst) {
-      identifierType = 'GST';
-      identifierValue = gst;
+    } else if (gstin) {
+      identifierType = 'GSTIN';
+      identifierValue = gstin;
+    }
+    else if(gstn){
+      identifierType = 'GSTN';
+      identifierValue = gstn;
     } else if (ifsc){
       identifierType = 'IFSC';
       identifierValue = ifsc;
+    }
+    else if(gst){
+      identifierType = 'GST';
+      identifierValue  = gst;
     }
     else {
       return res.status(400).json({ message: 'No valid identifier provided.' });

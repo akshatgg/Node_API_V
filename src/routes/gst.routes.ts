@@ -6,7 +6,7 @@ import queryValidator from "../middlewares/query-validator";
 
 const gstRouter = Router();
 
-gstRouter.post('/search/gstin', verifyToken, GSTController.searchByGSTIN);
+gstRouter.post('/search/gstin',verifyToken, GSTController.searchByGSTIN);
 
 gstRouter.post('/search/gstin-by-pan', verifyToken, GSTController.searchGSTINNumberByPan);
 

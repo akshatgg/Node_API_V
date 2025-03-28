@@ -112,7 +112,7 @@ export default class AadhaarController {
           // Generate access token
           const token = await Sandbox.generateAccessToken();
     
-          // Request headers
+          // Request headers  
           const headers = {
             Authorization: token,
             Accept: "application/json",
