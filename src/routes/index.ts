@@ -62,7 +62,7 @@ router.use("/pincode", pincodeRouter);
 
 router.use("/postOffice", postOfficeRouter);
 
-router.use("/pan",verifyToken,strictLimiter,panRouter);
+router.use("/pan",verifyToken,panRouter);
 
 router.use("/razorpay",verifyToken,razorpayRouter);
 
@@ -90,7 +90,7 @@ router.use("/tan",verifyToken,strictLimiter, tanRouter);
 
 router.use("/bank", bankRouter);
 
-router.use("/aadhaar",verifyToken,strictLimiter,aadhaarRouter);
+router.use("/aadhaar",verifyToken,aadhaarRouter);
 
 router.use("/calculator", calculatorRouter);
 

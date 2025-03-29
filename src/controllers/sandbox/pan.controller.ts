@@ -37,8 +37,8 @@ export default class PanController {
     
             // Set headers for the request
             const headers = {
-                'Authorization': token,
-                'accept': 'application/json',
+                Authorization: token,
+                accept: 'application/json',
                 'x-api-key': process.env.SANDBOX_KEY,
                 'x-api-version': process.env.SANDBOX_API_VERSION,
             };
@@ -51,8 +51,8 @@ export default class PanController {
                     pan,
                     name_as_per_pan,
                     date_of_birth,
-                    consent :"y",
-                    reason :"For KYC of User"
+                    consent :"Y",
+                    reason :"For KYC of User sqsqddqd dq"
                 },
                 { headers }
             );

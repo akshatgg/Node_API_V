@@ -17,8 +17,9 @@ export default class BankController {
             const token = await Sandbox.generateAccessToken();
 
             const headers = {
-                'Authorization': token,
-                'accept': 'application/json',
+                Authorization: token,
+                ifsc,
+                accept: 'application/json',
                 'x-api-key': process.env.SANDBOX_KEY,
                 'x-api-version': process.env.SANDBOX_API_VERSION
             };
@@ -54,8 +55,8 @@ export default class BankController {
             const token = await Sandbox.generateAccessToken();
 
             const headers = {
-                'Authorization': token,
-                'accept': 'application/json',
+                Authorization: token,
+                accept: 'application/json',
                 'x-api-key': process.env.SANDBOX_KEY,
                 'x-api-version': process.env.SANDBOX_API_VERSION
             };
@@ -78,18 +79,18 @@ export default class BankController {
     static async upiVerification(req: Request, res: Response) {
         try {
             const { virtual_payment_address, name } = req.body;
-
+         
             if (!virtual_payment_address || !name) {
                 return res.status(400).json({ success: false, message: 'Required Query parameter was not provided' });
             }
-
-            const endpoint = `${Sandbox.BASE_URL}/bank/upi/${"7838034911%40axl"}?name=${name}`;
+        
+            const endpoint = `${Sandbox.BASE_URL}/bank/upi/${virtual_payment_address}?name=${name}`;
 
             const token = await Sandbox.generateAccessToken();
 
             const headers = {
-                'Authorization': token,
-                'accept': 'application/json',
+                Authorization: token,
+                accept: 'application/json',
                 'x-api-key': process.env.SANDBOX_KEY,
                 'x-api-version': process.env.SANDBOX_API_VERSION
             };

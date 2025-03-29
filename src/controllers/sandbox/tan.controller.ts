@@ -17,8 +17,8 @@ export default class TanController {
             const token = await Sandbox.generateAccessToken();
 
             const headers = {
-                'Authorization': token,
-                'accept': 'application/json',
+                Authorization: token,
+                accept: 'application/json',
                 'x-api-key': process.env.SANDBOX_KEY,
                 'x-api-version': process.env.SANDBOX_API_VERSION
             };

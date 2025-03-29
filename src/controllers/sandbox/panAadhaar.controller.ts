@@ -20,7 +20,7 @@ export default class PanAadhaarController {
             // Set default values for entity, consent, and reason
             const defaultEntity = "in.co.sandbox.kyc.pan_aadhaar.status";
             const defaultConsent = "Y";
-            const defaultReason = "For KYC of User";
+            const defaultReason = "For KYC of User jjjjjjjj";
 
             // Construct the endpoint URL with the PAN number
             const endpoint = `${Sandbox.BASE_URL}/kyc/pan-aadhaar/status`;
@@ -30,8 +30,8 @@ export default class PanAadhaarController {
 
             // Set headers for the API request
             const headers = {
-                'Authorization': token,
-                'accept': 'application/json',
+                Authorization: token,
+                accept: 'application/json',
                 'x-api-key': process.env.SANDBOX_KEY,
                 'x-api-version': process.env.SANDBOX_API_VERSION
             };

@@ -9,4 +9,5 @@ bankRouter.post('/details', verifyToken, BankController.getBankDetailsByIfsc);
 bankRouter.post('/verify-account', verifyToken, BankController.verifyBankAccount);
 
 bankRouter.post('/upi-verify', verifyToken, BankController.upiVerification);
+
 export default bankRouter;
