@@ -30,6 +30,7 @@ app.use(
       process.env.CLIENT_URL as string,
       "https://itaxeasy-chi.vercel.app",
       "http://localhost:3000",
+      "https://itaxeasy.com",
       "https://itax-ssr.vercel.app",
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
