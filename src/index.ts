@@ -32,6 +32,9 @@ app.use(
       "http://localhost:3000",
       "https://itaxeasy.com",
       "https://itax-ssr.vercel.app",
+      "https://api.sandbox.co.in",
+      "https://backend.itaxeasy.com",
+      "https://api.itaxeasy.com",
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   })
