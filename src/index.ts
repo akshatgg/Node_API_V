@@ -37,6 +37,7 @@ app.use(
   })
 );
 
+
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // Middleware to log request status
 app.use((req, res, next) => {

@@ -6,7 +6,7 @@ import { UserType } from "@prisma/client";
 interface AuthRequest extends Request {
   user?: any;
   isAdmin?: boolean;
-  isSuperadmin?: boolean;
+  isSuperAdmin?: boolean;
 }
 
 export default function verifyToken(
@@ -39,12 +39,14 @@ export default function verifyToken(
   const user = TokenService.decodeToken(token);
   req.user = user;  // ✅ Now TypeScript recognizes `req.user`
   
-  console.log(user);
 
+  console.log("Decoded User:", user);  
   req.isAdmin = user.userType === UserType.admin;
-  req.isSuperadmin = user.userType === UserType.superadmin;
-
-  console.log(req.isSuperadmin); // ✅ Should log correctly now
+  req.isSuperAdmin = user.userType === UserType.superadmin;
+  console.log("userType:", user.userType);
+  console.log("Is Admin:", req.isAdmin);
+  console.log("Is SuperAdmin:", req.isSuperAdmin);
+  
 
   next();
 }

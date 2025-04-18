@@ -24,10 +24,26 @@ export default class ServicesController {
 
     public static async getServices(_: Request, res: Response): Promise<Response> {
         try {
-            const services = await prisma.service.findMany();
-            return res.json({ success: true, message: 'Services fetched successfully', data: services });
+            const startups = await prisma.registerStartup.findMany({
+                include: {
+                    user: true, // Include related user details
+                    cart: true, // Include related cart details (if needed)
+                    subscriptions: true, // Include subscriptions
+                    RegisterServices: true // If there's a relation
+                }
+            });
+    
+            return res.json({
+                success: true,
+                message: 'RegisterStartup data fetched successfully',
+                data: startups
+            });
         } catch (error) {
-            return res.status(500).json({ success: false, message: 'Failed to fetch services' });
+            console.error('Error fetching RegisterStartup:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Failed to fetch RegisterStartup data'
+            });
         }
     }
 
