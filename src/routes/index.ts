@@ -45,7 +45,8 @@ import razorpayRouter from "./razorpay.routes";
 // import EinvoiceController from "../controllers/sandbox/einvoice.controller";
 import einvoiceRouter from "./Einvoice.routes";
 import ewaybill from "./ewaybill.routes";
-
+import cartRouter from "./cart.routes";
+import cartStartupRouter from "./cartstartup.routes";
 const router = Router();
 
 router.use("/user", userRouter);
@@ -53,6 +54,10 @@ router.use("/user", userRouter);
 router.use("/business", businessProfileRouter);
 
 router.use("/invoice", invoiceRouter);
+
+router.use("/cart",  cartRouter);
+
+router.use("/cartStartup",  cartStartupRouter);
 
 router.use("/gstrates", gstRatesRouter);
 

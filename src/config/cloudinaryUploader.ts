@@ -6,9 +6,9 @@ import { Request } from "express";
 import path from "path";
 
 cloudinary.config({
-  cloud_name: "dhqpgwpgq",
-  api_key: "931122266428593",
-  api_secret: "rUE4CKJVhCudoUQyHG5B_X6nyYY",
+  cloud_name: "drl3vjskb",
+  api_key: "873359697654574",
+  api_secret: "64ENuKTsjjCp7F1Vs-KBHeWbtsw",
 });
 
 // Cloudinary-specific parameters

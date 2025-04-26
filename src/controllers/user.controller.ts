@@ -1263,7 +1263,7 @@ export default class UserController {
         .json({ success: false, message: "Internal server error" });
     }
   }
-  static async verifyotpbyphone(req: Request, res: Response) {
+  // static async verifyotpbyphone(req: Request, res: Response) {
     
-  }
+  // }
 }

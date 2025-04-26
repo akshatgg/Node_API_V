@@ -12,19 +12,32 @@ export class RegisterServicesController {
   static async registerService(req: Request, res: Response) {
     try {
       const userId = req.user?.id;
-
+  
       if (!userId) {
         return res.status(400).json({
           success: false,
           message: "Token not found",
         });
       }
-
+  
+      // Add this code block to verify user exists
+      const user = await prisma.user.findUnique({
+        where: { id: userId }
+      });
+      
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+      // End of added verification
+  
       const { serviceId } = servicesCreateSchema.parse(req.body);
       const { aadhaarCard, panCard, gstCertificate, photo } = req.files as {
         [fieldname: string]: Express.Multer.File[];
       };
-
+  
       const newService: RegisterServices = await prisma.registerServices.create(
         {
           data: {
@@ -37,7 +50,7 @@ export class RegisterServicesController {
           },
         }
       );
-
+  
       return res.status(201).json({
         success: true,
         result: newService,
@@ -52,7 +65,7 @@ export class RegisterServicesController {
           errors: error.errors,
         });
       }
-
+  
       return res.status(500).json({
         success: false,
         message: "Internal server error",

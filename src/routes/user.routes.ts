@@ -63,7 +63,7 @@ userRouter.post("/send-otp", verifyToken, UserController.sendVerificationOtp);
 
 userRouter.post("/change-password", verifyToken, UserController.changePassword);
 
-userRouter.post("/verify-otp",UserController.verifyotpbyphone);
+// userRouter.post("/verify-otp",UserController.verifyotpbyphone);
 userRouter.put(
   "/update",
   verifyToken,

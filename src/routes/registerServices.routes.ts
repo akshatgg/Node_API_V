@@ -9,7 +9,7 @@ const registerServicesRouter = Router();
 registerServicesRouter.post(
   "/",
   verifyToken,
-  adminCheck,
+  
   // multerInstance.single('aadhaarCard'),
   // multerInstance.single('panCard'),
   // multerInstance.single('gstCertificate'),

@@ -127,19 +127,19 @@ model BusinessProfile {
 
 model Cart {
   id                   String             @id @default(uuid())
-  userId               Int                @unique
+  userId               Int                   @unique  // ✅ Add this
   createdAt            DateTime           @default(now())
-  updatedAt            DateTime           @default(now())
+  updatedAt            DateTime           @default(now()) @updatedAt
   user                 User               @relation(fields: [userId], references: [id])
-  services             ApiService[]       @relation("ApiServiceToCart")
+  services             ApiService[]       @relation("CartServices")
   registrationServices RegisterServices[] @relation("CartToRegisterServices")
   registrationStartup  RegisterStartup[]  @relation("CartToRegisterStartup")
+   category             String?  
 }
 
 model ApiService {
-  id           String          @id @default(uuid())
+  id           String     @id @default(uuid())
   title        String
-  category     String
   overview     String
   price        Float
   upcoming     Boolean
@@ -147,11 +147,13 @@ model ApiService {
   bodyParams   Json?
   response     Json?
   responseJSON Json?
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @default(now())
-  carts        Cart[]          @relation("ApiServiceToCart")
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @default(now()) @updatedAt
+  carts        Cart[]     @relation("CartServices")
   subscription Subscriptions[] @relation("ApiServiceToSubscriptions")
+   category    String // ✅ Add this line
 }
+
 
 model Subscriptions {
   id                   String                @id @default(uuid())

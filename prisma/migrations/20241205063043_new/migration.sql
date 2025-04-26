@@ -699,7 +699,7 @@ INSERT INTO "RegisterStartup" ("id", "title", "image", "userId", "categories", "
 -- --------------------------------------------------------
 
 
-
+    
 
 
 -- CreateTable
