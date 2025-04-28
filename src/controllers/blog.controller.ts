@@ -1,23 +1,35 @@
+import { uploadToCloudinary } from "../config/cloudinaryUploader";
 import { prisma } from "../index";
 import { Request, Response } from "express";
 
 export default class BlogController {
   static async createPost(req: Request, res: Response): Promise<Response> {
     try {
-      console.log(req.body)
+      console.log(req.body);
       const { title, category, contentHeading, contentDescription } = req.body;
-      // const localFilePath = req.file?.path;
-      // console.log(req.file)
-      // const cloudinaryResult = await uploadToCloudinary(localFilePath, "image", req, req.file);
-      // const imageUrl = cloudinaryResult.secure_url
+      
       if (!title || !contentHeading) {
         return res
           .status(400)
-          .json({ success: true, message: "Required body params are missing" });
+          .json({ success: false, message: "Required body params are missing" });
       }
-
+  
       const user = req.user!;
-
+      let imageUrl = null;
+  
+      // Check if we have a file before attempting to upload
+      if (req.file) {
+        const localFilePath = req.file.path;
+        console.log(req.file);
+        try {
+          const cloudinaryResult = await uploadToCloudinary(localFilePath, "image", req, req.file);
+          imageUrl = cloudinaryResult.secure_url;
+        } catch (uploadError) {
+          console.error("Image upload error:", uploadError);
+          // Continue without image if upload fails
+        }
+      }
+  
       const post = await prisma.post.create({
         data: {
           userId: user.id,
@@ -25,9 +37,10 @@ export default class BlogController {
           category,
           contentHeading,
           contentDescription,
+          imageUrl, // Add the image URL to the database
         },
       });
-
+  
       return res.status(201).json({ success: true, data: post });
     } catch (error) {
       console.log(error);

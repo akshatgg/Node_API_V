@@ -10,12 +10,10 @@ interface AuthRequest extends Request {
 }
 
 export default function verifyToken(
-  req: AuthRequest,  // ✅ Explicit type
+  req: AuthRequest,
   res: Response,
   next: NextFunction
 ) {
-  console.log(req.headers);
-
   const token = req.headers.authorization?.startsWith("Bearer ")
     ? req.headers.authorization.split(" ")[1]
     : null;
@@ -36,17 +34,22 @@ export default function verifyToken(
     });
   }
 
-  const user = TokenService.decodeToken(token);
-  req.user = user;  // ✅ Now TypeScript recognizes `req.user`
+  const user = TokenService.decodeToken(token) as any;
   
+  // 🔥 HOTFIX: Map `Usertype` to `userType`
+  user.userType = user.Usertype;
+  
+  req.user = user;
 
-  console.log("Decoded User:", user);  
+  console.log("🚀 ~ verifyToken ~ user:", user);
+
   req.isAdmin = user.userType === UserType.admin;
   req.isSuperAdmin = user.userType === UserType.superadmin;
-  console.log("userType:", user.userType);
-  console.log("Is Admin:", req.isAdmin);
-  console.log("Is SuperAdmin:", req.isSuperAdmin);
   
+  console.log("🚀 ~ verifyToken ~ req.isAdmin:", req.isAdmin);
+  console.log("🚀 ~ verifyToken ~ req.isSuperAdmin:", req.isSuperAdmin);
+  console.log(user.userType);
+  console.log(user.Usertype);
 
   next();
 }
