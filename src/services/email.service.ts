@@ -1,44 +1,50 @@
 import nodemailer, { SendMailOptions, Transporter } from 'nodemailer';
 
 export default class EmailService {
-    static transporter: Transporter | null
+    static transporter: Transporter | null;
 
-    static wrapedSendMail(mailOptions: SendMailOptions) : Promise<{ success: boolean; error?: Error; result?: any }> {
-        return new Promise((resolve, reject)=>{
+    static wrapedSendMail(mailOptions: SendMailOptions): Promise<{ success: boolean; error?: Error; result?: any }> {
+        return new Promise((resolve, reject) => {
             EmailService.transporter?.sendMail(mailOptions, (error, result) => {
                 if (error) {
-                    console.log(`Error is ${error}`);
-                    
+                    console.error(`Email sending error: ${error}`);
                     reject({ success: false, error });
-                } 
-                else {
+                } else {
                     resolve({ success: true, result });
                 }
             });
-       });
+        });
     }
 
     static async initialize() {
-        if(EmailService.transporter != null) {
+        if (EmailService.transporter != null) {
             return;
         }
 
+        const user = process.env.OPT_EMAIL;
+        const pass = process.env.OTP_PASS;
+
+        if (!user || !pass) {
+            throw new Error('Missing email credentials');
+        }
+
         const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            // host:'mail.itaxeasy.com',
-            // port:465,
-            // secure:false,
+            host: 'smtpout.secureserver.net',
+            port: 465,
+            secure: true,
             auth: {
-                user: process.env.OPT_EMAIL,
-                pass: process.env.OTP_PASS
+                user,
+                pass,
             },
-            // tls: {
-            //     // do not fail on invalid certs
-            //     rejectUnauthorized: false
-            // },
         });
 
-        await transporter.verify();
+        try {
+            await transporter.verify();
+            console.log("Transporter verified successfully");
+        } catch (err) {
+            console.error("Transporter verification failed", err);
+            throw err;
+        }
 
         EmailService.transporter = transporter;
     }
@@ -53,19 +59,15 @@ export default class EmailService {
                 subject,
                 text: body,
             };
-            
+
             const { success, error } = await EmailService.wrapedSendMail(mailOptions);
 
-            if(!success) {
-                throw error;
-            }
-            
-            return { success: true, message: 'Email sent' };
-        } catch(e) {
-            console.error(e);
+            if (!success) throw error;
 
+            return { success: true, message: 'Email sent' };
+        } catch (e) {
+            console.error('Email sending failed:', e);
             return { success: false, message: 'Could not send email.' };
         }
     }
-
 }

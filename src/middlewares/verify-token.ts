@@ -33,7 +33,8 @@ export default function verifyToken(
       message: "Unauthorized: Access is denied due to invalid credentials",
     });
   }
-
+  
+  
   const user = TokenService.decodeToken(token) as any;
   
   // 🔥 HOTFIX: Map `Usertype` to `userType`

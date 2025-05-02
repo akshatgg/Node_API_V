@@ -24,8 +24,20 @@ export default function SuperadminCheck(
   }
 
   const user = TokenService.decodeToken(token);
-  console.log(user);
-  const superuser = user.userType === "superadmin";
+  console.log("Decoded user:", user); // Log the entire user object to debug
+
+  // Check if the Usertype property exists (note the capital 'U')
+  if (!user || (typeof user === 'object' && !('Usertype' in user))) {
+    console.log("Usertype property missing in token payload");
+    return res.status(401).send({
+      success: false,
+      message: "Invalid token format: User type information missing",
+    });
+  }
+
+  const superuser = user.Usertype === "superadmin";
+  console.log("Usertype:", user.Usertype);
+  console.log("isSuperadmin:", superuser);
 
   if (!superuser) {
     return res.status(401).send({
@@ -36,6 +48,5 @@ export default function SuperadminCheck(
   }
 
   req.user = user;
-
   next();
 }

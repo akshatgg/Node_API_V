@@ -1157,8 +1157,9 @@ export default class UserController {
       });
 
       const user = await prisma.user.findMany({
+      
         where: {
-          superadminId: Superadmin.id,
+         
           userType: "admin",
         },
         orderBy: {

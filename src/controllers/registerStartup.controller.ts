@@ -26,38 +26,43 @@ export class RegisterStartupController {
       // Data validation;
       const { title, categories, aboutService, priceWithGst } =
         startupCreateSchema.parse(req.body);
-
+  
       if (!imageUrl) {
         return res.status(400).json({ error: "Image is required" });
       }
-
+  
       const { id: userId } = req.user!;
-
+  
       const existingUser = await prisma.user.findUnique({
         where: { id: userId },
       });
-
+  
       if (!existingUser) {
         return res.status(404).json({ error: "User not found" });
       }
-
-      const newRegisterStarup: RegisterStartup =
-        await prisma.registerStartup.create({
-          data: {
-            title,
-            image: imageUrl,
-            userId,
-            categories,
-            aboutService,
-            priceWithGst: parseInt(priceWithGst, 10),
-          },
-        });
-
+  
+      // First, try to get the maximum ID to determine the next available ID
+      const maxIdResult = await prisma.$queryRaw`SELECT MAX(id) FROM "RegisterStartup"`;
+      const maxId = maxIdResult[0]?.max || 0;
+      const nextId = maxId + 1;
+      
+      // Use raw SQL to insert with explicit ID and RETURNING * to get the created record
+      const insertResult = await prisma.$queryRaw`
+        INSERT INTO "RegisterStartup" (id, title, image, "userId", categories, "aboutService", "priceWithGst") 
+        VALUES (${nextId}, ${title}, ${imageUrl}, ${userId}, ${categories}, ${aboutService}, ${parseInt(priceWithGst, 10)})
+        RETURNING *;
+      `;
+  
+      // The result is an array, get the first element
+      const createdRecord = insertResult[0];
+  
       return res.status(201).json({
-        result: newRegisterStarup,
-        message: "Sucessfully Register Startup Setting created",
+        result: createdRecord,
+        message: "Successfully Register Startup Setting created",
       });
     } catch (error) {
+      console.error("RegisterStartup Error:", error);
+      
       if (error instanceof ZodError) {
         return res.status(400).json({
           success: false,
@@ -65,10 +70,11 @@ export class RegisterStartupController {
           errors: error.message,
         });
       }
+      
       return res.status(500).json({
         success: false,
         message: "Internal server error",
-        errors: error,
+        errors: error instanceof Error ? error.message : error,
       });
     }
   }

@@ -17,7 +17,7 @@ insuranceRouter.post(
 insuranceRouter.put(
   "/update/:id",
   verifyToken,
-  adminCheck,
+  adminCheck, 
   bodyValidator,
   InsuranceController.updateInsurance
 );
