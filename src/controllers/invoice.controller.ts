@@ -499,6 +499,138 @@ class InvoiceController {
     }
   }
 
+static async updateParty(req: Request, res: Response) {
+  try {
+    const { id: userId } = req.user!;
+    
+    // Log all request parameters for debugging
+    console.log("Request params:", req.params);
+    console.log("Request URL:", req.originalUrl);
+    console.log("Request body:", req.body);
+    
+    // Get party ID from different possible sources
+    const partyId = req.params.id || req.body.id || req.query.id;
+    
+    console.log("Extracted partyId:", partyId);
+    
+    if (!partyId) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Party ID is required but not found in request params, body, or query" 
+      });
+    }
+
+    // Extract data for updating the party and ledger
+    const {
+      partyName,
+      type,
+      gstin,
+      pan,
+      tan,
+      upi,
+      email,
+      phone,
+      address,
+      bankName,
+      bankAccountNumber,
+      bankIfsc,
+      bankBranch,
+      openingBalance,
+      year,
+      month,
+    } = req.body;
+
+    // First verify the party exists and belongs to this user
+    const existingParty = await prisma.party.findFirst({
+      where: {
+        id: partyId,
+        userId
+      },
+      include: {
+        ledgers: true
+      }
+    });
+
+    if (!existingParty) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "Party not found or you don't have permission to update it" 
+      });
+    }
+
+    console.log("Found existing party:", existingParty.id);
+
+    // Update the Party data - explicitly casting the ID to string to ensure it's handled correctly
+    const updatedParty = await prisma.party.update({
+      where: {
+        id: String(partyId)
+      },
+      data: {
+        partyName,
+        type,
+        gstin,
+        pan,
+        tan,
+        upi,
+        email,
+        phone,
+        address,
+        bankName,
+        bankAccountNumber,
+        bankIfsc,
+        bankBranch
+      },
+      include: {
+        ledgers: true
+      }
+    });
+
+    // If there's a ledger associated and opening balance/ledger data should be updated
+    if (existingParty.ledgers.length > 0 && openingBalance !== undefined) {
+      const ledgerId = existingParty.ledgers[0].id;
+      
+      // Update the ledger type if party type changed
+      const ledgerType = type === PartyType.customer
+        ? LedgerType.accountsReceivable
+        : LedgerType.accountsPayable;
+        
+      await prisma.ledger.update({
+        where: {
+          id: ledgerId
+        },
+        data: {
+          ledgerName: partyName, // Update ledger name to match party name
+          ledgerType,
+          openingBalance,
+          ...(year && { year }),
+          ...(month !== undefined && { month })
+        }
+      });
+    }
+
+    // Get the updated party with fresh ledger data
+    const updatedPartyWithLedger = await prisma.party.findUnique({
+      where: {
+        id: partyId
+      },
+      include: {
+        ledgers: true
+      }
+    });
+
+    return res.status(200).json({ 
+      success: true, 
+      party: updatedPartyWithLedger 
+    });
+    
+  } catch (error) {
+    console.log("Error in updateParty:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
+  }
+}
+
   static async deleteParty(req: Request, res: Response) {
     try {
       const partyId = req.params.id;

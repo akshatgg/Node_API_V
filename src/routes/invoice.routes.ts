@@ -18,7 +18,7 @@ invoiceRouter.get('/parties', verifyToken, InvoiceController.getAllParties);
 invoiceRouter.get('/parties/:id', verifyToken, InvoiceController.getPartyById);
 invoiceRouter.post('/parties', verifyToken, InvoiceController.createParty);
 invoiceRouter.delete('/parties/:id', verifyToken, InvoiceController.deleteParty);
-
+invoiceRouter.put('/parties/:id', verifyToken, InvoiceController.updateParty);
 // Routes for items
 invoiceRouter.get('/items', verifyToken, InvoiceController.getAllItems);
 invoiceRouter.get('/items/:id', verifyToken, InvoiceController.getItemById);

@@ -3,7 +3,7 @@ import { Career } from "@prisma/client";
 import { join } from "path";
 import { cwd } from "process";
 import { prisma } from "..";
-import { deleteImageByUrl } from "../config/cloudinaryUploader";
+import { deleteImageByUrl, uploadToCloudinary } from "../config/cloudinaryUploader";
 
 const currentDir = cwd();
 
@@ -46,21 +46,26 @@ export default class CareerController {
   //create career
   static async createCareer(req: Request, res: Response) {
     try {
-      const file = req.file as Express.Multer.File; // Assuming a single CV file
+      const file = req.file as Express.Multer.File // Assuming a single CV file
 
       if (!file) {
-        return res
-          .status(400)
-          .json({ success: false, message: "No CV file to upload." });
+        return res.status(400).json({ success: false, message: "No CV file to upload." })
       }
 
-      const { name, address, pin, email, mobile, skills, gender } = req.body;
+      const { name, address, pin, email, mobile, skills, gender } = req.body
 
-      const { path: cvFilePath } = file;
+      // Upload the file to Cloudinary
+      const cloudinaryResult = await uploadToCloudinary(
+        file.path,
+        "raw", // Use 'raw' for PDF files
+        req,
+        file,
+      )
 
+      // Create career entry with Cloudinary URL
       const career = await prisma.career.create({
         data: {
-          cv: cvFilePath, // Assuming 'cv' field corresponds to the 'fileName'
+          cv: cloudinaryResult.secure_url, // Store the Cloudinary URL
           name,
           address,
           pin,
@@ -69,18 +74,16 @@ export default class CareerController {
           skills,
           gender,
         },
-      });
+      })
 
       return res.status(201).json({
         success: true,
         message: "Success! We will get back to you.",
         career,
-      });
+      })
     } catch (e) {
-      console.log(e);
-      return res
-        .status(500)
-        .json({ success: false, message: "Something went wrong" });
+      console.log(e)
+      return res.status(500).json({ success: false, message: "Something went wrong" })
     }
   }
   //getAll career

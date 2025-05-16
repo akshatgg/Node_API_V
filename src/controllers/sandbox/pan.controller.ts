@@ -9,12 +9,13 @@ export default class PanController {
             const { pan, name_as_per_pan, date_of_birth } = req.body;
     
             // Validate Required Parameters
-            if (!pan || !/^[A-Z]{3}[PCFTGHLABJ]{1}[A-Z]{1}[0-9]{4}[A-Z]{1}$/.test(pan)) {
-                return res.status(400).json({
-                    success: false,
-                    message: "Enter a valid PAN Number (e.g., ABCDE1234F)."
-                });
-            }
+if (!pan || !/^[A-Z]{3}[ABCFGHLJPT]{1}[A-Z]{1}[0-9]{4}[A-Z]{1}$/.test(pan)) {
+    return res.status(400).json({
+        success: false,
+        message: "Enter a valid PAN Number (e.g., ABCDE1234F)."
+    });
+}
+
     
             if (!name_as_per_pan) {
                 return res.status(400).json({
