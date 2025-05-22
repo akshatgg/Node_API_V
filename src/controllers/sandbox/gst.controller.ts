@@ -195,7 +195,7 @@ export default class GSTController {
             // Make the API request
             const response = await axios.post(
                 `${endpoint}${queryParams}`, // Endpoint with query parameters
-                { gstin }, // Body parameters
+                { gstin,financial_year }, // Body parameters
                 { headers } // Headers
             );
     
