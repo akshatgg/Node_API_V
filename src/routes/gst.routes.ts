@@ -22,6 +22,7 @@ gstRouter.post('/tax-payer/file/proceed', verifyToken, bodyValidator, GSTControl
 
 gstRouter.post('/tax-payer/file/gstr-4/:gstin/:year/:month', verifyToken, bodyValidator, GSTController.uploadGSTR4);
 
+
 gstRouter.post('/tax-payer/file/gstr-3b/:gstin/:year/:month', verifyToken, bodyValidator, GSTController.uploadGSTR3B);
 
 gstRouter.post('/tax-payer/file/gstr-3b/:gstin/:year/:month', verifyToken, bodyValidator, GSTController.uploadGSTR3B);

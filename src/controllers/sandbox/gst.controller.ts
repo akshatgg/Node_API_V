@@ -3,7 +3,7 @@ import { GSTIN_RGX, validateGSTIN } from "../../lib/util";
 import Sandbox from "../../services/sandbox.service";
 import axios from "axios";
 import { z } from "zod";
-
+import {redisClient} from "../../middlewares/redis-adder";
 const GSTR4_SCHEMA = z.object({
     gstin: z.string({ required_error: 'GSTIN Number is required' }).regex(GSTIN_RGX, "Invalid GSTIN Number"),
     fp: z.string(),
@@ -318,71 +318,129 @@ export default class GSTController {
         }
     }
 
-    static async generateOTP(req: Request, res: Response) {
-        try {
-            const { gstin, username } = req.body;
+static async generateOTP(req: Request, res: Response) {
+    try {
+        const { gstin, username } = req.body;
 
-            if (!validateGSTIN(gstin)) {
-                return res.status(400).json({ success: false, message: "Please enter valid GSTIN" });
-            }
-
-            const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/otp?username=${username}`;
-            const token = await Sandbox.generateAccessToken();
-
-            const headers = {
-                'Authorization': token,
-                'accept': 'application/json',
-                'x-api-key': process.env.SANDBOX_KEY,
-                'x-api-version': process.env.SANDBOX_API_VERSION
-            };
-
-            const { status, data: { data } } = await axios.post(endpoint, {}, {
-                headers,
-            });
-
-            if (status === 401) {
-                return res.status(401).send({ success: false, message: 'Unauthorized Access' });
-            }
-
-            return res.status(200).send({ success: true, data });
-        } catch (e) {
-            console.log(e);
-            return res.status(500).json({ success: false, message: 'Something went wrong' });
+        // Validate GSTIN
+        if (!validateGSTIN(gstin)) {
+            // console.warn(`[generateOTP] Invalid GSTIN: ${gstin}`);
+            return res.status(400).json({ success: false, message: "Please enter a valid GSTIN" });
         }
+
+        // Construct endpoint
+        const endpoint = `${Sandbox.BASE_URL}/gst/compliance/tax-payer/otp`;
+
+        // Generate access token
+        const token = await Sandbox.generateAccessToken();
+        // console.debug(`[generateOTP] Access token generated.`);
+
+        // Set headers
+        const headers = {
+            'Authorization': token,
+            'x-api-key': process.env.SANDBOX_KEY,
+            'x-api-version': process.env.SANDBOX_API_VERSION || '1.0',
+            'x-source': 'primary',
+            'Content-Type': 'application/json',
+        };
+
+        // Prepare request body
+        const requestBody = {
+            username,
+            gstin,
+        };
+
+        // console.debug(`[generateOTP] Sending POST request to ${endpoint} with body:`, requestBody);
+
+        // Send POST request
+        const response = await axios.post(endpoint, requestBody, { headers });
+
+        // Check response status
+        if (response.status === 200) {
+            // console.info(`[generateOTP] OTP generated successfully for GSTIN: ${gstin}`);
+            return res.status(200).json({ success: true, data: response.data });
+        } else {
+            // console.error(`[generateOTP] Unexpected response status: ${response.status}`, response.data);
+            return res.status(response.status).json({ success: false, message: 'Unexpected response from OTP API', data: response.data });
+        }
+    } catch (error) {
+        console.error(`[generateOTP] Error occurred:`, error);
+
+        // Handle specific error responses
+        if (axios.isAxiosError(error)) {
+            const { response } = error;
+            if (response) {
+                const { status, data } = response;
+                console.error(`[generateOTP] Axios error response:`, data);
+
+                if (status === 422 && data.message === "Invalid GSTIN pattern") {
+                    return res.status(422).json({ success: false, message: "Invalid GSTIN pattern" });
+                }
+
+                if (status === 200 && data?.data?.status_cd === "0") {
+                    const errorMessage = data?.data?.error?.message || 'OTP generation failed';
+                    return res.status(500).json({ success: false, message: errorMessage });
+                }
+
+                return res.status(status).json({ success: false, message: data.message || 'Error from OTP API' });
+            }
+        }
+
+        return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
+
+
+static async verifyOTP(req: Request, res: Response) {
+  try {
+    const { gstin, username, otp } = req.body;
+
+    if (!validateGSTIN(gstin)) {
+      return res.status(400).json({ success: false, message: "Please enter a valid GSTIN" });
     }
 
-    static async verifyOTP(req: Request, res: Response) {
-        try {
-            const { gstin, username, otp } = req.body;
+    // Append OTP to query string (non-standard, only if backend supports it)
+    const endpoint = `${Sandbox.BASE_URL}/gst/compliance/tax-payer/otp/verify?otp=${encodeURIComponent(otp)}`;
 
-            if (!validateGSTIN(gstin)) {
-                return res.status(400).json({ success: false, message: "Please enter valid GSTIN" });
-            }
+    const token = await Sandbox.generateAccessToken();
 
-            const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/otp/verify?username=${username}&otp=${otp}`;
-            const token = await Sandbox.generateAccessToken();
+    const headers = {
+      'Authorization': token,
+      'accept': 'application/json',
+      'x-api-key': process.env.SANDBOX_KEY,
+      'x-api-version': process.env.SANDBOX_API_VERSION || '1.0',
+      'x-source': 'primary',
+      'Content-Type': 'application/json'
+    };
 
-            const headers = {
-                'Authorization': token,
-                'accept': 'application/json',
-                'x-api-key': process.env.SANDBOX_KEY,
-                'x-api-version': process.env.SANDBOX_API_VERSION
-            };
+    // Send GSTIN and Username in body, OTP is in URL
+    const requestBody = { username, gstin };
 
-            const response = await axios.post(endpoint, {}, {
-                headers,
-            });
+    console.debug("Verifying OTP with body:", requestBody);
+    console.debug("OTP passed in URL params:", otp);
 
-            if (response.status !== 200) {
-                return res.status(500).send({ success: true, message: "Could not authenticate. Something went wrong" });
-            }
+    const response = await axios.post(endpoint, requestBody, { headers });
 
-            return res.status(200).send({ success: true, message: `GSTIN: ${gstin} authenticated successfully!` });
-        } catch (e) {
-            console.log(e);
-            return res.status(500).json({ success: false, message: 'Something went wrong' });
-        }
+    console.debug("OTP verification response:", response.data);
+
+    if (response.status !== 200) {
+      return res.status(response.status).send({ success: false, message: "Could not authenticate. Something went wrong" });
     }
+const { access_token } = response.data.data;
+const sandbox_token=await redisClient.set(`gst-token:${gstin}`, access_token, { EX: 3600 });
+console.log(sandbox_token);
+
+
+    
+    return res.status(200).send({ success: true, message: `GSTIN: ${gstin} authenticated successfully!`, data: response.data });
+  } catch (error) {
+    console.error("Error during OTP verification:", error);
+    return res.status(500).json({ success: false, message: 'Something went wrong' });
+  }
+}
+
+
+
 
     /**
      * Upload GSTR-4
@@ -567,13 +625,14 @@ export default class GSTController {
             if (!year || typeof year !== 'string' || !month || typeof month !== 'string') {
                 return res.status(400).send({ success: false, message: 'Year and Month are required' });
             }
-
-            const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/gstrs/gstr-1/at/${year}/${month}`;
+const sandbox_token = await redisClient.get(`gst-token:${gstin}`);
+console.log("✅ Saved token in Redis:", sandbox_token);
+            const endpoint = `${Sandbox.BASE_URL}/gst/compliance/tax-payer/gstrs/gstr-1/at/${year}/${month}`;
 
             const token = await Sandbox.generateAccessToken();
 
             const headers = {
-                'Authorization': token,
+                'Authorization': sandbox_token,
                 'accept': 'application/json',
                 'x-api-key': process.env.SANDBOX_KEY,
                 'x-api-version': process.env.SANDBOX_API_VERSION

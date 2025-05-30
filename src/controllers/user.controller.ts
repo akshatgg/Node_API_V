@@ -275,7 +275,7 @@ export default class UserController {
       console.log(user)
       // Generate token with user data and role flags (isAdmin, isSuperadmin)
       const token = TokenService.generateToken(user);
-  
+      
       res.cookie('authToken', token, {
         httpOnly: true,       // Prevents JavaScript from accessing the cookie
         secure: process.env.NODE_ENV === 'production', // Ensures cookie is sent over HTTPS only in production

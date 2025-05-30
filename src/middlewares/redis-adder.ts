@@ -10,10 +10,10 @@ config({
 
 // Create Redis client
 const client = createClient({
-  username: '',
-  password: '',
+  username: 'akshat',
+  password: 'akshat1234',
   socket: {
-    host: '172.30.72.250',
+    host: '127.0.0.1',
     port: 6379,
   },
 });
@@ -109,5 +109,5 @@ const strictLimiter = async (req: Request, res: Response, next: NextFunction) =>
     res.status(500).json({ message: 'Internal Server Error' });
   }
 };
-
+export { client as redisClient };
 export default strictLimiter;

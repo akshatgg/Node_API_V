@@ -14,7 +14,7 @@ export default function verifyToken(
   res: Response,
   next: NextFunction
 ) {
-  const token = req.headers.authorization?.startsWith("Bearer ")
+  const token = req.headers.authorization?.startsWith("Bearer")
     ? req.headers.authorization.split(" ")[1]
     : null;
 
