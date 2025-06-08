@@ -427,7 +427,7 @@ static async verifyOTP(req: Request, res: Response) {
       return res.status(response.status).send({ success: false, message: "Could not authenticate. Something went wrong" });
     }
 const { access_token } = response.data.data;
-const sandbox_token=await redisClient.set(`gst-token:${gstin}`, access_token, { EX: 3600 });
+const sandbox_token=await redisClient.set(`gst-token:${gstin}`, access_token, { EX: 43200 });
 console.log(sandbox_token);
 
 
@@ -665,13 +665,14 @@ console.log("✅ Saved token in Redis:", sandbox_token);
             if (!year || typeof year !== 'string' || !month || typeof month !== 'string') {
                 return res.status(400).send({ success: false, message: 'Year and Month are required' });
             }
-
-            const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/gstrs/gstr-1/ata/${year}/${month}`;
-
+            const sandbox_token = await redisClient.get(`gst-token:${gstin}`);
+            console.log("✅ Saved token in Redis:", sandbox_token);
+            const endpoint = `${Sandbox.BASE_URL}/gst/compliance/tax-payer/gstrs/gstr-1/ata/${year}/${month}`;
+ 
             const token = await Sandbox.generateAccessToken();
 
             const headers = {
-                'Authorization': token,
+                'Authorization': sandbox_token,
                 'accept': 'application/json',
                 'x-api-key': process.env.SANDBOX_KEY,
                 'x-api-version': process.env.SANDBOX_API_VERSION
@@ -707,12 +708,13 @@ console.log("✅ Saved token in Redis:", sandbox_token);
                 return res.status(400).send({ success: false, message: 'ctin ,action_required ,from are required' })
             }
 
-            const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/gstrs/gstr-1/b2b/${year}/${month}`;
+            const endpoint = `${Sandbox.BASE_URL}/gst/compliance/tax-payer/gstrs/gstr-1/b2b/${year}/${month}`;
+            const sandbox_token = await redisClient.get(`gst-token:${gstin}`);
 
             const token = await Sandbox.generateAccessToken();
 
             const headers = {
-                'Authorization': token,
+                'Authorization': sandbox_token,
                 'accept': 'application/json',
                 'x-api-key': process.env.SANDBOX_KEY,
                 'x-api-version': process.env.SANDBOX_API_VERSION
@@ -749,12 +751,13 @@ console.log("✅ Saved token in Redis:", sandbox_token);
                 return res.status(400).send({ success: false, message: 'ctin ,action_required ,from are required' })
             }
 
-            const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/gstrs/gstr-1/b2ba/${year}/${month}`;
+            const endpoint = `${Sandbox.BASE_URL}/gst/compliance/tax-payer/gstrs/gstr-1/b2ba/${year}/${month}`;
+            const sandbox_token = await redisClient.get(`gst-token:${gstin}`);
 
             const token = await Sandbox.generateAccessToken();
 
             const headers = {
-                'Authorization': token,
+                'Authorization': sandbox_token,
                 'accept': 'application/json',
                 'x-api-key': process.env.SANDBOX_KEY,
                 'x-api-version': process.env.SANDBOX_API_VERSION
@@ -791,12 +794,13 @@ console.log("✅ Saved token in Redis:", sandbox_token);
                 return res.status(400).send({ success: false, message: 'state_code are required' })
             }
 
-            const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/gstrs/gstr-1/b2cl/${year}/${month}`;
+            const endpoint = `${Sandbox.BASE_URL}/gst/compliance/tax-payer/gstrs/gstr-1/b2cl/${year}/${month}`;
+            const sandbox_token = await redisClient.get(`gst-token:${gstin}`);
 
             const token = await Sandbox.generateAccessToken();
 
             const headers = {
-                'Authorization': token,
+                'Authorization': sandbox_token,
                 'accept': 'application/json',
                 'x-api-key': process.env.SANDBOX_KEY,
                 'x-api-version': process.env.SANDBOX_API_VERSION
@@ -833,12 +837,13 @@ console.log("✅ Saved token in Redis:", sandbox_token);
                 return res.status(400).send({ success: false, message: 'state_code are required' })
             }
 
-            const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/gstrs/gstr-1/b2cla/${year}/${month}`;
+            const endpoint = `${Sandbox.BASE_URL}/gst/compliance/tax-payer/gstrs/gstr-1/b2cla/${year}/${month}`;
+            const sandbox_token = await redisClient.get(`gst-token:${gstin}`);
 
             const token = await Sandbox.generateAccessToken();
 
             const headers = {
-                'Authorization': token,
+                'Authorization': sandbox_token,
                 'accept': 'application/json',
                 'x-api-key': process.env.SANDBOX_KEY,
                 'x-api-version': process.env.SANDBOX_API_VERSION
@@ -873,12 +878,13 @@ console.log("✅ Saved token in Redis:", sandbox_token);
             }
 
 
-            const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/gstrs/gstr-1/b2cs/${year}/${month}`;
+            const endpoint = `${Sandbox.BASE_URL}/gst/compliance/tax-payer/gstrs/gstr-1/b2cs/${year}/${month}`;
+            const sandbox_token = await redisClient.get(`gst-token:${gstin}`);
 
             const token = await Sandbox.generateAccessToken();
 
             const headers = {
-                'Authorization': token,
+                'Authorization': sandbox_token,
                 'accept': 'application/json',
                 'x-api-key': process.env.SANDBOX_KEY,
                 'x-api-version': process.env.SANDBOX_API_VERSION
@@ -913,12 +919,13 @@ console.log("✅ Saved token in Redis:", sandbox_token);
             }
 
 
-            const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/gstrs/gstr-1/b2csa/${year}/${month}`;
+            const endpoint = `${Sandbox.BASE_URL}/gst/compliance/tax-payer/gstrs/gstr-1/b2csa/${year}/${month}`;
+            const sandbox_token = await redisClient.get(`gst-token:${gstin}`);
 
             const token = await Sandbox.generateAccessToken();
 
             const headers = {
-                'Authorization': token,
+                'Authorization': sandbox_token,
                 'accept': 'application/json',
                 'x-api-key': process.env.SANDBOX_KEY,
                 'x-api-version': process.env.SANDBOX_API_VERSION
@@ -955,12 +962,13 @@ console.log("✅ Saved token in Redis:", sandbox_token);
                 return res.status(400).send({ success: false, message: 'action_required AND from are required' })
             }
 
-            const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/gstrs/gstr-1/cdnr/${year}/${month}`;
+            const endpoint = `${Sandbox.BASE_URL}/gst/compliance/tax-payer/gstrs/gstr-1/cdnr/${year}/${month}`;
+            const sandbox_token = await redisClient.get(`gst-token:${gstin}`);
 
             const token = await Sandbox.generateAccessToken();
 
             const headers = {
-                'Authorization': token,
+                'Authorization': sandbox_token,
                 'accept': 'application/json',
                 'x-api-key': process.env.SANDBOX_KEY,
                 'x-api-version': process.env.SANDBOX_API_VERSION
@@ -997,12 +1005,13 @@ console.log("✅ Saved token in Redis:", sandbox_token);
                 return res.status(400).send({ success: false, message: 'action_required AND from are required' })
             }
 
-            const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/gstrs/gstr-1/cdnra/${year}/${month}`;
+            const endpoint = `${Sandbox.BASE_URL}/gst/compliance/tax-payer/gstrs/gstr-1/cdnra/${year}/${month}`;
+            const sandbox_token = await redisClient.get(`gst-token:${gstin}`);
 
             const token = await Sandbox.generateAccessToken();
 
             const headers = {
-                'Authorization': token,
+                'Authorization': sandbox_token,
                 'accept': 'application/json',
                 'x-api-key': process.env.SANDBOX_KEY,
                 'x-api-version': process.env.SANDBOX_API_VERSION
@@ -1036,13 +1045,13 @@ console.log("✅ Saved token in Redis:", sandbox_token);
                 return res.status(400).send({ success: false, message: 'Year and Month are required' });
             }
 
-
-            const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/gstrs/gstr-1/cdnur/${year}/${month}`;
+const sandbox_token = await redisClient.get(`gst-token:${gstin}`);
+            const endpoint = `${Sandbox.BASE_URL}/gst/compliance/tax-payer/gstrs/gstr-1/cdnur/${year}/${month}`;
 
             const token = await Sandbox.generateAccessToken();
 
             const headers = {
-                'Authorization': token,
+                'Authorization': sandbox_token,
                 'accept': 'application/json',
                 'x-api-key': process.env.SANDBOX_KEY,
                 'x-api-version': process.env.SANDBOX_API_VERSION
@@ -1076,13 +1085,13 @@ console.log("✅ Saved token in Redis:", sandbox_token);
                 return res.status(400).send({ success: false, message: 'Year and Month are required' });
             }
 
-
-            const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/gstrs/gstr-1/cdnura/${year}/${month}`;
+const sandbox_token = await redisClient.get(`gst-token:${gstin}`);
+            const endpoint = `${Sandbox.BASE_URL}/gst/compliance/tax-payer/gstrs/gstr-1/cdnura/${year}/${month}`;
 
             const token = await Sandbox.generateAccessToken();
 
             const headers = {
-                'Authorization': token,
+                'Authorization': sandbox_token,
                 'accept': 'application/json',
                 'x-api-key': process.env.SANDBOX_KEY,
                 'x-api-version': process.env.SANDBOX_API_VERSION
@@ -1117,12 +1126,12 @@ console.log("✅ Saved token in Redis:", sandbox_token);
             }
 
 
-            const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/gstrs/gstr-1/doc-issue/${year}/${month}`;
-
+            const endpoint = `${Sandbox.BASE_URL}/gst/compliance/tax-payer/gstrs/gstr-1/doc-issue/${year}/${month}`;
+const sandbox_token = await redisClient.get(`gst-token:${gstin}`);
             const token = await Sandbox.generateAccessToken();
 
             const headers = {
-                'Authorization': token,
+                'Authorization': sandbox_token,
                 'accept': 'application/json',
                 'x-api-key': process.env.SANDBOX_KEY,
                 'x-api-version': process.env.SANDBOX_API_VERSION
@@ -1156,13 +1165,13 @@ console.log("✅ Saved token in Redis:", sandbox_token);
                 return res.status(400).send({ success: false, message: 'Year and Month are required' });
             }
 
-
-            const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/gstrs/gstr-1/exp/${year}/${month}`;
+const sandbox_token = await redisClient.get(`gst-token:${gstin}`);
+            const endpoint = `${Sandbox.BASE_URL}/gst/compliance/tax-payer/gstrs/gstr-1/exp/${year}/${month}`;
 
             const token = await Sandbox.generateAccessToken();
 
             const headers = {
-                'Authorization': token,
+                'Authorization': sandbox_token,
                 'accept': 'application/json',
                 'x-api-key': process.env.SANDBOX_KEY,
                 'x-api-version': process.env.SANDBOX_API_VERSION
@@ -1196,13 +1205,13 @@ console.log("✅ Saved token in Redis:", sandbox_token);
                 return res.status(400).send({ success: false, message: 'Year and Month are required' });
             }
 
-
-            const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/gstrs/gstr-1/expa/${year}/${month}`;
+const sandbox_token = await redisClient.get(`gst-token:${gstin}`);
+            const endpoint = `${Sandbox.BASE_URL}/gst/compliance/tax-payer/gstrs/gstr-1/expa/${year}/${month}`;
 
             const token = await Sandbox.generateAccessToken();
 
             const headers = {
-                'Authorization': token,
+                'Authorization': sandbox_token,
                 'accept': 'application/json',
                 'x-api-key': process.env.SANDBOX_KEY,
                 'x-api-version': process.env.SANDBOX_API_VERSION
@@ -1277,12 +1286,12 @@ console.log("✅ Saved token in Redis:", sandbox_token);
             }
 
 
-            const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/gstrs/gstr-1/hsn/${year}/${month}`;
-
+            const endpoint = `${Sandbox.BASE_URL}/gst/compliance/tax-payer/gstrs/gstr-1/hsn/${year}/${month}`;
+const sandbox_token = await redisClient.get(`gst-token:${gstin}`);
             const token = await Sandbox.generateAccessToken();
 
             const headers = {
-                'Authorization': token,
+                'Authorization': sandbox_token,
                 'accept': 'application/json',
                 'x-api-key': process.env.SANDBOX_KEY,
                 'x-api-version': process.env.SANDBOX_API_VERSION
@@ -1317,12 +1326,12 @@ console.log("✅ Saved token in Redis:", sandbox_token);
             }
 
 
-            const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/gstrs/gstr-1/nil/${year}/${month}`;
-
+            const endpoint = `${Sandbox.BASE_URL}/gst/compliance/tax-payer/gstrs/gstr-1/expa/${year}/${month}`;
+const sandbox_token = await redisClient.get(`gst-token:${gstin}`);
             const token = await Sandbox.generateAccessToken();
 
             const headers = {
-                'Authorization': token,
+                'Authorization': sandbox_token,
                 'accept': 'application/json',
                 'x-api-key': process.env.SANDBOX_KEY,
                 'x-api-version': process.env.SANDBOX_API_VERSION
@@ -1359,12 +1368,12 @@ console.log("✅ Saved token in Redis:", sandbox_token);
                 return res.status(400).send({ success: false, message: 'Year and Month are required' });
             }
 
-            const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/gstrs/gstr-1/${year}/${month}`;
-
+            const endpoint = `${Sandbox.BASE_URL}/gst/compliance/tax-payer/gstrs/gstr-1/${year}/${month}`;
+const sandbox_token = await redisClient.get(`gst-token:${gstin}`);
             const token = await Sandbox.generateAccessToken();
 
             const headers = {
-                'Authorization': token,
+                'Authorization': sandbox_token,
                 'accept': 'application/json',
                 'x-api-key': process.env.SANDBOX_KEY,
                 'x-api-version': process.env.SANDBOX_API_VERSION
@@ -1389,7 +1398,7 @@ console.log("✅ Saved token in Redis:", sandbox_token);
         try {
             const data = (req.body);
 
-            const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/:gstin/gstrs/gstr-1/:year/:month/reset`;
+            const endpoint = `${Sandbox.BASE_URL}/gst/compliance/tax-payer/gstrs/gstr-1/:year/:month/reset`;
 
             const token = await Sandbox.generateAccessToken();
 
@@ -1433,12 +1442,12 @@ console.log("✅ Saved token in Redis:", sandbox_token);
             }
 
 
-            const endpoint = `${Sandbox.BASE_URL}/gsp/tax-payer/${gstin}/gstrs/gstr-1/${year}/${month}/file`;
-
+            const endpoint = `${Sandbox.BASE_URL}/gst/compliance/tax-payer/gstrs/gstr-1/${year}/${month}/file`;
+const sandbox_token = await redisClient.get(`gst-token:${gstin}`);
             const token = await Sandbox.generateAccessToken();
 
             const headers = {
-                'Authorization': token,
+                'Authorization': sandbox_token,
                 'accept': 'application/json',
                 'x-api-key': process.env.SANDBOX_KEY,
                 'x-api-version': process.env.SANDBOX_API_VERSION

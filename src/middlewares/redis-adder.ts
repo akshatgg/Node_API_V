@@ -3,6 +3,7 @@ import { createClient } from 'redis';
 import { config } from 'dotenv';
 import path from 'path';
 
+
 // Load environment variables from .env file
 config({
   path: path.resolve(__dirname, "../../.env"),
@@ -32,7 +33,12 @@ client.connect().catch((err) => {
 const strictLimiter = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = req.user; // Assumes authentication middleware populates `req.user`
-    const { pan, aadhaar, tan, gstin,ifsc,gst,aadhar,gstn,gstr} = req.body;
+const payload = Object.keys(req.body || {}).length ? req.body : req.query;
+const {
+  pan, aadhaar, tan, gstin, ifsc, gst, aadhar, gstn, gstr
+} = payload;
+
+console.log("🚀 ~ strictLimiter ~ payload:", payload);
 
     if (!req.url) {
       return res.status(400).json({ message: 'URL is missing.' });
