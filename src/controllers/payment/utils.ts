@@ -87,29 +87,31 @@ export function getQueryURL(env: 'test' | 'prod' | undefined) {
 }
 
 export function validatePaymentData(data: PaymentData): string | null {
-  if (!data.name.trim()) {
+  if (!(data?.name || "").trim()) {
     return "Mandatory Parameter name cannot be empty";
   }
-  if (!(data.amount.trim()) || !parseFloat(data.amount)) {
+  if (!(data?.amount || "").trim() || isNaN(parseFloat(data.amount))) {
     return "Mandatory Parameter amount cannot be empty and must be in decimal";
   }
-  if (!data.txnid.trim()) {
+  if (!(data?.txnid || "").trim()) {
     return "Merchant Transaction validation failed. Please enter a proper value for merchant txn";
   }
-  if (!data.email.trim() || !validateEmail(data.email)) {
+  if (!(data?.email || "").trim() || !validateEmail(data.email)) {
     return "Email validation failed. Please enter a proper value for email";
   }
-  if (!data.phone.trim() || !validatePhone(data.phone)) {
+  if (!(data?.phone || "").trim() || !validatePhone(data.phone)) {
     return "Phone validation failed. Please enter a proper value for phone";
   }
-  if (!data.productinfo.trim()) {
+  if (!(data?.productinfo || "").trim()) {
     return "Mandatory Parameter Product info cannot be empty";
   }
-  if (!data.surl.trim() || !data.furl.trim()) {
+  if (!(data?.surl || "").trim() || !(data?.furl || "").trim()) {
     return "Mandatory Parameter Surl/Furl cannot be empty";
   }
+
   return null;
 }
+
 
 export function createPaymentForm(data: PaymentData, config: Config): any {
   const form: PaymentForm = {

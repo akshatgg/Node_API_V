@@ -235,7 +235,7 @@ export default class ApiServiceController {
               message: 'apiServiceId is required.',
             });
           }
-      
+        
           // Fetch the cart to ensure it exists and contains the ApiService
           const cart = await prisma.cart.findUnique({
             where: { userId },
@@ -243,14 +243,14 @@ export default class ApiServiceController {
               services: true,  // Include the related ApiService data
             },
           });
-      
+        
           if (!cart) {
             return res.status(404).json({
               success: false,
               message: 'Cart not found for the user.',
             });
           }
-      
+        
           // Check if the API service is in the cart
           const apiServiceInCart = cart.services.some(service => service.id === apiServiceId);
       

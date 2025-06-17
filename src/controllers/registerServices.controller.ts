@@ -2,77 +2,122 @@ import { Request, Response } from "express";
 import { prisma } from "../index";
 import { Prisma, RegisterServices } from "@prisma/client";
 import { ZodError, z } from "zod";
-import { deleteImageByUrl } from "../config/cloudinaryUploader";
+import { deleteImageByUrl, uploadToCloudinary } from "../config/cloudinaryUploader";
 
 const servicesCreateSchema = z.object({
   serviceId: z.string().transform((n) => parseInt(n, 10)),
 });
 
 export class RegisterServicesController {
-  static async registerService(req: Request, res: Response) {
-    try {
-      const userId = req.user?.id;
-  
-      if (!userId) {
-        return res.status(400).json({
-          success: false,
-          message: "Token not found",
-        });
-      }
-  
-      // Add this code block to verify user exists
-      const user = await prisma.user.findUnique({
-        where: { id: userId }
-      });
-      
-      if (!user) {
-        return res.status(404).json({
-          success: false,
-          message: "User not found",
-        });
-      }
-      // End of added verification
-  
-      const { serviceId } = servicesCreateSchema.parse(req.body);
-      const { aadhaarCard, panCard, gstCertificate, photo } = req.files as {
-        [fieldname: string]: Express.Multer.File[];
-      };
-  
-      const newService: RegisterServices = await prisma.registerServices.create(
-        {
-          data: {
-            serviceId,
-            userId,
-            aadhaarCard: aadhaarCard[0].path,
-            panCard: panCard[0].path,
-            gstCertificate: gstCertificate[0].path,
-            photo: photo[0].path,
-          },
-        }
-      );
-  
-      return res.status(201).json({
-        success: true,
-        result: newService,
-        message: "Service registered successfully",
-      });
-    } catch (error) {
-      // Explicitly type 'error' as 'any' or specify the exact type
-      if (error instanceof ZodError) {
-        return res.status(400).json({
-          success: false,
-          message: "Validation Error",
-          errors: error.errors,
-        });
-      }
-  
-      return res.status(500).json({
+// Updated registerService method with Cloudinary integration
+static async registerService(req: Request, res: Response) {
+  try {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(400).json({
         success: false,
-        message: "Internal server error",
-        error: error instanceof Error && error.toString(),
+        message: "Token not found",
       });
     }
+
+    // Verify user exists
+    const user = await prisma.user.findUnique({
+      where: { id: userId }
+    });
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const { serviceId } = servicesCreateSchema.parse(req.body);
+    const { aadhaarCard, panCard, gstCertificate, photo } = req.files as {
+      [fieldname: string]: Express.Multer.File[];
+    };
+
+    // Validate that all required files are present
+    if (!aadhaarCard?.[0] || !panCard?.[0] || !gstCertificate?.[0] || !photo?.[0]) {
+      return res.status(400).json({
+        success: false,
+        message: "All required files (aadhaarCard, panCard, gstCertificate, photo) must be uploaded",
+      });
+    }
+
+    // Upload files to Cloudinary
+    const [aadhaarUpload, panUpload, gstUpload, photoUpload] = await Promise.all([
+      uploadToCloudinary(
+        aadhaarCard[0].path, 
+        aadhaarCard[0].mimetype.startsWith('image/') ? "image" : "raw", 
+        req, 
+        aadhaarCard[0]
+      ),
+      uploadToCloudinary(
+        panCard[0].path, 
+        panCard[0].mimetype.startsWith('image/') ? "image" : "raw", 
+        req, 
+        panCard[0]
+      ),
+      uploadToCloudinary(
+        gstCertificate[0].path, 
+        gstCertificate[0].mimetype.startsWith('image/') ? "image" : "raw", 
+        req, 
+        gstCertificate[0]
+      ),
+      uploadToCloudinary(
+        photo[0].path, 
+        "image", 
+        req, 
+        photo[0]
+      ),
+    ]);
+
+    // Create service registration record with Cloudinary URLs
+    const newService: RegisterServices = await prisma.registerServices.create({
+      data: {
+        serviceId,
+        userId,
+        aadhaarCard: aadhaarUpload.secure_url,
+        panCard: panUpload.secure_url,
+        gstCertificate: gstUpload.secure_url,
+        photo: photoUpload.secure_url,
+      },
+    });
+
+    return res.status(201).json({
+      success: true,
+      result: newService,
+      message: "Service registered successfully",
+    });
+  } catch (error) {
+    console.error("Service registration error:", error);
+    
+    if (error instanceof ZodError) {
+      return res.status(400).json({
+        success: false,
+        message: "Validation Error",
+        errors: error.errors,
+      });
+    }
+
+    // Handle Cloudinary upload errors
+    if (error instanceof Error && error.message.includes("Cloudinary")) {
+      return res.status(500).json({
+        success: false,
+        message: "File upload failed",
+        error: error.message,
+      });
+    }
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
   }
+}
 
   static async findAllServices(req: Request, res: Response) {
     try {
