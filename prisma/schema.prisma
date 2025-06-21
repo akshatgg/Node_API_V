@@ -13,7 +13,7 @@ model User {
   email            String             @unique
   password         String
   firstName        String
-  middleName        String?
+  middleName       String?
   lastName         String?
   fatherName       String?
   phone            String?
@@ -127,18 +127,18 @@ model BusinessProfile {
 
 model Cart {
   id                   String             @id @default(uuid())
-  userId               Int                   @unique  // ✅ Add this
+  userId               Int                @unique
   createdAt            DateTime           @default(now())
   updatedAt            DateTime           @default(now()) @updatedAt
+  category             String?
   user                 User               @relation(fields: [userId], references: [id])
   services             ApiService[]       @relation("CartServices")
   registrationServices RegisterServices[] @relation("CartToRegisterServices")
   registrationStartup  RegisterStartup[]  @relation("CartToRegisterStartup")
-   category             String?  
 }
 
 model ApiService {
-  id           String     @id @default(uuid())
+  id           String          @id @default(uuid())
   title        String
   overview     String
   price        Float
@@ -147,13 +147,12 @@ model ApiService {
   bodyParams   Json?
   response     Json?
   responseJSON Json?
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @default(now()) @updatedAt
-  carts        Cart[]     @relation("CartServices")
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @default(now()) @updatedAt
+  category     String
   subscription Subscriptions[] @relation("ApiServiceToSubscriptions")
-   category    String // ✅ Add this line
+  carts        Cart[]          @relation("CartServices")
 }
-
 
 model Subscriptions {
   id                   String                @id @default(uuid())
@@ -202,10 +201,9 @@ model Transaction {
   ledgerId        String
   journalEntryId  String
   amount          Decimal
-  //make date component by Akshat
-   date           DateTime
   transactionType TransactionType
   userId          Int
+  date            DateTime
   journalEntry    JournalEntry    @relation(fields: [journalEntryId], references: [id])
   ledger          Ledger          @relation(fields: [ledgerId], references: [id])
   user            User            @relation(fields: [userId], references: [id])
@@ -235,23 +233,21 @@ model Party {
   user              User      @relation(fields: [userId], references: [id])
 }
 
-// that whole thing is make by akshat i am talking about statusWiseIncomeTaxCode
 model StatusWiseIncomeTaxCode {
-    id     Int     @id @default(autoincrement())
-    code   String
-    status String
+  id     Int    @id @default(autoincrement())
+  code   String
+  status String
 }
 
-// that whole thing is make by akshat i am talking about InterestOnKVP
 model InterestOnKVP {
-  id    Int    @id @default(autoincrement())
-  year  Int
-  rate  Float
+  id   Int   @id @default(autoincrement())
+  year Int
+  rate Float
 }
-// that whole thing is make by akshat i am talking about DepreciationTable
+
 model DepreciationTable {
-  id          Int    @id @default(autoincrement())
-  assetType   String
+  id               Int    @id @default(autoincrement())
+  assetType        String
   depreciationRate Float
 }
 
