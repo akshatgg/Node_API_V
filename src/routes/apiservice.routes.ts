@@ -26,4 +26,10 @@ apirouter.post('/subscribe-all-apis',verifyToken,ApiServiceController.subscribeT
 apirouter.get('/get-all-categories',verifyToken,ApiServiceController.getAllApiCategories);
 
 apirouter.get('/get-all-subscriptions/:id',verifyToken,SuperadminCheck,ApiServiceController.getAllSubscriptions);
+
+apirouter.get('/subscription-user',verifyToken,ApiServiceController.getAllSubscriptionsForUser);
+
+apirouter.post(`/create-subscription`,verifyToken,ApiServiceController.createSubscription);
+
+apirouter.put('/update-subscription', verifyToken, ApiServiceController.updateSubscription);
 export default apirouter;
