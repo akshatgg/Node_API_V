@@ -27,6 +27,8 @@ apirouter.get('/get-all-categories',verifyToken,ApiServiceController.getAllApiCa
 
 apirouter.get('/get-all-subscriptions/:id',verifyToken,SuperadminCheck,ApiServiceController.getAllSubscriptions);
 
+apirouter.get('/get-all-subscriptions',verifyToken,SuperadminCheck,ApiServiceController.getAllSuccessfulSubscriptions);
+
 apirouter.get('/subscription-user',verifyToken,ApiServiceController.getAllSubscriptionsForUser);
 
 apirouter.post(`/create-subscription`,verifyToken,ApiServiceController.createSubscription);

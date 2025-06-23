@@ -495,6 +495,33 @@ export default class ApiServiceController {
       });
     }
   };
+
+
+static getAllSuccessfulSubscriptions = async (req: Request, res: Response) => {
+  try {
+    const subscriptions = await prisma.subscriptions.findMany({
+    
+      include: {
+        user: true,
+        services: true,
+      },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Successful subscriptions retrieved successfully.",
+      subscriptions,
+    });
+  } catch (error) {
+    console.error("Error fetching successful subscriptions:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+
   static getcountofcart = async (req: Request, res: Response) => {
     const userId = req.user?.id; // Assuming userId is stored in req.user
     try {
