@@ -5,4 +5,4 @@
 
 */
 -- AlterTable
-ALTER TABLE "ApiService" ADD COLUMN     "category" TEXT NOT NULL;
+-- ALTER TABLE "ApiService" ADD COLUMN "category" TEXT NOT NULL;
