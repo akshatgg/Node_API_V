@@ -1,8 +1,7 @@
 import { prisma } from "..";
 import { Request, Response } from "express";
 import { z } from "zod";
-import { Prisma, SubscriptionStatus } from '@prisma/client';
-
+import { Prisma, SubscriptionStatus } from "@prisma/client";
 
 export const createOrder = z.object({
   serviceIds: z.array(z.string()).optional(),
@@ -11,9 +10,9 @@ export const createOrder = z.object({
 });
 
 export const updateSubs = z.object({
-  status: z.string().min(1, 'Status is required'),
-  txnid: z.string().min(1, 'Transaction id is required.'),
-  pid: z.string().min(1, 'Payment id is required.'),
+  status: z.string().min(1, "Status is required"),
+  txnid: z.string().min(1, "Transaction id is required."),
+  pid: z.string().min(1, "Payment id is required."),
 });
 
 export default class ApiServiceController {
@@ -496,34 +495,34 @@ export default class ApiServiceController {
     }
   };
 
+  static getAllSubscriptions = async (req: Request, res: Response) => {
+    try {
+      const limit = req.query.limit
+        ? parseInt(req.query.limit as string, 10)
+        : undefined;
 
-static getAllSubscriptions = async (req: Request, res: Response) => {
-  try {
-    const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : undefined;
+      const subscriptions = await prisma.subscriptions.findMany({
+        take: limit, // Optional limit
+        orderBy: { createdAt: "desc" }, // Most recent first
+        include: {
+          user: true,
+          services: true,
+        },
+      });
 
-    const subscriptions = await prisma.subscriptions.findMany({
-      take: limit, // Optional limit
-      orderBy: { createdAt: 'desc' }, // Most recent first
-      include: {
-        user: true,
-        services: true,
-      },
-    });
-
-    return res.status(200).json({
-      success: true,
-      message: "Successful subscriptions retrieved successfully.",
-      subscriptions,
-    });
-  } catch (error) {
-    console.error("Error fetching successful subscriptions:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal Server Error",
-    });
-  }
-};
-
+      return res.status(200).json({
+        success: true,
+        message: "Successful subscriptions retrieved successfully.",
+        subscriptions,
+      });
+    } catch (error) {
+      console.error("Error fetching successful subscriptions:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+      });
+    }
+  };
 
   static getcountofcart = async (req: Request, res: Response) => {
     const userId = req.user?.id; // Assuming userId is stored in req.user
@@ -572,6 +571,8 @@ static getAllSubscriptions = async (req: Request, res: Response) => {
   };
   static getAllSubscriptionsForUser = async (req: Request, res: Response) => {
     const userId = req.user?.id; // Assuming userId is stored in req.user
+    const limitParam = req.query.limit;
+    const limit = limitParam ? parseInt(limitParam as string, 10) : undefined;
 
     try {
       // Validate if userId exists in req.user
@@ -590,6 +591,10 @@ static getAllSubscriptions = async (req: Request, res: Response) => {
           registrationStartup: true,
           services: true,
         },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        take: limit,
       });
 
       if (subscriptions.length === 0) {
@@ -700,9 +705,9 @@ static getAllSubscriptions = async (req: Request, res: Response) => {
   };
   static updateSubscription = async (req: Request, res: Response) => {
     const userId = req.user?.id; // Assuming userId is stored in req.user
-    
-    try{
-      if(!userId) {
+
+    try {
+      if (!userId) {
         return res.status(400).json({
           success: false,
           message: "User ID is required.",
@@ -726,7 +731,7 @@ static getAllSubscriptions = async (req: Request, res: Response) => {
       const updated = await prisma.subscriptions.updateMany({
         data: {
           pid,
-          status: status as SubscriptionStatus,  // ✅ Cast to enum
+          status: status as SubscriptionStatus, // ✅ Cast to enum
         },
         where: {
           userId,
@@ -737,7 +742,8 @@ static getAllSubscriptions = async (req: Request, res: Response) => {
       if (updated.count === 0) {
         return res.status(404).json({
           success: false,
-          message: "No subscription found for the given user and transaction ID.",
+          message:
+            "No subscription found for the given user and transaction ID.",
         });
       }
       return res.status(201).json({
@@ -752,5 +758,5 @@ static getAllSubscriptions = async (req: Request, res: Response) => {
         message: "Internal Server Error",
       });
     }
-  }
+  };
 }
