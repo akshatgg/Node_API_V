@@ -11,8 +11,8 @@ config({
 
 // Create Redis client
 const client = createClient({ 
-  username: 'akshat',
-  password: 'akshat1234',
+  username: '',
+  password: '',
   socket: {
     host: '127.0.0.1',
     port: 6379,

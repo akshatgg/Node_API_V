@@ -450,7 +450,7 @@ export default class ApiServiceController {
     }
   };
 
-  static getAllSubscriptions = async (req: Request, res: Response) => {
+  static getSubscriptionsById = async (req: Request, res: Response) => {
     const { id: apiServiceId } = req.params; // Assume API ID is passed as a route parameter
     console.log(apiServiceId);
     try {
@@ -497,10 +497,13 @@ export default class ApiServiceController {
   };
 
 
-static getAllSuccessfulSubscriptions = async (req: Request, res: Response) => {
+static getAllSubscriptions = async (req: Request, res: Response) => {
   try {
+    const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : undefined;
+
     const subscriptions = await prisma.subscriptions.findMany({
-    
+      take: limit, // Optional limit
+      orderBy: { createdAt: 'desc' }, // Most recent first
       include: {
         user: true,
         services: true,
