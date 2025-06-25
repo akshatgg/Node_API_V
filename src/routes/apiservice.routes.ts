@@ -31,7 +31,7 @@ apirouter.get('/get-all-subscriptions',verifyToken,SuperadminCheck,ApiServiceCon
 
 apirouter.get('/subscription-user',verifyToken,ApiServiceController.getAllSubscriptionsForUser);
 
-apirouter.post(`/create-subscription`,verifyToken,ApiServiceController.createSubscription);
+apirouter.post('/create-subscription',verifyToken,ApiServiceController.createSubscription);
 
 apirouter.put('/update-subscription', verifyToken, ApiServiceController.updateSubscription);
 export default apirouter;
