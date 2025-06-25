@@ -501,14 +501,33 @@ export default class ApiServiceController {
         ? parseInt(req.query.limit as string, 10)
         : undefined;
 
-      const subscriptions = await prisma.subscriptions.findMany({
-        take: limit, // Optional limit
-        orderBy: { createdAt: "desc" }, // Most recent first
-        include: {
-          user: true,
-          services: true,
-        },
-      });
+
+static getAllSuccessfulSubscriptions = async (req: Request, res: Response) => {
+  try {
+    const subscriptions = await prisma.subscriptions.findMany({
+    
+      include: {
+        user: true,
+        services: true,
+        registrationStartup: true,
+        registrationServices: true,
+      },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Successful subscriptions retrieved successfully.",
+      subscriptions,
+    });
+  } catch (error) {
+    console.error("Error fetching successful subscriptions:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
 
       return res.status(200).json({
         success: true,
