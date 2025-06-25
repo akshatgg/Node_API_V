@@ -504,6 +504,8 @@ static getAllSuccessfulSubscriptions = async (req: Request, res: Response) => {
       include: {
         user: true,
         services: true,
+        registrationStartup: true,
+        registrationServices: true,
       },
     });
 

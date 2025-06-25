@@ -137,6 +137,7 @@ model Cart {
   registrationStartup  RegisterStartup[]  @relation("CartToRegisterStartup")
 }
 
+
 model ApiService {
   id           String          @id @default(uuid())
   title        String
