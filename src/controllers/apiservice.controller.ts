@@ -512,6 +512,14 @@ export default class ApiServiceController {
         },
       });
 
+      if (subscriptions.length === 0) {
+        return res.status(200).json({
+          success: true,
+          message: "No subscriptions found",
+          subscriptions: [],
+        });
+      }
+
       return res.status(200).json({
         success: true,
         message: "Successful subscriptions retrieved successfully.",
@@ -600,8 +608,8 @@ export default class ApiServiceController {
       });
 
       if (subscriptions.length === 0) {
-        return res.status(404).json({
-          success: false,
+        return res.status(200).json({
+          success: true,
           message: "No subscriptions found for the user.",
         });
       }
@@ -673,7 +681,7 @@ export default class ApiServiceController {
       //   totalAmount += registerServices.reduce((acc, service) => acc + +(service.price ?? 0), 0);
 
       // Add 18% tax
-      totalAmount += (totalAmount * 18) / 100;
+      // totalAmount += (totalAmount * 18) / 100;
 
       // Create the subscription
       const subscription = await prisma.subscriptions.create({
