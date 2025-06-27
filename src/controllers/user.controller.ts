@@ -92,6 +92,7 @@ export default class UserController {
     try {
       const {
         firstName,
+        middleName,
         lastName,
         gender,
         fatherName,
@@ -111,6 +112,7 @@ export default class UserController {
         where: { email },
         update: {
           firstName,
+          middleName,
           lastName,
           gender,
           fatherName,
@@ -123,6 +125,7 @@ export default class UserController {
         },
         create: {
           firstName,
+          middleName,
           lastName,
           gender,
           fatherName,
