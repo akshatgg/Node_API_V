@@ -10,14 +10,15 @@ config({
 });
 
 // Create Redis client
-const client = createClient({ 
-  username: '',
-  password: '',
+const client = createClient({
+  username: process.env.REDIS_USERNAME,
+  password: process.env.REDIS_PASSWORD,
   socket: {
-    host: '127.0.0.1',
-    port: 6379,
+    host: process.env.REDIS_HOST,
+    port: Number(process.env.REDIS_PORT),
   },
 });
+
 
 // Handling Redis events
 client.on('error', (err) => console.error('Redis Client Error:', err));
