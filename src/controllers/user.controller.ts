@@ -877,7 +877,7 @@ export default class UserController {
         const cloudinaryResult = await uploadToCloudinary(localFilePath, "image", req, req.file);
         avatar = cloudinaryResult.secure_url;  // Cloudinary URL for the uploaded image
       }
-  
+      const parseBoolean = (val: string | boolean) => val === true || val === 'true';
       if (!firstName.length) {
         return res
           .status(400)
@@ -899,7 +899,7 @@ export default class UserController {
           .send({ success: false, message: "User does not exist" });
       }
       await prisma.user.update({
-        where: {
+        where: {  
           id: user.id,
         },
         data: {
@@ -909,13 +909,13 @@ export default class UserController {
           gender: gender ?? user.gender,
           fatherName,
           pin: pin ?? user.pin,
-          pan: pan ?? user.pan,
+          pan: pan ?? user.pan, 
           aadhaar: aadhaar ?? user.aadhaar,
           address: address ?? user.address,
           phone: phone ?? user.phone,
           avatar: avatar ?? user.avatar,
-          ispanlinked: Boolean(ispanlinked) ?? user.ispanlinked,
-          inventory: Boolean(inventory) ?? user.inventory,
+          ispanlinked: parseBoolean(ispanlinked), // ✅ fixed
+          inventory: parseBoolean(inventory), 
         },
       });
       return res
@@ -1028,6 +1028,8 @@ export default class UserController {
           pan: true,
           userType: true,
           pin: true,
+          ispanlinked: true,
+          inventory: true,
         },
         where: {
           id: {
@@ -1220,6 +1222,9 @@ export default class UserController {
           pin: true,
           dob: true,
           avatar: true,
+          ispanlinked: true,
+          inventory: true,
+          verified: true,
         },
         where: {
           id: {
