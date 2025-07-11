@@ -47,6 +47,8 @@ import einvoiceRouter from "./Einvoice.routes";
 import ewaybill from "./ewaybill.routes";
 import cartRouter from "./cart.routes";
 import cartStartupRouter from "./cartstartup.routes";
+import tdsRouter from "./tds.routes";
+import tcsRouter from "./tcs.routes";
 const router = Router();
 
 router.use("/user", userRouter);
@@ -137,6 +139,10 @@ router.use("/download",downloadrouter);
 router.use("/einvoice",einvoiceRouter);
 
 router.use("/ewaybill",ewaybill);
+
+router.use("/tds", tdsRouter);
+
+router.use("/tcs",tcsRouter);
 
 router.get("/", (req, res) => {
   return res.send({ message: "Up and running" });
