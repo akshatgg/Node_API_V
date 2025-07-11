@@ -3,6 +3,65 @@ import { Request, Response } from "express";
 import Sandbox from "../../services/sandbox.service";
 
 export default class EinvoiceController {
+   
+static einvoiceAuthToken: string | null = null;
+
+     static async einvoiceLogin(req: Request, res: Response) {
+  try {
+    const { username, password, gstin } = req.body;
+
+    if (!username || !password || !gstin) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields: username, password, or gstin"
+      });
+    }
+
+    const endpoint = `${Sandbox.BASE_URL}/gst/compliance/e-invoice/tax-payer/authenticate?force=true`;
+const token = await Sandbox.generateAccessToken();
+    const headers = {
+      accept: 'application/json',
+      authorization: `${token}`, // ✅ match other methods
+      'x-api-key': process.env.SANDBOX_KEY || '',
+      'x-source': 'primary',
+      'x-api-version': process.env.SANDBOX_API_VERSION || '',
+      'content-type': 'application/json',
+    };
+
+    const payload = { username, password, gstin };
+
+    const response = await axios.post(endpoint, payload, { headers });
+
+    EinvoiceController.einvoiceAuthToken = response.data?.data?.access_token || null;
+
+
+    return res.status(200).json({
+      success: true,
+      data: response.data
+    });
+
+  } catch (error: unknown) {
+    console.error('E-invoice login failed:', error);
+
+    if (typeof error === "object" && error !== null && "response" in error) {
+      const err = error as { response: { status: number; data?: { message?: string } } };
+      return res.status(err.response.status).json({
+        success: false,
+        message: err.response.data?.message || 'Authentication failed'
+      });
+    }
+
+    return res.status(500).json({
+      success: false,
+      message: 'Something went wrong',
+      error: error instanceof Error ? error.message : String(error)
+    });
+  }
+}
+
+
+
+
     static async generateEinvoice(req: Request, res: Response) {
         try {
             // Ensure the request body is not empty
@@ -11,7 +70,7 @@ export default class EinvoiceController {
             }
     
             const endpoint = `${Sandbox.BASE_URL}/gst/compliance/e-invoice/tax-payer/invoice`;
-            const token = await Sandbox.generateAccessToken();
+            const token = EinvoiceController.einvoiceAuthToken;
     
             // Set up headers for the API request
             const headers = {
@@ -59,7 +118,7 @@ export default class EinvoiceController {
 
             const endpoint = `${Sandbox.BASE_URL}/gst/compliance/e-invoice/tax-payer/invoice/irn`;
 
-            const token = await Sandbox.generateAccessToken();
+            const token = EinvoiceController.einvoiceAuthToken;
 
             const headers = {
                 'Authorization': token,
@@ -88,7 +147,7 @@ export default class EinvoiceController {
 
             const endpoint = `${Sandbox.BASE_URL}/einvoice/${einvoiceId}/cancel`;
 
-            const token = await Sandbox.generateAccessToken();
+            const token = EinvoiceController.einvoiceAuthToken;
 
             const headers = {
                 'Authorization': token,
@@ -120,7 +179,7 @@ export default class EinvoiceController {
             }
     
             const endpoint = `${Sandbox.BASE_URL}/einvoice/generate/pdf`;
-            const token = await Sandbox.generateAccessToken();
+            const token = EinvoiceController.einvoiceAuthToken;
     
             // Set up request headers
             const headers = {
@@ -173,7 +232,7 @@ export default class EinvoiceController {
                 return res.status(400).json({ success: false, message: 'Query Parameter "documentData" is missing' });
             }
             const endpoint = `${Sandbox.BASE_URL}/gst/compliance/e-invoice/tax-payer/invoice`;
-            const token = await Sandbox.generateAccessToken();
+            const token = EinvoiceController.einvoiceAuthToken;
             const headers = {
                 'Authorization': token,
                 'accept': 'application/json',
