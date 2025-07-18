@@ -55,6 +55,130 @@ export default class UserController {
 
     return hash;
   }
+  static async resendOtpWithKey(req: Request, res: Response) {
+  try {
+    const { email, otp_key } = req.body;
+
+    const user = await prisma.user.findFirst({ where: { email } });
+
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    if (otp_key) {
+      await prisma.otp.deleteMany({ where: { userId: user.id } });
+    }
+
+    const otpValue = generateOTP();
+    const expiryDate = new Date(Date.now() + 10 * 60 * 1000); // 10 mins
+
+    const newOtp = await prisma.otp.create({
+      data: {
+        userId: user.id,
+        otp: otpValue,
+        deletedate: expiryDate,
+        used: false,
+      },
+    });
+
+    const emailSubject = "OTP Verification";
+    const emailBody = `Your OTP is: ${otpValue}\nDo not share this code.\nExpires in 10 minutes.`;
+
+    await EmailService.sendMail(email, emailSubject, emailBody);
+
+    return res.status(200).send({
+      success: true,
+      message: "OTP sent successfully to your email.",
+      data: { otp_key: newOtp.id },
+    });
+  } catch (err) {
+    console.error("resendOtpWithKey error:", err);
+    return res.status(500).send({ success: false, message: "Something went wrong." });
+  }
+}
+static async verifyOtpWithKey(req: Request, res: Response) {
+  try {
+    const { email, otp_key, otp } = req.body;
+
+    const isOtp = await prisma.otp.findFirst({ where: { id: otp_key } });
+
+    if (!isOtp || isOtp.used) {
+      return res.status(400).send({ success: false, message: "Invalid or used OTP." });
+    }
+
+    const otpTime = isOtp.createdAt.getTime();
+    const currentTime = Date.now();
+    const isOtpExpired = currentTime > otpTime + 10 * 60 * 1000;
+
+    if (isOtpExpired) {
+      return res.status(400).send({ success: false, message: "OTP expired." });
+    }
+
+    if (isOtp.otp !== otp) {
+      return res.status(400).send({ success: false, message: "Incorrect OTP." });
+    }
+
+    // ✅ Do NOT mark used here
+    // Optional: Mark user verified if you want
+    await prisma.user.update({
+      where: { id: isOtp.userId, email },
+      data: { verified: true },
+    });
+
+    return res.status(200).send({
+      success: true,
+      message: "User verified successfully.",
+    });
+  } catch (err) {
+    console.error("verifyOtpWithKey error:", err);
+    return res.status(500).send({ success: false, message: "Server error." });
+  }
+}
+
+static async updatePasswordWithOtp(req: Request, res: Response) {
+  try {
+    const { email, otp_key, otp, newPassword } = req.body;
+
+    const isOtp = await prisma.otp.findFirst({ where: { id: otp_key } });
+
+    if (!isOtp || isOtp.used) {
+      return res.status(400).send({ success: false, message: "Invalid or used OTP." });
+    }
+
+    const isOtpExpired = Date.now() > isOtp.createdAt.getTime() + 10 * 60 * 1000;
+    if (isOtpExpired) {
+      return res.status(400).send({ success: false, message: "OTP expired." });
+    }
+
+    if (isOtp.otp !== otp) {
+      return res.status(400).send({ success: false, message: "Incorrect OTP." });
+    }
+
+    const hashedPwd = await UserController.hashPassword(newPassword);
+
+    await prisma.user.update({
+      where: { id: isOtp.userId, email },
+      data: { password: hashedPwd },
+    });
+
+    await prisma.otp.update({
+      where: { id: isOtp.id },
+      data: { used: true },
+    });
+
+    return res.status(200).send({
+      success: true,
+      message: "Password updated successfully.",
+    });
+  } catch (err) {
+    console.error("updatePasswordWithOtp error:", err);
+    return res.status(500).send({ success: false, message: "Server error." });
+  }
+}
+
 
   static async sendOtp(email: string, userId: number,mobile_number:number) {
     const otp = generateOTP(); // Assume generateOTP is implemented and returns a string
