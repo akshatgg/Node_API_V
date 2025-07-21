@@ -89,4 +89,10 @@ userRouter.post("/googlelogin", googleController.loginWithGoogle);
 // Route for fetching user profile using access token
 userRouter.post("/profile", googleController.getUserProfile);
 
+userRouter.post("/resend-otp-key", UserController.resendOtpWithKey);
+
+userRouter.post("/verify-otp-key", UserController.verifyOtpWithKey);
+
+userRouter.post("/update-password-with-otp", UserController.updatePasswordWithOtp);
+
 export default userRouter;
