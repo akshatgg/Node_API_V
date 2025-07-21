@@ -6,7 +6,7 @@ export default class EinvoiceController {
    
 static einvoiceAuthToken: string | null = null;
 
-     static async einvoiceLogin(req: Request, res: Response) {
+    static async einvoiceLogin(req: Request, res: Response) {
   try {
     const { username, password, gstin } = req.body;
 
@@ -18,7 +18,7 @@ static einvoiceAuthToken: string | null = null;
     }
 
     const endpoint = `${Sandbox.BASE_URL}/gst/compliance/e-invoice/tax-payer/authenticate?force=true`;
-const token = await Sandbox.generateAccessToken();
+    const token = await Sandbox.generateAccessToken();
     const headers = {
       accept: 'application/json',
       authorization: `${token}`, // ✅ match other methods

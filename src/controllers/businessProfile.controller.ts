@@ -7,7 +7,9 @@ export default class BusinessProfileController {
   static async getProfile(req: Request, res: Response) {
     try {
       const id = req.user?.id;
-
+        if(!id) {
+          return res.status(400).send({ success: false, message: "User ID is required" });
+        }
       const profile = await prisma.businessProfile.findFirst({
         where: { userId: id },
         include: { user: { select: { avatar: true } } },

@@ -3,7 +3,7 @@ import verifyToken from "../middlewares/verify-token";
 import EinvoiceController from "../controllers/sandbox/einvoice.controller";
 
 const einvoiceRouter = Router();
-
+einvoiceRouter.post('/auth', verifyToken, EinvoiceController.einvoiceLogin);
 einvoiceRouter.post('/generate', verifyToken, EinvoiceController.generateEinvoice);
 einvoiceRouter.post('/by-irn', verifyToken, EinvoiceController.einvoicebyirn);
 einvoiceRouter.post('/cancel', verifyToken, EinvoiceController.einvoiceCancel);
