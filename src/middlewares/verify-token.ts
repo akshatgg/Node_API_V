@@ -40,6 +40,7 @@ export default function verifyToken(
   // 🔥 HOTFIX: Map `Usertype` to `userType`
   user.userType = user.Usertype;
   
+  
   req.user = user;
 
   console.log("🚀 ~ verifyToken ~ user:", user);
