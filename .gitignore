@@ -6,3 +6,5 @@ memorylogs
 dist
 uploads
 /compose.yaml
+
+.env
